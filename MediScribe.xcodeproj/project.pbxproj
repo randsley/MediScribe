@@ -6,6 +6,16 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		022AD7662F1ED791004D771E /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 022AD7652F1ED791004D771E /* RootView.swift */; };
+		022AD7682F1ED815004D771E /* NotesHomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 022AD7672F1ED815004D771E /* NotesHomeView.swift */; };
+		022AD76A2F1ED857004D771E /* ImagingHomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 022AD7692F1ED857004D771E /* ImagingHomeView.swift */; };
+		022AD76C2F1ED8A2004D771E /* ImagingGenerateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 022AD76B2F1ED8A2004D771E /* ImagingGenerateView.swift */; };
+		022AD76E2F1ED92A004D771E /* ImagingHistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 022AD76D2F1ED92A004D771E /* ImagingHistoryView.swift */; };
+		022AD7702F1ED970004D771E /* ReferralsHomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 022AD76F2F1ED970004D771E /* ReferralsHomeView.swift */; };
+		022AD7722F1EDA9A004D771E /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 022AD7712F1EDA9A004D771E /* SettingsView.swift */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		024D8CE22F1B0FB800004385 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -24,6 +34,13 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		022AD7652F1ED791004D771E /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
+		022AD7672F1ED815004D771E /* NotesHomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotesHomeView.swift; sourceTree = "<group>"; };
+		022AD7692F1ED857004D771E /* ImagingHomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagingHomeView.swift; sourceTree = "<group>"; };
+		022AD76B2F1ED8A2004D771E /* ImagingGenerateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagingGenerateView.swift; sourceTree = "<group>"; };
+		022AD76D2F1ED92A004D771E /* ImagingHistoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagingHistoryView.swift; sourceTree = "<group>"; };
+		022AD76F2F1ED970004D771E /* ReferralsHomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReferralsHomeView.swift; sourceTree = "<group>"; };
+		022AD7712F1EDA9A004D771E /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		024D8CCF2F1B0FB700004385 /* MediScribe.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MediScribe.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		024D8CE12F1B0FB800004385 /* MediScribeTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MediScribeTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		024D8CEB2F1B0FB800004385 /* MediScribeUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MediScribeUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -72,9 +89,64 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		022AD75C2F1ED654004D771E /* UI */ = {
+			isa = PBXGroup;
+			children = (
+				022AD7652F1ED791004D771E /* RootView.swift */,
+				022AD7712F1EDA9A004D771E /* SettingsView.swift */,
+			);
+			path = UI;
+			sourceTree = "<group>";
+		};
+		022AD75D2F1ED666004D771E /* Features */ = {
+			isa = PBXGroup;
+			children = (
+				022AD7602F1ED699004D771E /* Referrals */,
+				022AD75F2F1ED685004D771E /* Notes */,
+				022AD75E2F1ED67B004D771E /* Imaging */,
+			);
+			path = Features;
+			sourceTree = "<group>";
+		};
+		022AD75E2F1ED67B004D771E /* Imaging */ = {
+			isa = PBXGroup;
+			children = (
+				022AD7692F1ED857004D771E /* ImagingHomeView.swift */,
+				022AD76D2F1ED92A004D771E /* ImagingHistoryView.swift */,
+				022AD76B2F1ED8A2004D771E /* ImagingGenerateView.swift */,
+			);
+			path = Imaging;
+			sourceTree = "<group>";
+		};
+		022AD75F2F1ED685004D771E /* Notes */ = {
+			isa = PBXGroup;
+			children = (
+				022AD7672F1ED815004D771E /* NotesHomeView.swift */,
+			);
+			path = Notes;
+			sourceTree = "<group>";
+		};
+		022AD7602F1ED699004D771E /* Referrals */ = {
+			isa = PBXGroup;
+			children = (
+				022AD76F2F1ED970004D771E /* ReferralsHomeView.swift */,
+			);
+			path = Referrals;
+			sourceTree = "<group>";
+		};
+		022AD7612F1ED6D2004D771E /* Domain */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Domain;
+			sourceTree = "<group>";
+		};
 		024D8CC62F1B0FB700004385 = {
 			isa = PBXGroup;
 			children = (
+				022AD7612F1ED6D2004D771E /* Domain */,
+				022AD75D2F1ED666004D771E /* Features */,
+				022AD75C2F1ED654004D771E /* UI */,
 				024D8CD12F1B0FB700004385 /* MediScribe */,
 				024D8CE42F1B0FB800004385 /* MediScribeTests */,
 				024D8CEE2F1B0FB800004385 /* MediScribeUITests */,
@@ -236,6 +308,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				022AD7682F1ED815004D771E /* NotesHomeView.swift in Sources */,
+				022AD7702F1ED970004D771E /* ReferralsHomeView.swift in Sources */,
+				022AD76E2F1ED92A004D771E /* ImagingHistoryView.swift in Sources */,
+				022AD7662F1ED791004D771E /* RootView.swift in Sources */,
+				022AD76C2F1ED8A2004D771E /* ImagingGenerateView.swift in Sources */,
+				022AD76A2F1ED857004D771E /* ImagingHomeView.swift in Sources */,
+				022AD7722F1EDA9A004D771E /* SettingsView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
