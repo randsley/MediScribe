@@ -14,6 +14,8 @@
 		022AD76E2F1ED92A004D771E /* ImagingHistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 022AD76D2F1ED92A004D771E /* ImagingHistoryView.swift */; };
 		022AD7702F1ED970004D771E /* ReferralsHomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 022AD76F2F1ED970004D771E /* ReferralsHomeView.swift */; };
 		022AD7722F1EDA9A004D771E /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 022AD7712F1EDA9A004D771E /* SettingsView.swift */; };
+		022AD77A2F1EE954004D771E /* README.MD in Resources */ = {isa = PBXBuildFile; fileRef = 022AD7792F1EE954004D771E /* README.MD */; };
+		022AD77C2F1EEACE004D771E /* CLINICAL_OVERVIEW.MD in Sources */ = {isa = PBXBuildFile; fileRef = 022AD77B2F1EEABE004D771E /* CLINICAL_OVERVIEW.MD */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -41,6 +43,8 @@
 		022AD76D2F1ED92A004D771E /* ImagingHistoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagingHistoryView.swift; sourceTree = "<group>"; };
 		022AD76F2F1ED970004D771E /* ReferralsHomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReferralsHomeView.swift; sourceTree = "<group>"; };
 		022AD7712F1EDA9A004D771E /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		022AD7792F1EE954004D771E /* README.MD */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.MD; sourceTree = "<group>"; };
+		022AD77B2F1EEABE004D771E /* CLINICAL_OVERVIEW.MD */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = CLINICAL_OVERVIEW.MD; sourceTree = "<group>"; };
 		024D8CCF2F1B0FB700004385 /* MediScribe.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MediScribe.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		024D8CE12F1B0FB800004385 /* MediScribeTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MediScribeTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		024D8CEB2F1B0FB800004385 /* MediScribeUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MediScribeUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -144,6 +148,8 @@
 		024D8CC62F1B0FB700004385 = {
 			isa = PBXGroup;
 			children = (
+				022AD77B2F1EEABE004D771E /* CLINICAL_OVERVIEW.MD */,
+				022AD7792F1EE954004D771E /* README.MD */,
 				022AD7612F1ED6D2004D771E /* Domain */,
 				022AD75D2F1ED666004D771E /* Features */,
 				022AD75C2F1ED654004D771E /* UI */,
@@ -284,6 +290,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				022AD77A2F1EE954004D771E /* README.MD in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -308,6 +315,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				022AD77C2F1EEACE004D771E /* CLINICAL_OVERVIEW.MD in Sources */,
 				022AD7682F1ED815004D771E /* NotesHomeView.swift in Sources */,
 				022AD7702F1ED970004D771E /* ReferralsHomeView.swift in Sources */,
 				022AD76E2F1ED92A004D771E /* ImagingHistoryView.swift in Sources */,
