@@ -1,12 +1,29 @@
+//
+//  ImagingGenerateView.swift
+//  MediScribe
+//
+//  Imaging findings generation with safety validation
+//
+
 import SwiftUI
 import Foundation
+import PhotosUI
+import CoreData
 
 struct ImagingGenerateView: View {
+    @Environment(\.managedObjectContext) private var viewContext
+    @StateObject private var modelManager = ImagingModelManager.shared
+
     @State private var status = "Select an image to generate a descriptive findings summary."
     @State private var findingsJSON = ""
     @State private var clinicianReviewed = false
     @State private var showError = false
     @State private var errorText = ""
+    @State private var selectedPhoto: PhotosPickerItem? = nil
+    @State private var selectedImageData: Data? = nil
+    @State private var showCamera = false
+    @State private var showSaveSuccess = false
+    @State private var isGenerating = false
 
     var body: some View {
         Form {
@@ -15,10 +32,60 @@ struct ImagingGenerateView: View {
                     .font(.footnote)
             }
 
-            Section("Actions") {
-                Button("Generate findings summary") {
-                    generatePlaceholderThenValidate()
+            Section("Model Information") {
+                HStack {
+                    Text("Model:")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                    Spacer()
+                    Text(modelManager.modelInfo)
+                        .font(.caption)
                 }
+
+                if modelManager.isLoading {
+                    ProgressView("Loading model...", value: modelManager.loadingProgress)
+                        .font(.caption)
+                }
+            }
+
+            Section("Image Selection") {
+                PhotosPicker(selection: $selectedPhoto, matching: .images) {
+                    Label("Choose from Photo Library", systemImage: "photo.on.rectangle")
+                }
+
+                Button {
+                    showCamera = true
+                } label: {
+                    Label("Take Photo", systemImage: "camera")
+                }
+
+                if let imageData = selectedImageData {
+                    HStack {
+                        Image(systemName: "checkmark.circle.fill")
+                            .foregroundColor(.green)
+                        Text("Image selected (\(ByteCountFormatter.string(fromByteCount: Int64(imageData.count), countStyle: .file)))")
+                            .font(.caption)
+                    }
+                }
+            }
+
+            Section("Actions") {
+                Button {
+                    Task {
+                        await generateFindings()
+                    }
+                } label: {
+                    if isGenerating {
+                        HStack {
+                            ProgressView()
+                                .progressViewStyle(.circular)
+                            Text("Generating...")
+                        }
+                    } else {
+                        Text("Generate findings summary")
+                    }
+                }
+                .disabled(selectedImageData == nil || isGenerating || modelManager.isLoading)
             }
 
             Section("Findings (for clinician review)") {
@@ -33,11 +100,13 @@ struct ImagingGenerateView: View {
             }
 
             Section {
-                Button("Add to patient record") { }
-                    .disabled(!clinicianReviewed)
+                Button("Add to patient record") {
+                    saveFinding()
+                }
+                .disabled(!clinicianReviewed || findingsJSON.isEmpty)
 
                 Button("Include in referral summary") { }
-                    .disabled(!clinicianReviewed)
+                    .disabled(!clinicianReviewed || findingsJSON.isEmpty)
             }
         }
         .navigationTitle("Findings Draft")
@@ -46,33 +115,63 @@ struct ImagingGenerateView: View {
         } message: {
             Text(errorText)
         }
+        .alert("Finding Saved", isPresented: $showSaveSuccess) {
+            Button("OK", role: .cancel) { }
+        } message: {
+            Text("Imaging finding has been saved to patient record.")
+        }
+        .onChange(of: selectedPhoto) { _, newValue in
+            Task {
+                if let data = try? await newValue?.loadTransferable(type: Data.self) {
+                    selectedImageData = data
+                    status = "Image loaded. Ready to generate findings."
+                    // Reset findings when new image is selected
+                    findingsJSON = ""
+                    clinicianReviewed = false
+                }
+            }
+        }
+        .sheet(isPresented: $showCamera) {
+            ImagePicker(imageData: $selectedImageData, sourceType: .camera)
+                .onDisappear {
+                    if selectedImageData != nil {
+                        status = "Image captured. Ready to generate findings."
+                        // Reset findings when new image is captured
+                        findingsJSON = ""
+                        clinicianReviewed = false
+                    }
+                }
+        }
     }
 
-    private func generatePlaceholderThenValidate() {
+    private func generateFindings() async {
+        guard let imageData = selectedImageData else { return }
+
+        isGenerating = true
         status = "Reviewing visible features in the image…"
 
-        // TODO: Replace this placeholder with Core ML output (Data)
-        let json = """
-        {
-          \"image_type\": \"Chest X-ray (view not specified)\",
-          \"image_quality\": \"Image quality not specified.\",
-          \"anatomical_observations\": {
-            \"lungs\": [\"Lung fields appear symmetric.\"],
-            \"pleural_regions\": [\"No clearly visible pleural fluid is observed.\"],
-            \"cardiomediastinal_silhouette\": [\"Cardiomediastinal contours appear within expected visual limits.\"],
-            \"bones_and_soft_tissues\": [\"No obvious displacement is visible in the ribs.\"]
-          },
-          \"comparison_with_prior\": \"No prior image available for comparison.\",
-          \"areas_highlighted\": \"No highlighted areas provided.\",
-          \"limitations\": \"\(FindingsValidator.limitationsConst)\"
-        }
-        """
-
         do {
-            _ = try FindingsValidator.decodeAndValidate(Data(json.utf8))
-            findingsJSON = json
-            status = "Draft generated. Please review."
-        } catch {
+            // Generate findings using model manager
+            let result = try await modelManager.generateFindings(from: imageData)
+
+            // Validate the model output
+            _ = try FindingsValidator.decodeAndValidate(Data(result.findingsJSON.utf8))
+
+            // If validation passes, update UI
+            findingsJSON = result.findingsJSON
+            status = "Draft generated in \(String(format: "%.1f", result.processingTime))s. Please review."
+            isGenerating = false
+
+        } catch let error as ImagingModelError {
+            // Handle model-specific errors
+            findingsJSON = ""
+            status = "Unable to generate findings."
+            errorText = error.localizedDescription
+            showError = true
+            isGenerating = false
+
+        } catch let error as FindingsValidationError {
+            // Handle validation errors (safety gate triggered)
             findingsJSON = ""
             status = "Unable to generate a compliant findings summary."
             #if DEBUG
@@ -81,151 +180,112 @@ struct ImagingGenerateView: View {
             errorText = "Unable to generate a compliant findings summary. Please document manually."
             #endif
             showError = true
+            isGenerating = false
+
+        } catch {
+            // Handle unexpected errors
+            findingsJSON = ""
+            status = "An unexpected error occurred."
+            #if DEBUG
+            errorText = "Error: \(error.localizedDescription)"
+            #else
+            errorText = "Unable to generate findings. Please try again."
+            #endif
+            showError = true
+            isGenerating = false
         }
     }
-}
 
-// MARK: - Findings safety gate (temporary colocated implementation)
-// NOTE: Move these types into separate files under Domain/ when convenient.
+    private func saveFinding() {
+        // Create or get default patient
+        let patient = getOrCreateDefaultPatient()
 
-struct ImagingFindingsSummary: Codable {
-    let imageType: String
-    let imageQuality: String
-    let anatomicalObservations: AnatomicalObservations
-    let comparisonWithPrior: String
-    let areasHighlighted: String
-    let limitations: String
+        // Create finding
+        let finding = Finding(context: viewContext)
+        finding.id = UUID()
+        finding.createdAt = Date()
+        finding.findingsJSON = findingsJSON
+        finding.imageData = selectedImageData
+        finding.reviewedAt = Date()
+        finding.reviewedBy = "Clinician" // TODO: Get actual clinician name from app settings
+        finding.imageType = "Imaging" // TODO: Extract from findings JSON
+        finding.patient = patient
 
-    enum CodingKeys: String, CodingKey {
-        case imageType = "image_type"
-        case imageQuality = "image_quality"
-        case anatomicalObservations = "anatomical_observations"
-        case comparisonWithPrior = "comparison_with_prior"
-        case areasHighlighted = "areas_highlighted"
-        case limitations
-    }
-}
+        do {
+            try viewContext.save()
+            showSaveSuccess = true
+            status = "Finding saved successfully."
 
-struct AnatomicalObservations: Codable {
-    let lungs: [String]
-    let pleuralRegions: [String]
-    let cardiomediastinalSilhouette: [String]
-    let bonesAndSoftTissues: [String]
-
-    enum CodingKeys: String, CodingKey {
-        case lungs
-        case pleuralRegions = "pleural_regions"
-        case cardiomediastinalSilhouette = "cardiomediastinal_silhouette"
-        case bonesAndSoftTissues = "bones_and_soft_tissues"
-    }
-}
-
-enum FindingsValidationError: Error {
-    case invalidJSON
-    case extraTopLevelKeys(found: Set<String>, allowed: Set<String>)
-    case extraAnatomyKeys(found: Set<String>, allowed: Set<String>)
-    case limitationsMismatch
-    case forbiddenPhraseFound(String)
-}
-
-struct TextSanitizer {
-    static func normalize(_ input: String) -> (spaced: String, collapsed: String) {
-        var s = input.lowercased()
-        s = s.folding(options: [.diacriticInsensitive, .widthInsensitive], locale: .current)
-
-        let allowed = CharacterSet.alphanumerics
-        s = s.unicodeScalars.map { allowed.contains($0) ? Character($0) : " " }
-            .reduce(into: "") { $0.append($1) }
-
-        s = s.split(whereSeparator: { $0 == " " || $0 == "\n" || $0 == "\t" }).joined(separator: " ")
-        let collapsed = s.replacingOccurrences(of: " ", with: "")
-        return (spaced: s, collapsed: collapsed)
-    }
-
-    static func findForbidden(in input: String, forbidden: [String]) -> String? {
-        let norm = normalize(input)
-        for rawPhrase in forbidden {
-            let p = normalize(rawPhrase)
-            if norm.spaced.contains(p.spaced) { return rawPhrase }
-            if !p.collapsed.isEmpty && norm.collapsed.contains(p.collapsed) { return rawPhrase }
+            // Reset form
+            findingsJSON = ""
+            clinicianReviewed = false
+            selectedImageData = nil
+            selectedPhoto = nil
+        } catch {
+            errorText = "Failed to save finding: \(error.localizedDescription)"
+            showError = true
         }
-        return nil
     }
-}
 
-final class FindingsValidator {
-    static let limitationsConst =
-        "This summary describes visible image features only and does not assess clinical significance or provide a diagnosis."
+    private func getOrCreateDefaultPatient() -> Patient {
+        // Try to fetch existing default patient
+        let request: NSFetchRequest<Patient> = Patient.fetchRequest()
+        request.predicate = NSPredicate(format: "medicalRecordNumber == %@", "DEFAULT")
+        request.fetchLimit = 1
 
-    private static let allowedTopLevelKeys: Set<String> = [
-        "image_type", "image_quality", "anatomical_observations",
-        "comparison_with_prior", "areas_highlighted", "limitations"
-    ]
-
-    private static let allowedAnatomyKeys: Set<String> = [
-        "lungs", "pleural_regions", "cardiomediastinal_silhouette", "bones_and_soft_tissues"
-    ]
-
-    private static let forbiddenPhrases: [String] = [
-        "pneumonia", "tuberculosis", "tb", "covid", "covid-19", "infection",
-        "malignancy", "cancer", "tumor", "fracture", "heart failure", "cardiomegaly",
-        "edema", "emphysema", "fibrosis",
-        "diagnosis", "diagnostic", "diagnostic of", "consistent with", "indicative of",
-        "suggests", "confirms", "rules out", "compatible with", "cannot exclude",
-        "likely", "unlikely", "probable", "possibly", "suspicious for",
-        "high probability", "low probability", "risk of",
-        "recommend", "recommendation", "treat", "treatment", "start", "stop", "manage",
-        "urgent", "emergency", "referral indicated", "hospitalize", "follow up required",
-        "may represent", "could represent", "appears to represent", "concerning for",
-        "suggests the presence of",
-        "ai detected", "system identified", "algorithm determined", "more accurate than",
-        "better than clinician"
-    ]
-
-    static func decodeAndValidate(_ data: Data) throws -> ImagingFindingsSummary {
-        guard let raw = try JSONSerialization.jsonObject(with: data) as? [String: Any] else {
-            throw FindingsValidationError.invalidJSON
+        if let existingPatient = try? viewContext.fetch(request).first {
+            return existingPatient
         }
 
-        let rawKeys = Set(raw.keys)
-        if !rawKeys.isSubset(of: allowedTopLevelKeys) {
-            throw FindingsValidationError.extraTopLevelKeys(found: rawKeys, allowed: allowedTopLevelKeys)
+        // Create default patient if none exists
+        let newPatient = Patient(context: viewContext)
+        newPatient.id = UUID()
+        newPatient.createdAt = Date()
+        newPatient.medicalRecordNumber = "DEFAULT"
+        newPatient.notes = "Default patient for imaging findings"
+
+        return newPatient
+    }
+}
+
+// MARK: - Image Picker for Camera
+struct ImagePicker: UIViewControllerRepresentable {
+    @Binding var imageData: Data?
+    @Environment(\.dismiss) private var dismiss
+    let sourceType: UIImagePickerController.SourceType
+
+    func makeUIViewController(context: Context) -> UIImagePickerController {
+        let picker = UIImagePickerController()
+        picker.sourceType = sourceType
+        picker.delegate = context.coordinator
+        return picker
+    }
+
+    func updateUIViewController(_ uiViewController: UIImagePickerController, context: Context) {
+        // No update needed
+    }
+
+    func makeCoordinator() -> Coordinator {
+        Coordinator(self)
+    }
+
+    class Coordinator: NSObject, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+        let parent: ImagePicker
+
+        init(_ parent: ImagePicker) {
+            self.parent = parent
         }
 
-        if let anatomy = raw["anatomical_observations"] as? [String: Any] {
-            let anatomyKeys = Set(anatomy.keys)
-            if !anatomyKeys.isSubset(of: allowedAnatomyKeys) {
-                throw FindingsValidationError.extraAnatomyKeys(found: anatomyKeys, allowed: allowedAnatomyKeys)
+        func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey: Any]) {
+            if let image = info[.originalImage] as? UIImage {
+                // Convert to JPEG data for storage
+                parent.imageData = image.jpegData(compressionQuality: 0.8)
             }
+            parent.dismiss()
         }
 
-        let decoded = try JSONDecoder().decode(ImagingFindingsSummary.self, from: data)
-
-        if decoded.limitations != limitationsConst {
-            throw FindingsValidationError.limitationsMismatch
+        func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
+            parent.dismiss()
         }
-
-        // IMPORTANT: The limitations sentence contains the word "diagnosis" by design.
-        // We validate it by exact match above, but we must exclude it from forbidden phrase scanning.
-        let textForScan = flattenStringsExcludingLimitations(decoded)
-        if let bad = TextSanitizer.findForbidden(in: textForScan, forbidden: forbiddenPhrases) {
-            throw FindingsValidationError.forbiddenPhraseFound(bad)
-        }
-
-        return decoded
-    }
-
-    private static func flattenStringsExcludingLimitations(_ s: ImagingFindingsSummary) -> String {
-        var parts: [String] = []
-        parts.append(s.imageType)
-        parts.append(s.imageQuality)
-        parts.append(contentsOf: s.anatomicalObservations.lungs)
-        parts.append(contentsOf: s.anatomicalObservations.pleuralRegions)
-        parts.append(contentsOf: s.anatomicalObservations.cardiomediastinalSilhouette)
-        parts.append(contentsOf: s.anatomicalObservations.bonesAndSoftTissues)
-        parts.append(s.comparisonWithPrior)
-        parts.append(s.areasHighlighted)
-        // NOTE: intentionally exclude s.limitations
-        return parts.joined(separator: "\n")
     }
 }

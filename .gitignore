@@ -1,0 +1,104 @@
+# Xcode
+#
+# gitignore contributors: remember to keep this file platform-agnostic
+# gitignore developers: add platform-specific rules in the appropriate section
+#
+# Created by https://www.toptal.com/developers/gitignore/api/xcode,swift
+# Edit at https://www.toptal.com/developers/gitignore?templates=xcode,swift
+
+### Swift ###
+# Swift Package Manager
+#
+# Add this line if you want to avoid checking in source code from Swift Package Manager dependencies.
+# Packages/
+# Package.pins
+# Package.resolved
+# *.xcodeproj
+# *.xcworkspace
+#
+# Xcode
+#
+build/
+DerivedData/
+.swiftpm
+
+# Pods
+#
+# Add this line if you want to avoid checking in source code from CocoaPods dependencies.
+# Pods/
+#
+# Carthage
+#
+# Add this line if you want to avoid checking in source code from Carthage dependencies.
+# Carthage/
+
+### Xcode ###
+# Xcode
+#
+# gitignore contributors: remember to keep this file platform-agnostic
+# gitignore developers: add platform-specific rules in the appropriate section
+#
+## User-specific
+*.xcuserdatad
+*.xcworkspace
+
+## Build generated
+build/
+DerivedData/
+
+## Various settings
+*.xcscheme
+*.xccheckout
+
+## Playgrounds
+timeline.xctimeline
+playground.xcworkspace
+
+# Swift Package Manager
+#
+# Add this line if you want to avoid checking in source code from Swift Package Manager dependencies.
+# Packages/
+# Package.pins
+# Package.resolved
+# *.xcodeproj
+#
+# Xcode
+#
+build/
+DerivedData/
+.swiftpm
+
+# Pods
+#
+# Add this line if you want to avoid checking in source code from CocoaPods dependencies.
+# Pods/
+#
+# Carthage
+#
+# Add this line if you want to avoid checking in source code from Carthage dependencies.
+# Carthage/
+
+# Other
+*.dSYM/
+*.db
+*.sqlite
+*.sqlite3
+
+# Backups
+*.backup
+*.backup2
+
+# macOS
+.DS_Store
+
+# MediScribe specific
+CLAUDE.md
+MediScribe.xcodeproj/project.pbxproj.backup
+MediScribe.xcodeproj/project.pbxproj.backup2
+IMPLEMENTATION_SUMMARY.md
+MEDGEMMA_INTEGRATION_PLAN.md
+MEDGEMMA_STATUS.md
+ML_INTEGRATION_GUIDE.md
+PHASE_2_STATUS.md
+TESTING_CHECKLIST.md
+

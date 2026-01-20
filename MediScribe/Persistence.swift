@@ -14,10 +14,22 @@ struct PersistenceController {
     static let preview: PersistenceController = {
         let result = PersistenceController(inMemory: true)
         let viewContext = result.container.viewContext
-        for _ in 0..<10 {
-            let newItem = Item(context: viewContext)
-            newItem.timestamp = Date()
+
+        // Create sample data for previews
+        for i in 0..<3 {
+            let patient = Patient(context: viewContext)
+            patient.id = UUID()
+            patient.createdAt = Date()
+            patient.medicalRecordNumber = "MRN\(1000 + i)"
+
+            // Create sample finding for patient
+            let finding = Finding(context: viewContext)
+            finding.id = UUID()
+            finding.createdAt = Date()
+            finding.findingsJSON = "{\"sample\": \"data\"}"
+            finding.patient = patient
         }
+
         do {
             try viewContext.save()
         } catch {

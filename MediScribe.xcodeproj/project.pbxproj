@@ -16,6 +16,14 @@
 		022AD7722F1EDA9A004D771E /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 022AD7712F1EDA9A004D771E /* SettingsView.swift */; };
 		022AD77A2F1EE954004D771E /* README.MD in Resources */ = {isa = PBXBuildFile; fileRef = 022AD7792F1EE954004D771E /* README.MD */; };
 		022AD77C2F1EEACE004D771E /* CLINICAL_OVERVIEW.MD in Sources */ = {isa = PBXBuildFile; fileRef = 022AD77B2F1EEABE004D771E /* CLINICAL_OVERVIEW.MD */; };
+		557A8DB7713DBD3083A6351F /* ImagingFindingsSummary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A8EE4D08CD515CCA250F3F7 /* ImagingFindingsSummary.swift */; };
+		94DC2980FD1B65F1AA926404 /* AnatomicalObservations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0152C577A8AF7025A06A6BEF /* AnatomicalObservations.swift */; };
+		62E0D97EF8D6EB9F702C4F74 /* FindingsValidationError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41927F759BFD5E6FE051A08D /* FindingsValidationError.swift */; };
+		08AB676E9D11323EE3C24765 /* FindingsValidator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4FD5959A160A596A5F390A /* FindingsValidator.swift */; };
+		41B729B392F7559C7D71C9FC /* TextSanitizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DDE81485BAEFF6C7F8020DF /* TextSanitizer.swift */; };
+		5646201F1622A1BBBD414767 /* ImagingModelProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5068F406A5B495B7F39BCECE /* ImagingModelProtocol.swift */; };
+		FF5CA30802AD9CBEBB1FB731 /* PlaceholderImagingModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27D2058574E80D2A27786BC7 /* PlaceholderImagingModel.swift */; };
+		FE228B40F3B40D9BC490BF92 /* ImagingModelManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C71C7FD89938FA7D333F195 /* ImagingModelManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -48,6 +56,14 @@
 		024D8CCF2F1B0FB700004385 /* MediScribe.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MediScribe.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		024D8CE12F1B0FB800004385 /* MediScribeTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MediScribeTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		024D8CEB2F1B0FB800004385 /* MediScribeUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MediScribeUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		9A8EE4D08CD515CCA250F3F7 /* ImagingFindingsSummary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagingFindingsSummary.swift; sourceTree = "<group>"; };
+		0152C577A8AF7025A06A6BEF /* AnatomicalObservations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnatomicalObservations.swift; sourceTree = "<group>"; };
+		41927F759BFD5E6FE051A08D /* FindingsValidationError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FindingsValidationError.swift; sourceTree = "<group>"; };
+		0A4FD5959A160A596A5F390A /* FindingsValidator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FindingsValidator.swift; sourceTree = "<group>"; };
+		0DDE81485BAEFF6C7F8020DF /* TextSanitizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextSanitizer.swift; sourceTree = "<group>"; };
+		5068F406A5B495B7F39BCECE /* ImagingModelProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagingModelProtocol.swift; sourceTree = "<group>"; };
+		27D2058574E80D2A27786BC7 /* PlaceholderImagingModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaceholderImagingModel.swift; sourceTree = "<group>"; };
+		0C71C7FD89938FA7D333F195 /* ImagingModelManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagingModelManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -138,11 +154,43 @@
 			path = Referrals;
 			sourceTree = "<group>";
 		};
-		022AD7612F1ED6D2004D771E /* Domain */ = {
+022AD7612F1ED6D2004D771E /* Domain */ = {
 			isa = PBXGroup;
 			children = (
+				E35421949957371D00D64AE2 /* ML */,
+				EF26827332131A1EC61CAEB1 /* Validators */,
+				D91531D70E2FB2253EAD92CF /* Models */,
 			);
 			path = Domain;
+			sourceTree = "<group>";
+		};
+		D91531D70E2FB2253EAD92CF /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				9A8EE4D08CD515CCA250F3F7 /* ImagingFindingsSummary.swift */,
+				0152C577A8AF7025A06A6BEF /* AnatomicalObservations.swift */,
+				41927F759BFD5E6FE051A08D /* FindingsValidationError.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		EF26827332131A1EC61CAEB1 /* Validators */ = {
+			isa = PBXGroup;
+			children = (
+				0A4FD5959A160A596A5F390A /* FindingsValidator.swift */,
+				0DDE81485BAEFF6C7F8020DF /* TextSanitizer.swift */,
+			);
+			path = Validators;
+			sourceTree = "<group>";
+		};
+		E35421949957371D00D64AE2 /* ML */ = {
+			isa = PBXGroup;
+			children = (
+				5068F406A5B495B7F39BCECE /* ImagingModelProtocol.swift */,
+				27D2058574E80D2A27786BC7 /* PlaceholderImagingModel.swift */,
+				0C71C7FD89938FA7D333F195 /* ImagingModelManager.swift */,
+			);
+			path = ML;
 			sourceTree = "<group>";
 		};
 		024D8CC62F1B0FB700004385 = {
@@ -315,6 +363,14 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				557A8DB7713DBD3083A6351F /* ImagingFindingsSummary.swift in Sources */,
+				94DC2980FD1B65F1AA926404 /* AnatomicalObservations.swift in Sources */,
+				62E0D97EF8D6EB9F702C4F74 /* FindingsValidationError.swift in Sources */,
+				08AB676E9D11323EE3C24765 /* FindingsValidator.swift in Sources */,
+				41B729B392F7559C7D71C9FC /* TextSanitizer.swift in Sources */,
+				5646201F1622A1BBBD414767 /* ImagingModelProtocol.swift in Sources */,
+				FF5CA30802AD9CBEBB1FB731 /* PlaceholderImagingModel.swift in Sources */,
+				FE228B40F3B40D9BC490BF92 /* ImagingModelManager.swift in Sources */,
 				022AD77C2F1EEACE004D771E /* CLINICAL_OVERVIEW.MD in Sources */,
 				022AD7682F1ED815004D771E /* NotesHomeView.swift in Sources */,
 				022AD7702F1ED970004D771E /* ReferralsHomeView.swift in Sources */,
