@@ -142,6 +142,15 @@ All outputs are intended solely to support documentation and communication by qu
 
 ---
 
-## License
+## Licensing
 
-License to be defined.
+The source code for **MediScribe** is licensed under the **MIT License**. See the [LICENSE](LICENSE) file for details.
+
+### Required Model Dependency
+
+This application requires the **MedGemma** model to function. The MedGemma model is **not included** in this repository and is governed by a separate set of terms.
+
+- **Model:** MedGemma
+- **Governing Terms:** [Health AI Developer Foundations Terms of Use](https://ai.google.dev/terms)
+
+Users must acquire the MedGemma model from its official source and agree to its terms of use before using it with MediScribe. The application is configured to use the `medgemma-1.5-4b-it-Q4_K_M.gguf` model file, which should be placed in the appropriate directory after acquisition.
