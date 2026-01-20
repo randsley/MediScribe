@@ -24,6 +24,7 @@ enum ImagingModelError: Error {
     case invalidModelOutput
     case insufficientMemory
     case unsupportedImageFormat
+    case inferenceFailed
 
     var localizedDescription: String {
         switch self {
@@ -39,6 +40,8 @@ enum ImagingModelError: Error {
             return "Insufficient memory to run model. Close other apps and try again."
         case .unsupportedImageFormat:
             return "Unsupported image format. Please use JPEG or PNG."
+        case .inferenceFailed:
+            return "Model inference failed. Please try again."
         }
     }
 }

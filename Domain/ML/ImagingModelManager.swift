@@ -26,13 +26,44 @@ class ImagingModelManager: ObservableObject {
     @Published private(set) var loadingProgress: Double = 0.0
 
     private init() {
-        // Start with placeholder model
-        // TODO: Replace with MedGemmaModel once integrated
-        self.currentModel = PlaceholderImagingModel()
+        // Try to use MedGemmaModel if GGUF file is available, otherwise use placeholder
+        // Check if model file exists in bundle
+        let modelFileName = "medgemma-1.5-4b-it-Q4_K_M"
+        let modelFileExt = "gguf"
+
+        // Try standard resource path first
+        var modelPath: String? = Bundle.main.path(forResource: modelFileName, ofType: modelFileExt)
+
+        // If not found, try bundle root directly (for PBXFileSystemSynchronizedRootGroup)
+        if modelPath == nil {
+            let bundleRootPath = Bundle.main.bundlePath + "/\(modelFileName).\(modelFileExt)"
+            if FileManager.default.fileExists(atPath: bundleRootPath) {
+                modelPath = bundleRootPath
+            }
+        }
+
+        if modelPath != nil {
+            print("✓ MedGemma model file found - using MedGemmaModel")
+            self.currentModel = MedGemmaModel()
+        } else {
+            print("⚠️ MedGemma model file not found - using PlaceholderImagingModel")
+            print("   To use the real model, add medgemma-1.5-4b-it-Q4_K_M.gguf to the Xcode project Resources")
+            self.currentModel = PlaceholderImagingModel()
+        }
 
         // Automatically load model on init
         Task {
-            try? await loadCurrentModel()
+            do {
+                try await loadCurrentModel()
+            } catch {
+                // If MedGemma fails to load, fall back to placeholder
+                print("⚠️ Failed to load model: \(error.localizedDescription)")
+                if !(self.currentModel is PlaceholderImagingModel) {
+                    print("⚠️ Falling back to PlaceholderImagingModel")
+                    self.currentModel = PlaceholderImagingModel()
+                    try? await loadCurrentModel()
+                }
+            }
         }
     }
 

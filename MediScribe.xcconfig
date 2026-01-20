@@ -1,0 +1,9 @@
+// Configuration settings file format documentation can be found at:
+// https://help.apple.com/xcode/#/dev745c5c974
+
+SWIFT_OBJC_BRIDGING_HEADER = $(PROJECT_DIR)/MediScribe/MediScribe-Bridging-Header.h
+HEADER_SEARCH_PATHS = $(inherited) $(PROJECT_DIR)/llama.cpp/include $(PROJECT_DIR)/llama.cpp/ggml/include $(PROJECT_DIR)/llama.cpp/common $(PROJECT_DIR)/llama.cpp/tools/mtmd $(PROJECT_DIR)/llama.cpp/vendor/stb
+LIBRARY_SEARCH_PATHS = $(inherited) $(PROJECT_DIR)/llama.cpp/build-ios-sim-new/src/Release-iphonesimulator $(PROJECT_DIR)/llama.cpp/build-ios-sim-new/ggml/src/Release-iphonesimulator $(PROJECT_DIR)/llama.cpp/build-ios-sim-new/ggml/src/ggml-metal/Release-iphonesimulator $(PROJECT_DIR)/llama.cpp/build-ios-sim-new/ggml/src/ggml-cpu/Release-iphonesimulator $(PROJECT_DIR)/llama.cpp/build-ios-sim-new/ggml/src/ggml-blas/Release-iphonesimulator $(PROJECT_DIR)/llama.cpp/build-ios-sim-new/tools/mtmd/Release-iphonesimulator $(PROJECT_DIR)/llama.cpp/build-ios-new/src/Release-iphoneos $(PROJECT_DIR)/llama.cpp/build-ios-new/ggml/src/Release-iphoneos $(PROJECT_DIR)/llama.cpp/build-ios-new/ggml/src/ggml-metal/Release-iphoneos $(PROJECT_DIR)/llama.cpp/build-ios-new/ggml/src/ggml-cpu/Release-iphoneos $(PROJECT_DIR)/llama.cpp/build-ios-new/ggml/src/ggml-blas/Release-iphoneos $(PROJECT_DIR)/llama.cpp/build-ios-new/tools/mtmd/Release-iphoneos
+OTHER_LDFLAGS = $(inherited) -lllama -lggml -lggml-base -lggml-cpu -lggml-metal -lggml-blas -lmtmd -framework Metal -framework MetalKit -framework Accelerate -framework Foundation -lc++
+CLANG_CXX_LANGUAGE_STANDARD = c++17
+CLANG_CXX_LIBRARY = libc++

@@ -23,7 +23,16 @@
 		41B729B392F7559C7D71C9FC /* TextSanitizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DDE81485BAEFF6C7F8020DF /* TextSanitizer.swift */; };
 		5646201F1622A1BBBD414767 /* ImagingModelProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5068F406A5B495B7F39BCECE /* ImagingModelProtocol.swift */; };
 		FF5CA30802AD9CBEBB1FB731 /* PlaceholderImagingModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27D2058574E80D2A27786BC7 /* PlaceholderImagingModel.swift */; };
+		B8B5CDEA15CD48F89A8E1BC2 /* MedGemmaModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F405F4AAA7843FFA21CA909 /* MedGemmaModel.swift */; };
 		FE228B40F3B40D9BC490BF92 /* ImagingModelManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C71C7FD89938FA7D333F195 /* ImagingModelManager.swift */; };
+		A1B2C3D4E5F6G7H8I9J0K1L2 /* LabsHomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = L2K1J0I9H8G7F6E5D4C3B2A1 /* LabsHomeView.swift */; };
+		B2C3D4E5F6G7H8I9J0K1L2M3 /* LabsCameraView.swift in Sources */ = {isa = PBXBuildFile; fileRef = M3L2K1J0I9H8G7F6E5D4C3B2 /* LabsCameraView.swift */; };
+		C3D4E5F6G7H8I9J0K1L2M3N4 /* LabsHistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = N4M3L2K1J0I9H8G7F6E5D4C3 /* LabsHistoryView.swift */; };
+		D4E5F6G7H8I9J0K1L2M3N4O5 /* LabsProcessView.swift in Sources */ = {isa = PBXBuildFile; fileRef = O5N4M3L2K1J0I9H8G7F6E5D4 /* LabsProcessView.swift */; };
+		E5F6G7H8I9J0K1L2M3N4O5P6 /* LabResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = P6O5N4M3L2K1J0I9H8G7F6E5 /* LabResult.swift */; };
+		F6G7H8I9J0K1L2M3N4O5P6Q7 /* LabValidationError.swift in Sources */ = {isa = PBXBuildFile; fileRef = Q7P6O5N4M3L2K1J0I9H8G7F6 /* LabValidationError.swift */; };
+		G7H8I9J0K1L2M3N4O5P6Q7R8 /* LabResultsValidator.swift in Sources */ = {isa = PBXBuildFile; fileRef = R8Q7P6O5N4M3L2K1J0I9H8G7 /* LabResultsValidator.swift */; };
+		H8I9J0K1L2M3N4O5P6Q7R8S9 /* DocumentType.swift in Sources */ = {isa = PBXBuildFile; fileRef = S9R8Q7P6O5N4M3L2K1J0I9H8 /* DocumentType.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -44,6 +53,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		050375340703414581755062 /* MediScribe.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = MediScribe.xcconfig; sourceTree = "<group>"; };
 		022AD7652F1ED791004D771E /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
 		022AD7672F1ED815004D771E /* NotesHomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotesHomeView.swift; sourceTree = "<group>"; };
 		022AD7692F1ED857004D771E /* ImagingHomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagingHomeView.swift; sourceTree = "<group>"; };
@@ -63,7 +73,16 @@
 		0DDE81485BAEFF6C7F8020DF /* TextSanitizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextSanitizer.swift; sourceTree = "<group>"; };
 		5068F406A5B495B7F39BCECE /* ImagingModelProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagingModelProtocol.swift; sourceTree = "<group>"; };
 		27D2058574E80D2A27786BC7 /* PlaceholderImagingModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaceholderImagingModel.swift; sourceTree = "<group>"; };
+		9F405F4AAA7843FFA21CA909 /* MedGemmaModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MedGemmaModel.swift; sourceTree = "<group>"; };
 		0C71C7FD89938FA7D333F195 /* ImagingModelManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagingModelManager.swift; sourceTree = "<group>"; };
+		L2K1J0I9H8G7F6E5D4C3B2A1 /* LabsHomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LabsHomeView.swift; sourceTree = "<group>"; };
+		M3L2K1J0I9H8G7F6E5D4C3B2 /* LabsCameraView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LabsCameraView.swift; sourceTree = "<group>"; };
+		N4M3L2K1J0I9H8G7F6E5D4C3 /* LabsHistoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LabsHistoryView.swift; sourceTree = "<group>"; };
+		O5N4M3L2K1J0I9H8G7F6E5D4 /* LabsProcessView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LabsProcessView.swift; sourceTree = "<group>"; };
+		P6O5N4M3L2K1J0I9H8G7F6E5 /* LabResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LabResult.swift; sourceTree = "<group>"; };
+		Q7P6O5N4M3L2K1J0I9H8G7F6 /* LabValidationError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LabValidationError.swift; sourceTree = "<group>"; };
+		R8Q7P6O5N4M3L2K1J0I9H8G7 /* LabResultsValidator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LabResultsValidator.swift; sourceTree = "<group>"; };
+		S9R8Q7P6O5N4M3L2K1J0I9H8 /* DocumentType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentType.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -124,6 +143,7 @@
 				022AD7602F1ED699004D771E /* Referrals */,
 				022AD75F2F1ED685004D771E /* Notes */,
 				022AD75E2F1ED67B004D771E /* Imaging */,
+				T9U0V1W2X3Y4Z5A6B7C8D9E0 /* Labs */,
 			);
 			path = Features;
 			sourceTree = "<group>";
@@ -154,6 +174,17 @@
 			path = Referrals;
 			sourceTree = "<group>";
 		};
+		T9U0V1W2X3Y4Z5A6B7C8D9E0 /* Labs */ = {
+			isa = PBXGroup;
+			children = (
+				L2K1J0I9H8G7F6E5D4C3B2A1 /* LabsHomeView.swift */,
+				M3L2K1J0I9H8G7F6E5D4C3B2 /* LabsCameraView.swift */,
+				N4M3L2K1J0I9H8G7F6E5D4C3 /* LabsHistoryView.swift */,
+				O5N4M3L2K1J0I9H8G7F6E5D4 /* LabsProcessView.swift */,
+			);
+			path = Labs;
+			sourceTree = "<group>";
+		};
 022AD7612F1ED6D2004D771E /* Domain */ = {
 			isa = PBXGroup;
 			children = (
@@ -170,6 +201,8 @@
 				9A8EE4D08CD515CCA250F3F7 /* ImagingFindingsSummary.swift */,
 				0152C577A8AF7025A06A6BEF /* AnatomicalObservations.swift */,
 				41927F759BFD5E6FE051A08D /* FindingsValidationError.swift */,
+				P6O5N4M3L2K1J0I9H8G7F6E5 /* LabResult.swift */,
+				Q7P6O5N4M3L2K1J0I9H8G7F6 /* LabValidationError.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -179,6 +212,7 @@
 			children = (
 				0A4FD5959A160A596A5F390A /* FindingsValidator.swift */,
 				0DDE81485BAEFF6C7F8020DF /* TextSanitizer.swift */,
+				R8Q7P6O5N4M3L2K1J0I9H8G7 /* LabResultsValidator.swift */,
 			);
 			path = Validators;
 			sourceTree = "<group>";
@@ -188,7 +222,9 @@
 			children = (
 				5068F406A5B495B7F39BCECE /* ImagingModelProtocol.swift */,
 				27D2058574E80D2A27786BC7 /* PlaceholderImagingModel.swift */,
+				9F405F4AAA7843FFA21CA909 /* MedGemmaModel.swift */,
 				0C71C7FD89938FA7D333F195 /* ImagingModelManager.swift */,
+				S9R8Q7P6O5N4M3L2K1J0I9H8 /* DocumentType.swift */,
 			);
 			path = ML;
 			sourceTree = "<group>";
@@ -370,6 +406,7 @@
 				41B729B392F7559C7D71C9FC /* TextSanitizer.swift in Sources */,
 				5646201F1622A1BBBD414767 /* ImagingModelProtocol.swift in Sources */,
 				FF5CA30802AD9CBEBB1FB731 /* PlaceholderImagingModel.swift in Sources */,
+				B8B5CDEA15CD48F89A8E1BC2 /* MedGemmaModel.swift in Sources */,
 				FE228B40F3B40D9BC490BF92 /* ImagingModelManager.swift in Sources */,
 				022AD77C2F1EEACE004D771E /* CLINICAL_OVERVIEW.MD in Sources */,
 				022AD7682F1ED815004D771E /* NotesHomeView.swift in Sources */,
@@ -379,6 +416,14 @@
 				022AD76C2F1ED8A2004D771E /* ImagingGenerateView.swift in Sources */,
 				022AD76A2F1ED857004D771E /* ImagingHomeView.swift in Sources */,
 				022AD7722F1EDA9A004D771E /* SettingsView.swift in Sources */,
+				A1B2C3D4E5F6G7H8I9J0K1L2 /* LabsHomeView.swift in Sources */,
+				B2C3D4E5F6G7H8I9J0K1L2M3 /* LabsCameraView.swift in Sources */,
+				C3D4E5F6G7H8I9J0K1L2M3N4 /* LabsHistoryView.swift in Sources */,
+				D4E5F6G7H8I9J0K1L2M3N4O5 /* LabsProcessView.swift in Sources */,
+				E5F6G7H8I9J0K1L2M3N4O5P6 /* LabResult.swift in Sources */,
+				F6G7H8I9J0K1L2M3N4O5P6Q7 /* LabValidationError.swift in Sources */,
+				G7H8I9J0K1L2M3N4O5P6Q7R8 /* LabResultsValidator.swift in Sources */,
+				H8I9J0K1L2M3N4O5P6Q7R8S9 /* DocumentType.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -535,6 +580,7 @@
 		};
 		024D8CF62F1B0FB800004385 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 050375340703414581755062 /* MediScribe.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -567,6 +613,7 @@
 		};
 		024D8CF72F1B0FB800004385 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 050375340703414581755062 /* MediScribe.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -599,6 +646,7 @@
 		};
 		024D8CF92F1B0FB800004385 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 050375340703414581755062 /* MediScribe.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
@@ -621,6 +669,7 @@
 		};
 		024D8CFA2F1B0FB800004385 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 050375340703414581755062 /* MediScribe.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;

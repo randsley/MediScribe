@@ -9,6 +9,9 @@ struct RootView: View {
             ImagingHomeView()
                 .tabItem { Label("Imaging", systemImage: "photo.on.rectangle") }
 
+            LabsHomeView()
+                .tabItem { Label("Labs", systemImage: "waveform.path.ecg") }
+
             ReferralsHomeView()
                 .tabItem { Label("Referrals", systemImage: "paperplane") }
 
