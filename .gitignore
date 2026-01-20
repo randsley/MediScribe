@@ -45,6 +45,7 @@ DerivedData/
 ## Build generated
 build/
 DerivedData/
+Resources/
 
 ## Various settings
 *.xcscheme
@@ -83,7 +84,8 @@ DerivedData/
 *.db
 *.sqlite
 *.sqlite3
-
+# Models
+Models/
 # Backups
 *.backup
 *.backup2
@@ -101,5 +103,3 @@ MEDGEMMA_STATUS.md
 ML_INTEGRATION_GUIDE.md
 PHASE_2_STATUS.md
 TESTING_CHECKLIST.md
-
-*.gguf
