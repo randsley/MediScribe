@@ -5,7 +5,9 @@
 -   **Implement Application-Level Encryption for `FieldNote` data:**
     *   Currently, `noteData` stored in Core Data relies on iOS Data Protection (device-level encryption).
     *   Implement explicit application-level encryption for `noteData` before saving to Core Data.
-    *   Consider encryption method (e.g., AES-256) and secure key management (e.g., iOS Keychain).
+    *   **Encryption Algorithm:** AES-256 in GCM (Galois/Counter Mode) for both confidentiality and integrity.
+    *   **Key Management:** iOS Keychain for secure storage, leveraging hardware protection.
+    *   **Implementation:** Use Apple's CryptoKit framework (iOS 13+) for safe, easy-to-use, hardware-accelerated AES-GCM. CommonCrypto is an alternative for older iOS versions but requires more careful handling.
     *   This is crucial for protecting sensitive patient information beyond device-level security.
 
 ## Notes Feature Enhancements
