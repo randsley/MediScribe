@@ -85,7 +85,7 @@ DerivedData/
 *.sqlite
 *.sqlite3
 # Models
-Models/
+/Models/
 # Backups
 *.backup
 *.backup2
