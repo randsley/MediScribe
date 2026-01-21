@@ -7,10 +7,12 @@
 
 import SwiftUI
 import UIKit
+import CoreData
 
 struct LabsProcessView: View {
     let image: UIImage
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.managedObjectContext) private var viewContext
 
     @StateObject private var modelManager = ImagingModelManager.shared
     @State private var isProcessing = false
@@ -19,6 +21,8 @@ struct LabsProcessView: View {
     @State private var showingValidationError = false
     @State private var validationError: LabValidationError?
     @State private var clinicianReviewed = false
+    @State private var showingSaveError = false
+    @State private var saveErrorMessage = ""
 
     var body: some View {
         NavigationStack {
@@ -72,14 +76,18 @@ struct LabsProcessView: View {
                 if labResults != nil && clinicianReviewed {
                     ToolbarItem(placement: .primaryAction) {
                         Button("Save") {
-                            // TODO: Save to Core Data
-                            dismiss()
+                            saveLabResults()
                         }
                     }
                 }
             }
             .task {
                 await processDocument()
+            }
+            .alert("Save Error", isPresented: $showingSaveError) {
+                Button("OK", role: .cancel) { }
+            } message: {
+                Text(saveErrorMessage)
             }
         }
     }
@@ -223,6 +231,47 @@ struct LabsProcessView: View {
         } catch {
             processingError = "Processing failed: \(error.localizedDescription)"
             isProcessing = false
+        }
+    }
+
+    private func saveLabResults() {
+        guard let results = labResults else {
+            return
+        }
+
+        do {
+            // Encode lab results to JSON
+            let encoder = JSONEncoder()
+            encoder.dateEncodingStrategy = .iso8601
+            let jsonData = try encoder.encode(results)
+            guard let jsonString = String(data: jsonData, encoding: .utf8) else {
+                throw NSError(domain: "LabsProcessView", code: 1, userInfo: [NSLocalizedDescriptionKey: "Failed to convert JSON to string"])
+            }
+
+            // Create Finding entity
+            let finding = Finding(context: viewContext)
+            finding.id = UUID()
+            finding.createdAt = Date()
+            finding.documentType = "lab" // Mark as lab result
+            finding.findingsJSON = jsonString
+            finding.reviewedAt = Date()
+            finding.reviewedBy = "Clinician" // TODO: Get actual clinician name from settings
+
+            // Store original image
+            if let imageData = image.jpegData(compressionQuality: 0.8) {
+                finding.imageData = imageData
+                finding.imageType = "image/jpeg"
+            }
+
+            // Save context
+            try viewContext.save()
+
+            // Dismiss on success
+            dismiss()
+
+        } catch {
+            saveErrorMessage = "Failed to save lab results: \(error.localizedDescription)"
+            showingSaveError = true
         }
     }
 }

@@ -204,6 +204,7 @@ struct ImagingGenerateView: View {
         let finding = Finding(context: viewContext)
         finding.id = UUID()
         finding.createdAt = Date()
+        finding.documentType = "imaging" // Mark as imaging finding
         finding.findingsJSON = findingsJSON
         finding.imageData = selectedImageData
         finding.reviewedAt = Date()
