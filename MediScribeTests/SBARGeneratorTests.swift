@@ -199,7 +199,7 @@ final class SBARGeneratorTests: XCTestCase {
                 author: NoteAuthor(id: "dr_001", displayName: "Dr. Smith", role: "Physician"),
                 patient: NotePatient(id: "PAT-123", estimatedAgeYears: 45, sexAtBirth: .male),
                 encounter: NoteEncounter(setting: .ambulance, locationText: "Highway 101"),
-                consent: NoteConsent(status: .implied)
+                consent: NoteConsent(status: .impliedEmergency)
             )
         )
 
@@ -221,7 +221,7 @@ final class SBARGeneratorTests: XCTestCase {
         note.assessment?.workingDiagnoses = [
             Diagnosis(label: "Acute coronary syndrome", certainty: .possible)
         ]
-        note.assessment?.stability = .unstable
+        note.assessment?.stability = Stability.unstable
 
         note.plan = NotePlan()
         note.plan?.disposition = Disposition(type: .transfer, destination: "Cardiac Center", urgency: .immediate)

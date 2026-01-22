@@ -16,11 +16,14 @@ final class NoteSigningTests: XCTestCase {
 
     override func setUp() {
         super.setUp()
-        persistenceController = PersistenceController.preview
+        // Create a fresh in-memory store for each test to ensure test isolation
+        persistenceController = PersistenceController(inMemory: true)
         context = persistenceController.container.viewContext
     }
 
     override func tearDown() {
+        // Clean up any remaining objects to ensure isolation
+        context.reset()
         persistenceController = nil
         context = nil
         super.tearDown()

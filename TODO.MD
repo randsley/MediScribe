@@ -29,10 +29,6 @@
     *   Encrypt `addendumText` field
     *   Maintain referential integrity with parent Note
 
--   **ClinicalNote Entity** (Legacy):
-    *   Encrypt `content` field
-    *   Consider deprecation vs encryption migration
-
 **Infrastructure**: Reuse existing `EncryptionService` and `KeychainManager` - no additional security infrastructure needed.
 
 ## Notes Feature Enhancements
@@ -47,11 +43,23 @@
 ## General
 
 -   **Expand Test Coverage:** Add unit tests for validators, model managers, and new features.
--   **Set up Continuous Integration (CI):** Re-introduce a CI workflow for automated builds and tests.
 
 ---
 
 ## Completed Security Tasks
+
+-   **✅ GitHub Actions CI:**
+    *   **Status**: COMPLETE
+    *   **Workflow**: `.github/workflows/ci.yml`
+    *   **Triggers**: Push and PR to `main` branch
+    *   **Steps**: Build (Debug) → Unit Tests (MediScribeTests)
+    *   **Runner**: macOS 14 with Xcode 15.4, iPhone 15 Simulator
+    *   **Features**: DerivedData caching, test result artifacts, concurrency control
+
+-   **✅ Deprecated ClinicalNote Entity:**
+    *   **Status**: COMPLETE - Entity removed in Core Data model version 2
+    *   **Reason**: Superseded by Note entity which provides encryption, signing, and addenda support
+    *   **Migration**: Lightweight migration handles automatic removal (entity was unused)
 
 -   **✅ Application-Level Encryption for `FieldNote` data:**
     *   **Status**: COMPLETE - Implemented in commit effd465

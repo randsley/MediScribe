@@ -6,6 +6,7 @@
 //
 
 import XCTest
+import CoreData
 @testable import MediScribe
 
 final class EncryptionServiceTests: XCTestCase {
@@ -117,7 +118,7 @@ final class EncryptionServiceTests: XCTestCase {
                 author: NoteAuthor(id: "int_test", displayName: "Integration Test", role: "Tester"),
                 patient: NotePatient(id: "INT-001"),
                 encounter: NoteEncounter(setting: .home),
-                consent: NoteConsent(status: .implied)
+                consent: NoteConsent(status: .impliedEmergency)
             )
         )
 

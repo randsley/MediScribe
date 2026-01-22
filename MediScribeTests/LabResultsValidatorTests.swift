@@ -10,34 +10,37 @@ import XCTest
 
 final class LabResultsValidatorTests: XCTestCase {
 
+    // Required limitations statement from LabResultsValidator
+    private let validLimitations = "This summary transcribes visible values from the document and does not interpret clinical significance or provide medical advice."
+
     // MARK: - Valid Lab Results Tests
 
     func testValidLabResults() throws {
         let validJSON = """
         {
-            "documentType": "Laboratory Report",
-            "documentDate": "2026-01-20",
-            "laboratoryName": "Central Lab",
-            "testCategories": [
+            "document_type": "Laboratory Report",
+            "document_date": "2026-01-20",
+            "laboratory_name": "Central Lab",
+            "test_categories": [
                 {
                     "category": "Complete Blood Count",
                     "tests": [
                         {
-                            "testName": "Hemoglobin",
+                            "test_name": "Hemoglobin",
                             "value": "14.5",
                             "unit": "g/dL",
-                            "referenceRange": "12.0-16.0"
+                            "reference_range": "12.0-16.0"
                         },
                         {
-                            "testName": "White Blood Cell Count",
+                            "test_name": "White Blood Cell Count",
                             "value": "7.2",
                             "unit": "x10^9/L",
-                            "referenceRange": "4.0-11.0"
+                            "reference_range": "4.0-11.0"
                         }
                     ]
                 }
             ],
-            "limitations": "This extraction shows ONLY the visible values from the laboratory report and does not interpret clinical significance or provide recommendations."
+            "limitations": "\(validLimitations)"
         }
         """
 
@@ -49,7 +52,8 @@ final class LabResultsValidatorTests: XCTestCase {
     func testMissingLimitationsStatement() {
         let invalidJSON = """
         {
-            "testCategories": []
+            "document_type": "Lab Report",
+            "test_categories": []
         }
         """
 
@@ -61,7 +65,7 @@ final class LabResultsValidatorTests: XCTestCase {
             if case .missingLimitationsStatement = validationError {
                 // Correct error type
             } else {
-                XCTFail("Expected missingLimitationsStatement error")
+                XCTFail("Expected missingLimitationsStatement error, got \(validationError)")
             }
         }
     }
@@ -69,7 +73,13 @@ final class LabResultsValidatorTests: XCTestCase {
     func testIncorrectLimitationsStatement() {
         let invalidJSON = """
         {
-            "testCategories": [],
+            "document_type": "Lab Report",
+            "test_categories": [
+                {
+                    "category": "CBC",
+                    "tests": [{"test_name": "Test", "value": "1"}]
+                }
+            ],
             "limitations": "This is a different statement."
         }
         """
@@ -79,10 +89,54 @@ final class LabResultsValidatorTests: XCTestCase {
                 XCTFail("Expected LabValidationError")
                 return
             }
-            if case .incorrectLimitationsStatement = validationError {
+            if case .missingLimitationsStatement = validationError {
+                // Correct error type - incorrect statement treated as missing
+            } else {
+                XCTFail("Expected missingLimitationsStatement error, got \(validationError)")
+            }
+        }
+    }
+
+    func testMissingDocumentType() {
+        let invalidJSON = """
+        {
+            "test_categories": [],
+            "limitations": "\(validLimitations)"
+        }
+        """
+
+        XCTAssertThrowsError(try LabResultsValidator.decodeAndValidate(invalidJSON)) { error in
+            guard let validationError = error as? LabValidationError else {
+                XCTFail("Expected LabValidationError")
+                return
+            }
+            if case .missingRequiredField("document_type") = validationError {
                 // Correct error type
             } else {
-                XCTFail("Expected incorrectLimitationsStatement error")
+                XCTFail("Expected missingRequiredField(document_type) error, got \(validationError)")
+            }
+        }
+    }
+
+    func testInvalidTopLevelKey() {
+        let invalidJSON = """
+        {
+            "document_type": "Lab Report",
+            "test_categories": [],
+            "invalid_key": "should fail",
+            "limitations": "\(validLimitations)"
+        }
+        """
+
+        XCTAssertThrowsError(try LabResultsValidator.decodeAndValidate(invalidJSON)) { error in
+            guard let validationError = error as? LabValidationError else {
+                XCTFail("Expected LabValidationError")
+                return
+            }
+            if case .invalidTopLevelKey = validationError {
+                // Correct error type
+            } else {
+                XCTFail("Expected invalidTopLevelKey error, got \(validationError)")
             }
         }
     }
@@ -92,13 +146,14 @@ final class LabResultsValidatorTests: XCTestCase {
     func testForbiddenPhrase_Abnormal() {
         let invalidJSON = """
         {
-            "testCategories": [
+            "document_type": "Lab Report",
+            "test_categories": [
                 {
                     "category": "Abnormal results detected",
-                    "tests": []
+                    "tests": [{"test_name": "Test", "value": "1"}]
                 }
             ],
-            "limitations": "This extraction shows ONLY the visible values from the laboratory report and does not interpret clinical significance or provide recommendations."
+            "limitations": "\(validLimitations)"
         }
         """
 
@@ -107,10 +162,10 @@ final class LabResultsValidatorTests: XCTestCase {
                 XCTFail("Expected LabValidationError")
                 return
             }
-            if case .forbiddenPhrase = validationError {
+            if case .forbiddenPhraseDetected = validationError {
                 // Correct error type
             } else {
-                XCTFail("Expected forbiddenPhrase error")
+                XCTFail("Expected forbiddenPhraseDetected error, got \(validationError)")
             }
         }
     }
@@ -118,69 +173,107 @@ final class LabResultsValidatorTests: XCTestCase {
     func testForbiddenPhrase_RequiresFollowUp() {
         let invalidJSON = """
         {
-            "testCategories": [
+            "document_type": "Lab Report",
+            "test_categories": [
                 {
                     "category": "Metabolic Panel",
                     "tests": [
                         {
-                            "testName": "Glucose",
+                            "test_name": "Glucose",
                             "value": "150 - requires follow-up",
                             "unit": "mg/dL"
                         }
                     ]
                 }
             ],
-            "limitations": "This extraction shows ONLY the visible values from the laboratory report and does not interpret clinical significance or provide recommendations."
+            "limitations": "\(validLimitations)"
         }
         """
 
-        XCTAssertThrowsError(try LabResultsValidator.decodeAndValidate(invalidJSON))
+        XCTAssertThrowsError(try LabResultsValidator.decodeAndValidate(invalidJSON)) { error in
+            guard let validationError = error as? LabValidationError else {
+                XCTFail("Expected LabValidationError")
+                return
+            }
+            if case .forbiddenPhraseDetected = validationError {
+                // Correct error type
+            } else {
+                XCTFail("Expected forbiddenPhraseDetected error, got \(validationError)")
+            }
+        }
     }
 
     func testForbiddenPhrase_Concerning() {
         let invalidJSON = """
         {
-            "documentType": "Concerning lab values",
-            "testCategories": [],
-            "limitations": "This extraction shows ONLY the visible values from the laboratory report and does not interpret clinical significance or provide recommendations."
+            "document_type": "Concerning lab values",
+            "test_categories": [
+                {
+                    "category": "Tests",
+                    "tests": [{"test_name": "Test", "value": "1"}]
+                }
+            ],
+            "limitations": "\(validLimitations)"
         }
         """
 
-        XCTAssertThrowsError(try LabResultsValidator.decodeAndValidate(invalidJSON))
+        XCTAssertThrowsError(try LabResultsValidator.decodeAndValidate(invalidJSON)) { error in
+            guard let validationError = error as? LabValidationError else {
+                XCTFail("Expected LabValidationError")
+                return
+            }
+            if case .forbiddenPhraseDetected = validationError {
+                // Correct error type
+            } else {
+                XCTFail("Expected forbiddenPhraseDetected error, got \(validationError)")
+            }
+        }
     }
 
     // MARK: - Edge Cases
 
-    func testEmptyTestCategories() throws {
-        let validJSON = """
+    func testEmptyTestCategories() {
+        // Empty test_categories should throw emptyTestCategories error
+        let invalidJSON = """
         {
-            "testCategories": [],
-            "limitations": "This extraction shows ONLY the visible values from the laboratory report and does not interpret clinical significance or provide recommendations."
+            "document_type": "Lab Report",
+            "test_categories": [],
+            "limitations": "\(validLimitations)"
         }
         """
 
-        // Empty categories should be valid (maybe the extraction found no tests)
-        XCTAssertNoThrow(try LabResultsValidator.decodeAndValidate(validJSON))
+        XCTAssertThrowsError(try LabResultsValidator.decodeAndValidate(invalidJSON)) { error in
+            guard let validationError = error as? LabValidationError else {
+                XCTFail("Expected LabValidationError")
+                return
+            }
+            if case .emptyTestCategories = validationError {
+                // Correct error type
+            } else {
+                XCTFail("Expected emptyTestCategories error, got \(validationError)")
+            }
+        }
     }
 
     func testMultipleTestCategories() throws {
         let validJSON = """
         {
-            "testCategories": [
+            "document_type": "Lab Report",
+            "test_categories": [
                 {
                     "category": "CBC",
                     "tests": [
-                        {"testName": "Hemoglobin", "value": "14.5", "unit": "g/dL"}
+                        {"test_name": "Hemoglobin", "value": "14.5", "unit": "g/dL"}
                     ]
                 },
                 {
                     "category": "Metabolic Panel",
                     "tests": [
-                        {"testName": "Glucose", "value": "95", "unit": "mg/dL"}
+                        {"test_name": "Glucose", "value": "95", "unit": "mg/dL"}
                     ]
                 }
             ],
-            "limitations": "This extraction shows ONLY the visible values from the laboratory report and does not interpret clinical significance or provide recommendations."
+            "limitations": "\(validLimitations)"
         }
         """
 
@@ -190,24 +283,24 @@ final class LabResultsValidatorTests: XCTestCase {
     func testOptionalFields() throws {
         let validJSON = """
         {
-            "documentType": "Lab Report",
-            "documentDate": "2026-01-20",
-            "laboratoryName": "Test Lab",
-            "testCategories": [
+            "document_type": "Lab Report",
+            "document_date": "2026-01-20",
+            "laboratory_name": "Test Lab",
+            "test_categories": [
                 {
                     "category": "Basic",
                     "tests": [
                         {
-                            "testName": "Test",
+                            "test_name": "Test",
                             "value": "100",
                             "unit": "U",
-                            "referenceRange": "90-110",
+                            "reference_range": "90-110",
                             "method": "Automated"
                         }
                     ]
                 }
             ],
-            "limitations": "This extraction shows ONLY the visible values from the laboratory report and does not interpret clinical significance or provide recommendations."
+            "limitations": "\(validLimitations)"
         }
         """
 
@@ -225,18 +318,19 @@ final class LabResultsValidatorTests: XCTestCase {
         // Test that spaces/formatting don't bypass detection
         let invalidJSON = """
         {
-            "testCategories": [
+            "document_type": "Lab Report",
+            "test_categories": [
                 {
                     "category": "Results",
                     "tests": [
                         {
-                            "testName": "Test",
+                            "test_name": "Test",
                             "value": "a b n o r m a l"
                         }
                     ]
                 }
             ],
-            "limitations": "This extraction shows ONLY the visible values from the laboratory report and does not interpret clinical significance or provide recommendations."
+            "limitations": "\(validLimitations)"
         }
         """
 
