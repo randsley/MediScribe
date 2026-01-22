@@ -144,7 +144,7 @@ All outputs are intended solely to support documentation and communication by qu
 
 ## Licensing
 
-The source code for **MediScribe** is licensed under the **MIT License**. See the [LICENSE](LICENSE) file for details.
+The source code for **MediScribe** is licensed under the **Apache 2.0 License**. See the [LICENSE](LICENSE) file for details.
 
 ### Required Model Dependency
 
