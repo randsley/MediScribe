@@ -673,8 +673,8 @@ class MedGemmaModel: ImagingModelProtocol {
                     throw ImagingModelError.inferenceFailed
                 }
 
-                // Get embeddings and add to context
-                guard let embeddings = mediscribe_mtmd_get_embeddings(mtmdContext) else {
+                // Verify embeddings are available
+                guard mediscribe_mtmd_get_embeddings(mtmdContext) != nil else {
                     throw ImagingModelError.inferenceFailed
                 }
 
@@ -742,28 +742,34 @@ private extension UIImage {
         let bytesPerPixel = 3
         let bytesPerRow = width * bytesPerPixel
         let bitsPerComponent = 8
+        let bufferSize = width * height * bytesPerPixel
 
         // Allocate buffer for RGB data
-        var rgbData = Data(count: width * height * bytesPerPixel)
+        var rgbBytes = [UInt8](repeating: 0, count: bufferSize)
 
         let colorSpace = CGColorSpaceCreateDeviceRGB()
         let bitmapInfo = CGBitmapInfo(rawValue: CGImageAlphaInfo.none.rawValue)
 
-        guard let context = CGContext(
-            data: &rgbData,
-            width: width,
-            height: height,
-            bitsPerComponent: bitsPerComponent,
-            bytesPerRow: bytesPerRow,
-            space: colorSpace,
-            bitmapInfo: bitmapInfo.rawValue
-        ) else {
-            return nil
+        // Use withUnsafeMutableBytes to safely get pointer for CGContext
+        let success = rgbBytes.withUnsafeMutableBytes { ptr -> Bool in
+            guard let context = CGContext(
+                data: ptr.baseAddress,
+                width: width,
+                height: height,
+                bitsPerComponent: bitsPerComponent,
+                bytesPerRow: bytesPerRow,
+                space: colorSpace,
+                bitmapInfo: bitmapInfo.rawValue
+            ) else {
+                return false
+            }
+            // Draw image into context (this converts to RGB)
+            context.draw(cgImage, in: CGRect(x: 0, y: 0, width: width, height: height))
+            return true
         }
 
-        // Draw image into context (this converts to RGB)
-        context.draw(cgImage, in: CGRect(x: 0, y: 0, width: width, height: height))
+        guard success else { return nil }
 
-        return (width: width, height: height, data: rgbData)
+        return (width: width, height: height, data: Data(rgbBytes))
     }
 }

@@ -312,7 +312,7 @@ struct SBARGenerator {
         var parts: [String] = []
 
         if let bp = vitals.bloodPressure {
-            parts.append("BP \(bp.systolic ?? 0)/\(bp.diastolic ?? 0)")
+            parts.append("BP \(bp.systolic)/\(bp.diastolic)")
         }
         if let hr = vitals.heartRate {
             parts.append("HR \(hr)")

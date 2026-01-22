@@ -98,9 +98,7 @@ struct LabsProcessView: View {
             // Document info
             GroupBox("Document Information") {
                 VStack(alignment: .leading, spacing: 8) {
-                    if let docType = results.documentType as? String {
-                        detailRow("Type:", docType)
-                    }
+                    detailRow("Type:", results.documentType)
                     if let date = results.documentDate {
                         detailRow("Date:", date)
                     }
