@@ -171,9 +171,7 @@ fi
 
 if [[ ! -f "$OUTPUT_DIR/$EXPECTED_MODEL" ]]; then
     hf download "$GGUF_REPO" "$MODEL_FILE" \
-        --local-dir "$OUTPUT_DIR" \
-        --local-dir-use-symlinks False
-
+        --local-dir "$OUTPUT_DIR"
     # Rename to match code expectations if needed
     if [[ -f "$DOWNLOAD_PATH" && "$MODEL_FILE" != "$EXPECTED_MODEL" ]]; then
         mv "$DOWNLOAD_PATH" "$OUTPUT_DIR/$EXPECTED_MODEL"
@@ -213,9 +211,7 @@ fi
 
 if [[ ! -f "$OUTPUT_DIR/$EXPECTED_MMPROJ" ]]; then
     hf download "$GGUF_REPO" "$MMPROJ_FILE" \
-        --local-dir "$OUTPUT_DIR" \
-        --local-dir-use-symlinks False
-
+        --local-dir "$OUTPUT_DIR"
     # The mmproj filename already matches expectations
     if [[ -f "$OUTPUT_DIR/$MMPROJ_FILE" ]]; then
         SIZE=$(du -h "$OUTPUT_DIR/$MMPROJ_FILE" | cut -f1)
