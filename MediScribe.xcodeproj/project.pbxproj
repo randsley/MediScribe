@@ -17,7 +17,6 @@
 		022AD7702F1ED970004D771E /* ReferralsHomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 022AD76F2F1ED970004D771E /* ReferralsHomeView.swift */; };
 		022AD7722F1EDA9A004D771E /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 022AD7712F1EDA9A004D771E /* SettingsView.swift */; };
 		022AD77A2F1EE954004D771E /* README.MD in Resources */ = {isa = PBXBuildFile; fileRef = 022AD7792F1EE954004D771E /* README.MD */; };
-		022AD77C2F1EEACE004D771E /* CLINICAL_OVERVIEW.MD in Sources */ = {isa = PBXBuildFile; fileRef = 022AD77B2F1EEABE004D771E /* CLINICAL_OVERVIEW.MD */; };
 		026FA99F2F2034AC001228BC /* NoteProblem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 026FA99C2F2034AC001228BC /* NoteProblem.swift */; };
 		026FA9A02F2034AC001228BC /* NoteIntervention.swift in Sources */ = {isa = PBXBuildFile; fileRef = 026FA9982F2034AC001228BC /* NoteIntervention.swift */; };
 		026FA9A12F2034AC001228BC /* NoteAssessment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 026FA9962F2034AC001228BC /* NoteAssessment.swift */; };
@@ -514,7 +513,6 @@
 				026FA9A62F2034AC001228BC /* FieldNote.swift in Sources */,
 				026FA9A72F2034AC001228BC /* NoteMeta.swift in Sources */,
 				026FA9A82F2034AC001228BC /* NoteTriage.swift in Sources */,
-				022AD77C2F1EEACE004D771E /* CLINICAL_OVERVIEW.MD in Sources */,
 				022AD7682F1ED815004D771E /* NotesHomeView.swift in Sources */,
 				022AD7702F1ED970004D771E /* ReferralsHomeView.swift in Sources */,
 				026FA9B32F203943001228BC /* Note+CoreDataClass.swift in Sources */,
