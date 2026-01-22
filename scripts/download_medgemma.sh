@@ -23,7 +23,7 @@ OFFICIAL_MODEL="google/medgemma-1.5-4b-it"
 GGUF_REPO="mradermacher/medgemma-1.5-4b-it-GGUF"
 
 # Files to download (from GGUF repo - mradermacher naming convention)
-MODEL_FILE="Q4_K_M.gguf"
+MODEL_FILE="medgemma-1.5-4b-it.Q4_K_M.gguf"
 MMPROJ_FILE="medgemma-1.5-4b-it.mmproj-Q8_0.gguf"
 
 # Expected filenames in MediScribe code (what MedGemmaModel.swift expects)
@@ -153,7 +153,7 @@ print_step "4/6" "Downloading main model..."
 
 echo ""
 echo "Source: $GGUF_REPO"
-echo "File:   $MODEL_FILE (~2.5 GB)"
+echo "File:   $MODEL_FILE (~2.4 GB)"
 echo ""
 
 DOWNLOAD_PATH="$OUTPUT_DIR/$MODEL_FILE"
@@ -194,7 +194,7 @@ print_step "5/6" "Downloading vision encoder (mmproj)..."
 
 echo ""
 echo "Source: $GGUF_REPO"
-echo "File:   $MMPROJ_FILE (~591 MB)"
+echo "File:   $MMPROJ_FILE (~563 MB)"
 echo "Note:   Required for medical image analysis"
 echo ""
 
@@ -235,10 +235,10 @@ if [[ -f "$OUTPUT_DIR/$EXPECTED_MODEL" ]]; then
     SIZE=$(stat -f%z "$OUTPUT_DIR/$EXPECTED_MODEL" 2>/dev/null || stat -c%s "$OUTPUT_DIR/$EXPECTED_MODEL" 2>/dev/null)
     SIZE_MB=$((SIZE / 1024 / 1024))
     TOTAL_SIZE=$((TOTAL_SIZE + SIZE))
-    if [[ $SIZE_MB -gt 2400 ]]; then
+    if [[ $SIZE_MB -gt 2300 ]]; then
         print_success "Main model: $EXPECTED_MODEL (${SIZE_MB} MB)"
     else
-        print_warning "Main model may be incomplete (${SIZE_MB} MB, expected ~2490 MB)"
+        print_warning "Main model may be incomplete (${SIZE_MB} MB, expected ~2374 MB)"
         ALL_OK=false
     fi
 else
@@ -250,10 +250,10 @@ if [[ -f "$OUTPUT_DIR/$EXPECTED_MMPROJ" ]]; then
     SIZE=$(stat -f%z "$OUTPUT_DIR/$EXPECTED_MMPROJ" 2>/dev/null || stat -c%s "$OUTPUT_DIR/$EXPECTED_MMPROJ" 2>/dev/null)
     SIZE_MB=$((SIZE / 1024 / 1024))
     TOTAL_SIZE=$((TOTAL_SIZE + SIZE))
-    if [[ $SIZE_MB -gt 550 ]]; then
+    if [[ $SIZE_MB -gt 500 ]]; then
         print_success "Vision encoder: $EXPECTED_MMPROJ (${SIZE_MB} MB)"
     else
-        print_warning "Vision encoder may be incomplete (${SIZE_MB} MB, expected ~591 MB)"
+        print_warning "Vision encoder may be incomplete (${SIZE_MB} MB, expected ~563 MB)"
         ALL_OK=false
     fi
 else
