@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		MEDGEMMA001BLD0000000001 /* medgemma-1.5-4b-it-Q4_K_M.gguf in Resources */ = {isa = PBXBuildFile; fileRef = MEDGEMMA001REF0000000001 /* medgemma-1.5-4b-it-Q4_K_M.gguf */; };
+		MEDGEMMA002BLD0000000002 /* medgemma-1.5-4b-it.mmproj-Q8_0.gguf in Resources */ = {isa = PBXBuildFile; fileRef = MEDGEMMA002REF0000000002 /* medgemma-1.5-4b-it.mmproj-Q8_0.gguf */; };
 		022AD7662F1ED791004D771E /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 022AD7652F1ED791004D771E /* RootView.swift */; };
 		022AD7682F1ED815004D771E /* NotesHomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 022AD7672F1ED815004D771E /* NotesHomeView.swift */; };
 		022AD76A2F1ED857004D771E /* ImagingHomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 022AD7692F1ED857004D771E /* ImagingHomeView.swift */; };
@@ -74,6 +76,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		MEDGEMMA001REF0000000001 /* medgemma-1.5-4b-it-Q4_K_M.gguf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "medgemma-1.5-4b-it-Q4_K_M.gguf"; path = "Models/MedGemma/medgemma-1.5-4b-it-Q4_K_M.gguf"; sourceTree = "<group>"; };
+		MEDGEMMA002REF0000000002 /* medgemma-1.5-4b-it.mmproj-Q8_0.gguf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "medgemma-1.5-4b-it.mmproj-Q8_0.gguf"; path = "Models/MedGemma/medgemma-1.5-4b-it.mmproj-Q8_0.gguf"; sourceTree = "<group>"; };
 		0152C577A8AF7025A06A6BEF /* AnatomicalObservations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnatomicalObservations.swift; sourceTree = "<group>"; };
 		022AD7652F1ED791004D771E /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
 		022AD7672F1ED815004D771E /* NotesHomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotesHomeView.swift; sourceTree = "<group>"; };
@@ -241,6 +245,8 @@
 				026FA9B22F203943001228BC /* Note+CoreDataProperties.swift */,
 				022AD77B2F1EEABE004D771E /* CLINICAL_OVERVIEW.MD */,
 				022AD7792F1EE954004D771E /* README.MD */,
+				MEDGEMMA001REF0000000001 /* medgemma-1.5-4b-it-Q4_K_M.gguf */,
+				MEDGEMMA002REF0000000002 /* medgemma-1.5-4b-it.mmproj-Q8_0.gguf */,
 				022AD7612F1ED6D2004D771E /* Domain */,
 				022AD75D2F1ED666004D771E /* Features */,
 				022AD75C2F1ED654004D771E /* UI */,
@@ -463,6 +469,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				022AD77A2F1EE954004D771E /* README.MD in Resources */,
+				MEDGEMMA001BLD0000000001 /* medgemma-1.5-4b-it-Q4_K_M.gguf in Resources */,
+				MEDGEMMA002BLD0000000002 /* medgemma-1.5-4b-it.mmproj-Q8_0.gguf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
