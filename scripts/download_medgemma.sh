@@ -79,17 +79,17 @@ fi
 print_success "hf CLI found"
 
 # Check authentication
-if ! hf whoami &> /dev/null; then
+if ! hf auth whoami &> /dev/null; then
     print_warning "Not logged in to Hugging Face"
     echo ""
     echo "You need a Hugging Face account to download MedGemma."
     echo "Get a token at: https://huggingface.co/settings/tokens"
     echo ""
-    read -p "Run 'hf login' now? (y/n) " -n 1 -r
+    read -p "Run 'hf auth login' now? (y/n) " -n 1 -r
     echo
     if [[ $REPLY =~ ^[Yy]$ ]]; then
-        hf login
-        if ! hf whoami &> /dev/null; then
+        hf auth login
+        if ! hf auth whoami &> /dev/null; then
             print_error "Login failed"
             exit 1
         fi
@@ -99,7 +99,7 @@ if ! hf whoami &> /dev/null; then
     fi
 fi
 
-HF_USER=$(hf whoami 2>/dev/null | head -1)
+HF_USER=$(hf auth whoami 2>/dev/null | head -1)
 print_success "Authenticated as: $HF_USER"
 
 # ============================================================================
