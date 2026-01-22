@@ -12,11 +12,170 @@ struct NoteEditorView: View {
     @State private var showingVitalsInput = false
     @State private var currentVitals: VitalSet = VitalSet()
 
+    // MARK: - Field-Optimized Suggestions (Multi-Regional Coverage)
+
+    // Symptom options (universal coverage)
+    private let symptomOptions = [
+        "Fever",
+        "Cough",
+        "Headache",
+        "Nausea",
+        "Vomiting",
+        "Diarrhea",
+        "Fatigue",
+        "Chest Pain",
+        "Shortness of Breath",
+        "Abdominal Pain",
+        "Rash",
+        "Joint Pain",
+        "Night Sweats",
+        "Weight Loss",
+        "Bleeding",
+        "Seizure",
+        "Altered Consciousness",
+        "Weakness"
+    ]
+
+    // Key risk factors (including regional conditions)
+    private let keyRiskOptions = [
+        "Diabetes",
+        "Hypertension",
+        "Asthma",
+        "COPD",
+        "Heart Disease",
+        "Immunocompromised",
+        "HIV+",
+        "TB Contact",
+        "Pregnancy",
+        "Malnutrition",
+        "Sickle Cell Disease",
+        "Chronic Kidney Disease",
+        "Allergy History"
+    ]
+
+    // Red flags (critical signs requiring immediate attention)
+    private let redFlagOptions = [
+        "Altered Consciousness",
+        "Severe Pain",
+        "Respiratory Distress",
+        "Severe Bleeding",
+        "Shock",
+        "Seizure",
+        "Stroke Signs",
+        "Chest Pain",
+        "Unable to Feed/Drink",
+        "Severe Dehydration",
+        "High Fever (>39°C)",
+        "Severe Malnutrition",
+        "Severe Anemia"
+    ]
+
+    // Point-of-care tests (universal + regional)
+    private let testSuggestions = [
+        // Universal/WHO
+        "Blood Glucose",
+        "SpO2",
+        "Urinalysis",
+        "Pregnancy Test",
+        "Hemoglobin",
+        // East/Central Africa
+        "Rapid Malaria Test (RDT)",
+        "HIV Rapid Test",
+        "TB Sputum Test",
+        "Stool Microscopy",
+        // South/Southeast Asia
+        "Dengue NS1/IgM",
+        "Typhoid Rapid Test",
+        "JE Serology",
+        // Latin America
+        "Chagas Serology",
+        "Leishmaniasis RDT"
+    ]
+
+    // Immediate actions (common interventions)
+    private let actionSuggestions = [
+        "Oral Rehydration",
+        "Oxygen Therapy",
+        "IV Fluids",
+        "Wound Dressing",
+        "Splinting",
+        "Analgesia",
+        "Antipyretic Given",
+        "Antibiotics Started"
+    ]
+
+    // Medications (WHO generic + multi-regional coverage)
+    private let medicationSuggestions = [
+        // WHO Generic/Universal
+        "Paracetamol",
+        "Ibuprofen",
+        "Amoxicillin",
+        "Metronidazole",
+        "Salbutamol",
+        "ORS",
+        "Ceftriaxone",
+        "Gentamicin",
+        "Dexamethasone",
+        // East/Central Africa
+        "Artemether-Lumefantrine (AL)",
+        "Quinine IV",
+        "Cotrimoxazole",
+        "Isoniazid",
+        "Rifampicin",
+        "ARVs",
+        "Albendazole",
+        "Praziquantel",
+        "Zinc Sulfate",
+        "Vitamin A",
+        // South/Southeast Asia
+        "Artesunate",
+        "ACT (Artemisinin Combination)",
+        "Azithromycin",
+        "Ciprofloxacin",
+        "Chloramphenicol",
+        "Doxycycline",
+        "Primaquine",
+        // Latin America
+        "Benznidazole",
+        "Nifurtimox",
+        "Ivermectin",
+        "Mebendazol"
+    ]
+
     var body: some View {
         NavigationView {
             Form {
-                // MARK: - Field Header (NoteMeta)
-                Section("Patient & Encounter Details") {
+                patientDetailsSection
+                triageSection
+                subjectiveSection
+                objectiveSection
+                assessmentSection
+                planSection
+            }
+            .navigationTitle("New Note")
+            .navigationBarItems(
+                leading: Button("Cancel") {
+                    presentationMode.wrappedValue.dismiss()
+                },
+                trailing: Button("Save") {
+                    saveNote()
+                    presentationMode.wrappedValue.dismiss()
+                }
+            )
+            .sheet(isPresented: $showingVitalsInput) {
+                FieldOptimizedVitalsView(vitalSet: $currentVitals) {
+                    if note.objective == nil { note.objective = NoteObjective() }
+                    note.objective?.vitals.append(currentVitals)
+                    showingVitalsInput = false
+                }
+            }
+        }
+    }
+
+    // MARK: - Section Views
+
+    private var patientDetailsSection: some View {
+        Section("Patient & Encounter Details") {
                     TextField("Patient ID", text: $note.meta.patient.id)
                     Picker("Sex at Birth", selection: Binding(
                         get: { note.meta.patient.sexAtBirth ?? .unknown },
@@ -38,10 +197,11 @@ struct NoteEditorView: View {
                         get: { note.meta.encounter.locationText ?? "" },
                         set: { note.meta.encounter.locationText = $0.isEmpty ? nil : $0 }
                     ))
-                }
+        }
+    }
 
-                // MARK: - Triage
-                Section("Triage") {
+    private var triageSection: some View {
+        Section("Triage") {
                     Picker("Triage System", selection: Binding(
                         get: { note.triage?.system ?? .start },
                         set: {
@@ -64,10 +224,11 @@ struct NoteEditorView: View {
                             Text(category.rawValue.capitalized).tag(category)
                         }
                     }
-                }
+        }
+    }
 
-                // MARK: - Subjective
-                Section("Subjective") {
+    private var subjectiveSection: some View {
+        Section("Subjective") {
                     TextField("Chief Complaint", text: Binding(
                         get: { note.subjective?.chiefComplaint ?? "" },
                         set: {
@@ -96,13 +257,17 @@ struct NoteEditorView: View {
                             note.subjective?.mechanismOrExposure = $0.isEmpty ? nil : $0
                         }
                     ))
-                    TextField("Associated Symptoms (comma-separated)", text: Binding(
-                        get: { note.subjective?.associatedSymptoms.joined(separator: ", ") ?? "" },
-                        set: {
-                            if note.subjective == nil { note.subjective = NoteSubjective() }
-                            note.subjective?.associatedSymptoms = $0.split(separator: ",").map { String($0.trimmingCharacters(in: .whitespaces)) }
-                        }
-                    ))
+                    MultiSelectGrid(
+                        title: "Associated Symptoms",
+                        options: symptomOptions,
+                        selections: Binding(
+                            get: { note.subjective?.associatedSymptoms ?? [] },
+                            set: {
+                                if note.subjective == nil { note.subjective = NoteSubjective() }
+                                note.subjective?.associatedSymptoms = $0
+                            }
+                        )
+                    )
                     TextField("Allergies (or unknown)", text: Binding(
                         get: { note.subjective?.allergies ?? "" },
                         set: {
@@ -117,17 +282,22 @@ struct NoteEditorView: View {
                             note.subjective?.medications = $0.isEmpty ? nil : $0
                         }
                     ))
-                    TextField("Key Risks (comma-separated)", text: Binding(
-                        get: { note.subjective?.keyRisks.joined(separator: ", ") ?? "" },
-                        set: {
-                            if note.subjective == nil { note.subjective = NoteSubjective() }
-                            note.subjective?.keyRisks = $0.split(separator: ",").map { String($0.trimmingCharacters(in: .whitespaces)) }
-                        }
-                    ))
-                }
+                    MultiSelectGrid(
+                        title: "Key Risks",
+                        options: keyRiskOptions,
+                        selections: Binding(
+                            get: { note.subjective?.keyRisks ?? [] },
+                            set: {
+                                if note.subjective == nil { note.subjective = NoteSubjective() }
+                                note.subjective?.keyRisks = $0
+                            }
+                        )
+                    )
+        }
+    }
 
-                // MARK: - Objective
-                Section("Objective") {
+    private var objectiveSection: some View {
+        Section("Objective") {
                     Button("Add Vitals") {
                         currentVitals = VitalSet() // Reset for new entry
                         showingVitalsInput = true
@@ -142,46 +312,68 @@ struct NoteEditorView: View {
                             note.objective?.primarySurvey = $0.isEmpty ? nil : $0
                         }
                     ))
-                    TextField("Focused Exam (comma-separated)", text: Binding(
-                        get: { note.objective?.focusedExam.values.flatMap { $0 }.joined(separator: ", ") ?? "" },
-                        set: {
-                            if note.objective == nil { note.objective = NoteObjective() }
-                            let components = $0.split(separator: ",").map { String($0.trimmingCharacters(in: .whitespaces)) }
-                            note.objective?.focusedExam = ["general": components] // Simplified: all under "general"
-                        }
-                    ))
-                    TextField("Point-of-Care Tests (comma-separated)", text: Binding(
-                        get: { note.objective?.pointOfCareTests.joined(separator: ", ") ?? "" },
-                        set: {
-                            if note.objective == nil { note.objective = NoteObjective() }
-                            note.objective?.pointOfCareTests = $0.split(separator: ",").map { String($0.trimmingCharacters(in: .whitespaces)) }
-                        }
-                    ))
-                }
+                    OrganSystemExamInput(
+                        title: "Focused Examination",
+                        examFindings: Binding(
+                            get: { note.objective?.focusedExam ?? [:] },
+                            set: {
+                                if note.objective == nil { note.objective = NoteObjective() }
+                                note.objective?.focusedExam = $0
+                            }
+                        )
+                    )
+                    DynamicListInput(
+                        title: "Point-of-Care Tests",
+                        items: Binding(
+                            get: { note.objective?.pointOfCareTests ?? [] },
+                            set: {
+                                if note.objective == nil { note.objective = NoteObjective() }
+                                note.objective?.pointOfCareTests = $0
+                            }
+                        ),
+                        placeholder: "Add test...",
+                        suggestions: testSuggestions
+                    )
+        }
+    }
 
-                // MARK: - Assessment
-                Section("Assessment") {
-                    TextField("Working Diagnoses (comma-separated)", text: Binding(
-                        get: { note.assessment?.workingDiagnoses.map { $0.label }.joined(separator: ", ") ?? "" },
-                        set: {
-                            if note.assessment == nil { note.assessment = NoteAssessment() }
-                            note.assessment?.workingDiagnoses = $0.split(separator: ",").map { Diagnosis(label: String($0.trimmingCharacters(in: .whitespaces)), certainty: .possible) }
-                        }
-                    ))
-                    TextField("Differentials (comma-separated)", text: Binding(
-                        get: { note.assessment?.differentials.joined(separator: ", ") ?? "" },
-                        set: {
-                            if note.assessment == nil { note.assessment = NoteAssessment() }
-                            note.assessment?.differentials = $0.split(separator: ",").map { String($0.trimmingCharacters(in: .whitespaces)) }
-                        }
-                    ))
-                    TextField("Red Flags (comma-separated)", text: Binding(
-                        get: { note.assessment?.redFlags.joined(separator: ", ") ?? "" },
-                        set: {
-                            if note.assessment == nil { note.assessment = NoteAssessment() }
-                            note.assessment?.redFlags = $0.split(separator: ",").map { String($0.trimmingCharacters(in: .whitespaces)) }
-                        }
-                    ))
+    private var assessmentSection: some View {
+        Section("Assessment") {
+                    DynamicListInput(
+                        title: "Working Diagnoses",
+                        items: Binding(
+                            get: { note.assessment?.workingDiagnoses.map { $0.label } ?? [] },
+                            set: {
+                                if note.assessment == nil { note.assessment = NoteAssessment() }
+                                note.assessment?.workingDiagnoses = $0.map { Diagnosis(label: $0, certainty: .possible) }
+                            }
+                        ),
+                        placeholder: "Add diagnosis...",
+                        suggestions: []
+                    )
+                    DynamicListInput(
+                        title: "Differentials",
+                        items: Binding(
+                            get: { note.assessment?.differentials ?? [] },
+                            set: {
+                                if note.assessment == nil { note.assessment = NoteAssessment() }
+                                note.assessment?.differentials = $0
+                            }
+                        ),
+                        placeholder: "Add differential...",
+                        suggestions: []
+                    )
+                    MultiSelectGrid(
+                        title: "Red Flags",
+                        options: redFlagOptions,
+                        selections: Binding(
+                            get: { note.assessment?.redFlags ?? [] },
+                            set: {
+                                if note.assessment == nil { note.assessment = NoteAssessment() }
+                                note.assessment?.redFlags = $0
+                            }
+                        )
+                    )
                     Picker("Stability", selection: Binding(
                         get: { note.assessment?.stability ?? .stable },
                         set: {
@@ -193,24 +385,35 @@ struct NoteEditorView: View {
                             Text(stability.rawValue.capitalized).tag(stability)
                         }
                     }
-                }
+        }
+    }
 
-                // MARK: - Plan
-                Section("Plan") {
-                    TextField("Immediate Actions (comma-separated)", text: Binding(
-                        get: { note.plan?.immediateActions.joined(separator: ", ") ?? "" },
-                        set: {
-                            if note.plan == nil { note.plan = NotePlan() }
-                            note.plan?.immediateActions = $0.split(separator: ",").map { String($0.trimmingCharacters(in: .whitespaces)) }
-                        }
-                    ))
-                    TextField("Medications Given (comma-separated)", text: Binding(
-                        get: { note.plan?.medicationsGiven.joined(separator: ", ") ?? "" },
-                        set: {
-                            if note.plan == nil { note.plan = NotePlan() }
-                            note.plan?.medicationsGiven = $0.split(separator: ",").map { String($0.trimmingCharacters(in: .whitespaces)) }
-                        }
-                    ))
+    private var planSection: some View {
+        Section("Plan") {
+                    DynamicListInput(
+                        title: "Immediate Actions",
+                        items: Binding(
+                            get: { note.plan?.immediateActions ?? [] },
+                            set: {
+                                if note.plan == nil { note.plan = NotePlan() }
+                                note.plan?.immediateActions = $0
+                            }
+                        ),
+                        placeholder: "Add action...",
+                        suggestions: actionSuggestions
+                    )
+                    DynamicListInput(
+                        title: "Medications Given",
+                        items: Binding(
+                            get: { note.plan?.medicationsGiven ?? [] },
+                            set: {
+                                if note.plan == nil { note.plan = NotePlan() }
+                                note.plan?.medicationsGiven = $0
+                            }
+                        ),
+                        placeholder: "Add medication...",
+                        suggestions: medicationSuggestions
+                    )
                     Picker("Disposition Type", selection: Binding(
                         get: { note.plan?.disposition?.type ?? .observe },
                         set: {
@@ -250,25 +453,6 @@ struct NoteEditorView: View {
                             note.plan?.safetyNetInstructions = $0.isEmpty ? nil : $0
                         }
                     ))
-                }
-            }
-            .navigationTitle("New Note")
-            .navigationBarItems(
-                leading: Button("Cancel") {
-                    presentationMode.wrappedValue.dismiss()
-                },
-                trailing: Button("Save") {
-                    saveNote()
-                    presentationMode.wrappedValue.dismiss()
-                }
-            )
-            .sheet(isPresented: $showingVitalsInput) {
-                VitalsInputView(vitalSet: $currentVitals) {
-                    if note.objective == nil { note.objective = NoteObjective() }
-                    note.objective?.vitals.append(currentVitals)
-                    showingVitalsInput = false
-                }
-            }
         }
     }
 
@@ -301,47 +485,6 @@ struct NoteEditorView: View {
     }
 }
 
-// MARK: - Vitals Input Sub-View
-struct VitalsInputView: View {
-    @Binding var vitalSet: VitalSet
-    var onSave: () -> Void
-
-    var body: some View {
-        NavigationView {
-            Form {
-                Section("Blood Pressure") {
-                    TextField("Systolic", value: $vitalSet.bloodPressure.systolic, formatter: NumberFormatter())
-                        .keyboardType(.numberPad)
-                    TextField("Diastolic", value: $vitalSet.bloodPressure.diastolic, formatter: NumberFormatter())
-                        .keyboardType(.numberPad)
-                }
-                Section("Other Vitals") {
-                    TextField("Heart Rate", value: $vitalSet.heartRate, formatter: NumberFormatter())
-                        .keyboardType(.numberPad)
-                    TextField("Respiratory Rate", value: $vitalSet.respiratoryRate, formatter: NumberFormatter())
-                        .keyboardType(.numberPad)
-                    TextField("SpO2 (%)", value: $vitalSet.spo2, formatter: NumberFormatter())
-                        .keyboardType(.numberPad)
-                    TextField("Temperature (°C)", value: $vitalSet.temperatureCelsius, formatter: NumberFormatter())
-                        .keyboardType(.decimalPad)
-                    TextField("GCS", value: $vitalSet.gcs, formatter: NumberFormatter())
-                        .keyboardType(.numberPad)
-                }
-            }
-            .navigationTitle("Add Vitals")
-            .navigationBarItems(
-                leading: Button("Cancel") {
-                    // Dismiss without saving
-                    onSave() // Call onSave to dismiss the sheet, but don't add vitals
-                },
-                trailing: Button("Save") {
-                    onSave()
-                }
-            )
-        }
-    }
-}
-
 // MARK: - Previews
 struct NoteEditorView_Previews: PreviewProvider {
     @State static var sampleNote: FieldNote = {
@@ -362,11 +505,4 @@ struct NoteEditorView_Previews: PreviewProvider {
     }
 }
 
-// Extend Enums for ForEach
-extension EncounterSetting: CaseIterable {}
-extension TriageSystem: CaseIterable {}
-extension TriageCategory: CaseIterable {}
-extension SexAtBirth: CaseIterable {}
-extension Stability: CaseIterable {}
-extension DispositionType: CaseIterable {}
-extension Urgency: CaseIterable {}
+// CaseIterable conformance is now defined in the enum declaration files

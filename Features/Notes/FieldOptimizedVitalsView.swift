@@ -91,7 +91,7 @@ struct FieldOptimizedVitalsView: View {
                 ToolbarItem(placement: .confirmationAction) {
                     if currentField == nil {
                         Button("Save") {
-                            vitalSet.recordedAt = Date()
+                            vitalSet.timestamp = Date()
                             onSave()
                         }
                     }
@@ -252,15 +252,17 @@ struct FieldOptimizedVitalsView: View {
         switch field {
         case .systolic:
             if vitalSet.bloodPressure == nil {
-                vitalSet.bloodPressure = BloodPressure()
+                vitalSet.bloodPressure = BloodPressure(systolic: Int(inputValue) ?? 0, diastolic: 0)
+            } else {
+                vitalSet.bloodPressure?.systolic = Int(inputValue) ?? 0
             }
-            vitalSet.bloodPressure?.systolic = Int(inputValue)
 
         case .diastolic:
             if vitalSet.bloodPressure == nil {
-                vitalSet.bloodPressure = BloodPressure()
+                vitalSet.bloodPressure = BloodPressure(systolic: 0, diastolic: Int(inputValue) ?? 0)
+            } else {
+                vitalSet.bloodPressure?.diastolic = Int(inputValue) ?? 0
             }
-            vitalSet.bloodPressure?.diastolic = Int(inputValue)
 
         case .heartRate:
             vitalSet.heartRate = Int(inputValue)

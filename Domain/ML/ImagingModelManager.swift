@@ -26,6 +26,15 @@ class ImagingModelManager: ObservableObject {
     @Published private(set) var loadingProgress: Double = 0.0
 
     private init() {
+        // TEMPORARY: Disable MedGemma until model files are properly configured
+        // The model files (medgemma-1.5-4b-it-Q4_K_M.gguf and mmproj) are not included
+        // in the repository due to size constraints
+        print("⚠️ MedGemma model disabled - using PlaceholderImagingModel")
+        print("   MediScribe uses placeholder JSON for imaging/labs features")
+        print("   To enable real model: add medgemma-1.5-4b-it-Q4_K_M.gguf to Xcode project")
+        self.currentModel = PlaceholderImagingModel()
+
+        /* COMMENTED OUT - Uncomment when model files are available:
         // Try to use MedGemmaModel if GGUF file is available, otherwise use placeholder
         // Check if model file exists in bundle
         let modelFileName = "medgemma-1.5-4b-it-Q4_K_M"
@@ -50,6 +59,7 @@ class ImagingModelManager: ObservableObject {
             print("   To use the real model, add medgemma-1.5-4b-it-Q4_K_M.gguf to the Xcode project Resources")
             self.currentModel = PlaceholderImagingModel()
         }
+        */
 
         // Automatically load model on init
         Task {

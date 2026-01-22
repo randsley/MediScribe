@@ -46,11 +46,11 @@ struct SBARGenerator {
         let chiefComplaint = note.subjective?.chiefComplaint
 
         let location: String?
-        if let setting = note.meta.encounter.setting.rawValue.capitalized,
-           let locationText = note.meta.encounter.locationText {
+        let setting = note.meta.encounter.setting.rawValue.capitalized
+        if let locationText = note.meta.encounter.locationText {
             location = "\(setting) - \(locationText)"
         } else {
-            location = note.meta.encounter.setting.rawValue.capitalized
+            location = setting
         }
 
         return SBARSituation(
@@ -118,13 +118,9 @@ struct SBARGenerator {
         let urgency = disposition?.urgency?.rawValue
 
         let interventionsPerformed: [String]?
-        if let interventions = note.interventions, !interventions.isEmpty {
-            interventionsPerformed = interventions.map { intervention in
-                if let details = intervention.details {
-                    return "\(intervention.type): \(details)"
-                } else {
-                    return intervention.type
-                }
+        if !note.interventions.isEmpty {
+            interventionsPerformed = note.interventions.map { intervention in
+                return "\(intervention.type): \(intervention.details)"
             }
         } else if let actions = note.plan?.immediateActions, !actions.isEmpty {
             interventionsPerformed = actions
@@ -135,7 +131,7 @@ struct SBARGenerator {
         let medicationsGiven = note.plan?.medicationsGiven
 
         let transportNeeds: String?
-        if disposition?.urgency == .immediate || disposition?.urgency == .emergent {
+        if disposition?.urgency == .immediate || disposition?.urgency == .urgent {
             transportNeeds = "Urgent transport required"
         } else if disposition?.type == .transfer || disposition?.type == .evacuate {
             transportNeeds = "Transport needed"
@@ -178,8 +174,8 @@ struct SBARGenerator {
 
         // Check blood pressure
         if let bp = latest.bloodPressure {
-            if let systolic = bp.systolic, systolic < 90 || systolic > 180 {
-                concerns.append("BP \(systolic)/\(bp.diastolic ?? 0)")
+            if bp.systolic < 90 || bp.systolic > 180 {
+                concerns.append("BP \(bp.systolic)/\(bp.diastolic)")
             }
         }
 

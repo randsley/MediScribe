@@ -6,12 +6,12 @@ struct NoteTriage: Codable {
     var category: TriageCategory
 }
 
-enum TriageSystem: String, Codable {
+enum TriageSystem: String, Codable, CaseIterable {
     case start = "START"
     // Add other triage systems as needed
 }
 
-enum TriageCategory: String, Codable {
+enum TriageCategory: String, Codable, CaseIterable {
     case red
     case yellow
     case green

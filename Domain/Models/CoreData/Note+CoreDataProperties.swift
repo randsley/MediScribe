@@ -6,8 +6,8 @@
 //
 //
 
-public import Foundation
-public import CoreData
+import Foundation
+import CoreData
 
 
 public typealias NoteCoreDataPropertiesSet = NSSet
@@ -22,6 +22,10 @@ extension Note {
     @NSManaged public var createdAt: Date?
     @NSManaged public var noteData: Data?
     @NSManaged public var patientID: String?
+    @NSManaged public var isLocked: Bool
+    @NSManaged public var signedAt: Date?
+    @NSManaged public var signedBy: String?
+    @NSManaged public var addenda: NSSet?
 
 }
 

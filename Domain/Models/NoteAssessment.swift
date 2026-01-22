@@ -19,7 +19,7 @@ enum Certainty: String, Codable {
     case confirmed
 }
 
-enum Stability: String, Codable {
+enum Stability: String, Codable, CaseIterable {
     case stable
     case unstable
 }

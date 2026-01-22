@@ -2,24 +2,62 @@
 
 ## Security
 
--   **Implement Application-Level Encryption for `FieldNote` data:**
-    *   Currently, `noteData` stored in Core Data relies on iOS Data Protection (device-level encryption).
-    *   Implement explicit application-level encryption for `noteData` before saving to Core Data.
-    *   **Encryption Algorithm:** AES-256 in GCM (Galois/Counter Mode) for both confidentiality and integrity.
-    *   **Key Management:** iOS Keychain for secure storage, leveraging hardware protection.
-    *   **Implementation:** Use Apple's CryptoKit framework (iOS 13+) for safe, easy-to-use, hardware-accelerated AES-GCM. CommonCrypto is an alternative for older iOS versions but requires more careful handling.
-    *   This is crucial for protecting sensitive patient information beyond device-level security.
+### Extend Application-Level Encryption to Additional Entities
+
+**Status**: FieldNote encryption is ✅ COMPLETE. Infrastructure is in place (EncryptionService, KeychainManager, AES-256-GCM).
+
+**Future Tasks** - Extend encryption to remaining patient-identified health data:
+
+-   **Finding Entity** (Imaging and Labs data):
+    *   Encrypt `findingsJSON` field (imaging findings, lab results)
+    *   Encrypt `imageData` field (medical images, lab report scans)
+    *   Add `setFindings()` and `getFindings()` methods following Note pattern
+    *   Implement migration for existing unencrypted findings
+    *   Update Imaging and Labs features to use encrypted storage
+
+-   **Referral Entity**:
+    *   Encrypt `clinicalSummary`, `reason`, and other text fields
+    *   Add encryption methods following established pattern
+    *   Implement migration support
+
+-   **Patient Entity**:
+    *   Encrypt demographics (name, DOB, medical record number)
+    *   Consider impact on search/filtering performance
+    *   May require encrypted search or tokenization approach
+
+-   **NoteAddendum Entity**:
+    *   Encrypt `addendumText` field
+    *   Maintain referential integrity with parent Note
+
+-   **ClinicalNote Entity** (Legacy):
+    *   Encrypt `content` field
+    *   Consider deprecation vs encryption migration
+
+**Infrastructure**: Reuse existing `EncryptionService` and `KeychainManager` - no additional security infrastructure needed.
 
 ## Notes Feature Enhancements
 
--   **Implement complex UI inputs in `NoteEditorView`:**
-    *   Multi-select for `associatedSymptoms`, `keyRisks`, `redFlags`.
-    *   Dynamic input for `Focused Exam`, `Point-of-Care Tests`, `Working Diagnoses`, `Differentials`, `Immediate Actions`, `Medications Given`.
-    *   Refine `VitalsInputView` for better user experience and validation.
--   **Refine Note Update Logic:**
-    *   Currently, saving an edited note creates a new entry. Implement logic to update an existing `Note` entity in Core Data instead of always creating a new one.
+-   **✅ Implement field-optimized UI inputs in `NoteEditorView`:**
+    *   ✅ Multi-select grids for `associatedSymptoms`, `keyRisks`, `redFlags`
+    *   ✅ Dynamic list inputs for `Point-of-Care Tests`, `Working Diagnoses`, `Differentials`, `Immediate Actions`, `Medications Given`
+    *   ✅ Organ system-based exam input for `Focused Exam` (structured by system)
+    *   ✅ Replaced `VitalsInputView` with `FieldOptimizedVitalsView` (large number pad, better UX)
+    *   ✅ Multi-regional suggestion lists (WHO + East/Central Africa + South/Southeast Asia + Latin America)
 
 ## General
 
 -   **Expand Test Coverage:** Add unit tests for validators, model managers, and new features.
 -   **Set up Continuous Integration (CI):** Re-introduce a CI workflow for automated builds and tests.
+
+---
+
+## Completed Security Tasks
+
+-   **✅ Application-Level Encryption for `FieldNote` data:**
+    *   **Status**: COMPLETE - Implemented in commit effd465
+    *   **Implementation**: AES-256-GCM encryption using CryptoKit
+    *   **Key Management**: iOS Keychain storage via KeychainManager
+    *   **Note Entity Methods**: `setFieldNote()` and `getFieldNote()` for encrypted storage
+    *   **Migration**: Automatic migration of legacy unencrypted noteData
+    *   **Test Coverage**: Comprehensive tests in EncryptionServiceTests.swift
+    *   **Files**: Domain/Security/EncryptionService.swift, Domain/Security/KeychainManager.swift

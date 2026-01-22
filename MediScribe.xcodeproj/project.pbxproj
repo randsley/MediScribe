@@ -45,6 +45,15 @@
 		FF5CA30802AD9CBEBB1FB731 /* PlaceholderImagingModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27D2058574E80D2A27786BC7 /* PlaceholderImagingModel.swift */; };
 		G7H8I9J0K1L2M3N4O5P6Q7R8 /* LabResultsValidator.swift in Sources */ = {isa = PBXBuildFile; fileRef = R8Q7P6O5N4M3L2K1J0I9H8G7 /* LabResultsValidator.swift */; };
 		H8I9J0K1L2M3N4O5P6Q7R8S9 /* DocumentType.swift in Sources */ = {isa = PBXBuildFile; fileRef = S9R8Q7P6O5N4M3L2K1J0I9H8 /* DocumentType.swift */; };
+		SEC001ENC2024010100000001 /* EncryptionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = SEC001REF2024010100000001 /* EncryptionService.swift */; };
+		SEC002KEY2024010100000002 /* KeychainManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = SEC002REF2024010100000002 /* KeychainManager.swift */; };
+		NOTES001BUILD00000000001 /* NoteEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = NOTES001REF00000000001 /* NoteEditorView.swift */; };
+		NOTES002BUILD00000000002 /* NoteDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = NOTES002REF00000000002 /* NoteDetailView.swift */; };
+		NOTES003BUILD00000000003 /* SBARView.swift in Sources */ = {isa = PBXBuildFile; fileRef = NOTES003REF00000000003 /* SBARView.swift */; };
+		NOTES004BUILD00000000004 /* FieldOptimizedVitalsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = NOTES004REF00000000004 /* FieldOptimizedVitalsView.swift */; };
+		NOTES005BUILD00000000005 /* OrganSystemExamInput.swift in Sources */ = {isa = PBXBuildFile; fileRef = NOTES005REF00000000005 /* OrganSystemExamInput.swift */; };
+		UI001BUILD000000000001 /* FieldOptimizedComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = UI001REF000000000001 /* FieldOptimizedComponents.swift */; };
+		SVC001BUILD00000000001 /* SBARGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = SVC001REF00000000001 /* SBARGenerator.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -107,6 +116,15 @@
 		Q7P6O5N4M3L2K1J0I9H8G7F6 /* LabValidationError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LabValidationError.swift; sourceTree = "<group>"; };
 		R8Q7P6O5N4M3L2K1J0I9H8G7 /* LabResultsValidator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LabResultsValidator.swift; sourceTree = "<group>"; };
 		S9R8Q7P6O5N4M3L2K1J0I9H8 /* DocumentType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentType.swift; sourceTree = "<group>"; };
+		SEC001REF2024010100000001 /* EncryptionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EncryptionService.swift; sourceTree = "<group>"; };
+		SEC002REF2024010100000002 /* KeychainManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainManager.swift; sourceTree = "<group>"; };
+		NOTES001REF00000000001 /* NoteEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteEditorView.swift; sourceTree = "<group>"; };
+		NOTES002REF00000000002 /* NoteDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteDetailView.swift; sourceTree = "<group>"; };
+		NOTES003REF00000000003 /* SBARView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SBARView.swift; sourceTree = "<group>"; };
+		NOTES004REF00000000004 /* FieldOptimizedVitalsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FieldOptimizedVitalsView.swift; sourceTree = "<group>"; };
+		NOTES005REF00000000005 /* OrganSystemExamInput.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrganSystemExamInput.swift; sourceTree = "<group>"; };
+		UI001REF000000000001 /* FieldOptimizedComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FieldOptimizedComponents.swift; sourceTree = "<group>"; };
+		SVC001REF00000000001 /* SBARGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SBARGenerator.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -157,6 +175,7 @@
 			children = (
 				022AD7652F1ED791004D771E /* RootView.swift */,
 				022AD7712F1EDA9A004D771E /* SettingsView.swift */,
+				UI001REF000000000001 /* FieldOptimizedComponents.swift */,
 			);
 			path = UI;
 			sourceTree = "<group>";
@@ -186,6 +205,11 @@
 			isa = PBXGroup;
 			children = (
 				022AD7672F1ED815004D771E /* NotesHomeView.swift */,
+				NOTES001REF00000000001 /* NoteEditorView.swift */,
+				NOTES002REF00000000002 /* NoteDetailView.swift */,
+				NOTES003REF00000000003 /* SBARView.swift */,
+				NOTES004REF00000000004 /* FieldOptimizedVitalsView.swift */,
+				NOTES005REF00000000005 /* OrganSystemExamInput.swift */,
 			);
 			path = Notes;
 			sourceTree = "<group>";
@@ -204,6 +228,8 @@
 				E35421949957371D00D64AE2 /* ML */,
 				EF26827332131A1EC61CAEB1 /* Validators */,
 				D91531D70E2FB2253EAD92CF /* Models */,
+				SEC003GRP2024010100000003 /* Security */,
+				SVC002GRP2024010100000002 /* Services */,
 			);
 			path = Domain;
 			sourceTree = "<group>";
@@ -286,6 +312,23 @@
 				R8Q7P6O5N4M3L2K1J0I9H8G7 /* LabResultsValidator.swift */,
 			);
 			path = Validators;
+			sourceTree = "<group>";
+		};
+		SEC003GRP2024010100000003 /* Security */ = {
+			isa = PBXGroup;
+			children = (
+				SEC001REF2024010100000001 /* EncryptionService.swift */,
+				SEC002REF2024010100000002 /* KeychainManager.swift */,
+			);
+			path = Security;
+			sourceTree = "<group>";
+		};
+		SVC002GRP2024010100000002 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				SVC001REF00000000001 /* SBARGenerator.swift */,
+			);
+			path = Services;
 			sourceTree = "<group>";
 		};
 		T9U0V1W2X3Y4Z5A6B7C8D9E0 /* Labs */ = {
@@ -481,6 +524,15 @@
 				F6G7H8I9J0K1L2M3N4O5P6Q7 /* LabValidationError.swift in Sources */,
 				G7H8I9J0K1L2M3N4O5P6Q7R8 /* LabResultsValidator.swift in Sources */,
 				H8I9J0K1L2M3N4O5P6Q7R8S9 /* DocumentType.swift in Sources */,
+				SEC001ENC2024010100000001 /* EncryptionService.swift in Sources */,
+				SEC002KEY2024010100000002 /* KeychainManager.swift in Sources */,
+				NOTES001BUILD00000000001 /* NoteEditorView.swift in Sources */,
+				NOTES002BUILD00000000002 /* NoteDetailView.swift in Sources */,
+				NOTES003BUILD00000000003 /* SBARView.swift in Sources */,
+				NOTES004BUILD00000000004 /* FieldOptimizedVitalsView.swift in Sources */,
+				NOTES005BUILD00000000005 /* OrganSystemExamInput.swift in Sources */,
+				UI001BUILD000000000001 /* FieldOptimizedComponents.swift in Sources */,
+				SVC001BUILD00000000001 /* SBARGenerator.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

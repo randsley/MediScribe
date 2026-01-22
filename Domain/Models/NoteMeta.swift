@@ -33,7 +33,7 @@ struct NotePatient: Codable {
     var sexAtBirth: SexAtBirth?
 }
 
-enum SexAtBirth: String, Codable {
+enum SexAtBirth: String, Codable, CaseIterable {
     case male
     case female
     case unknown
@@ -45,7 +45,7 @@ struct NoteEncounter: Codable {
     // Optional GPS coordinates can be added here if needed
 }
 
-enum EncounterSetting: String, Codable {
+enum EncounterSetting: String, Codable, CaseIterable {
     case roadside
     case tent
     case home

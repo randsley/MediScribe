@@ -14,7 +14,7 @@ struct Disposition: Codable {
     var urgency: Urgency?
 }
 
-enum DispositionType: String, Codable {
+enum DispositionType: String, Codable, CaseIterable {
     case observe
     case refer
     case transfer
@@ -22,7 +22,7 @@ enum DispositionType: String, Codable {
     case discharge
 }
 
-enum Urgency: String, Codable {
+enum Urgency: String, Codable, CaseIterable {
     case immediate
     case urgent
     case routine

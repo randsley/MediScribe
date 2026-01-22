@@ -10,7 +10,6 @@
         <relationship name="patient" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Patient" inverseName="clinicalNotes" inverseEntity="Patient"/>
     </entity>
     <entity name="Finding" representedClassName="Finding" syncable="YES" codeGenerationType="class">
-        <attribute name="attribute" optional="YES"/>
         <attribute name="createdAt" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="documentType" optional="YES" attributeType="String" defaultValueString="imaging"/>
         <attribute name="findingsJSON" attributeType="String"/>
@@ -22,7 +21,7 @@
         <relationship name="patient" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Patient" inverseName="findings" inverseEntity="Patient"/>
         <relationship name="referrals" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Referral" inverseName="attachedFindings" inverseEntity="Referral"/>
     </entity>
-    <entity name="Note" representedClassName="Note" syncable="YES" codeGenerationType="class">
+    <entity name="Note" representedClassName="Note" syncable="YES">
         <attribute name="createdAt" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
         <attribute name="isLocked" optional="YES" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>

@@ -111,6 +111,7 @@ class MedGemmaModel: ImagingModelProtocol {
                     llama_sampler_chain_add(self.sampler, llama_sampler_init_greedy())
 
                     // 9. Initialize mtmd context for vision (mmproj file)
+                    // NOTE: Multimodal support is optional - model works in text-only mode without it
                     let mmprojFileName = "medgemma-1.5-4b-it.mmproj-Q8_0"
                     let mmprojFileExt = "gguf"
 
@@ -125,17 +126,27 @@ class MedGemmaModel: ImagingModelProtocol {
                         }
                     }
 
-                    if let mmprojPath = mmprojPath {
-                        self.mtmdContext = mediscribe_mtmd_init(mmprojPath, self.model)
-                        if self.mtmdContext == nil {
-                            print("⚠️ Failed to load mmproj file - multimodal support disabled")
-                        } else if mediscribe_mtmd_has_vision(self.mtmdContext) {
-                            print("✓ MedGemma multimodal vision support enabled")
+                    // Only attempt to load mmproj if file exists AND is valid
+                    if let mmprojPath = mmprojPath, FileManager.default.fileExists(atPath: mmprojPath) {
+                        // Verify file size is reasonable (should be > 100MB for Q8 quantization)
+                        if let attributes = try? FileManager.default.attributesOfItem(atPath: mmprojPath),
+                           let fileSize = attributes[.size] as? Int64,
+                           fileSize > 1_000_000 { // At least 1MB to avoid corrupted files
+                            print("📁 Found mmproj file (\(ByteCountFormatter.string(fromByteCount: fileSize, countStyle: .file))) - attempting to load...")
+                            self.mtmdContext = mediscribe_mtmd_init(mmprojPath, self.model)
+                            if self.mtmdContext == nil {
+                                print("⚠️ Failed to load mmproj file - multimodal support disabled")
+                            } else if mediscribe_mtmd_has_vision(self.mtmdContext) {
+                                print("✓ MedGemma multimodal vision support enabled")
+                            } else {
+                                print("⚠️ mmproj loaded but vision not supported")
+                            }
                         } else {
-                            print("⚠️ mmproj loaded but vision not supported")
+                            print("⚠️ mmproj file too small or corrupted - skipping multimodal support")
                         }
                     } else {
                         print("⚠️ mmproj file not found - text-only mode")
+                        print("   To enable vision support, add \(mmprojFileName).\(mmprojFileExt) to Xcode project")
                     }
 
                     continuation.resume()

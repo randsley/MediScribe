@@ -123,7 +123,7 @@ struct ShareSheet: UIViewControllerRepresentable {
                 author: NoteAuthor(id: "dr_001", displayName: "Dr. Smith", role: "Physician"),
                 patient: NotePatient(id: "PAT-123", estimatedAgeYears: 45, sexAtBirth: .male),
                 encounter: NoteEncounter(setting: .tent, locationText: "Disaster Zone A"),
-                consent: NoteConsent(status: .implied)
+                consent: NoteConsent(status: .impliedEmergency)
             )
         ))
     }
