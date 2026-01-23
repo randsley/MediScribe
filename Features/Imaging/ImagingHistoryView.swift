@@ -85,6 +85,16 @@ struct FindingRowView: View {
 struct FindingDetailView: View {
     let finding: Finding
 
+    /// Decrypted findings JSON (with migration support for legacy data)
+    private var decryptedFindingsJSON: String? {
+        try? finding.getFindingsJSONWithMigration()
+    }
+
+    /// Decrypted image data (with migration support for legacy data)
+    private var decryptedImageData: Data? {
+        try? finding.getImageWithMigration()
+    }
+
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
@@ -116,7 +126,7 @@ struct FindingDetailView: View {
                         .font(.title3)
                         .bold()
 
-                    if let json = finding.findingsJSON {
+                    if let json = decryptedFindingsJSON {
                         Text(json)
                             .font(.system(.caption, design: .monospaced))
                             .padding()
@@ -129,7 +139,7 @@ struct FindingDetailView: View {
                 }
 
                 // Image if available
-                if let imageData = finding.imageData, let uiImage = UIImage(data: imageData) {
+                if let imageData = decryptedImageData, let uiImage = UIImage(data: imageData) {
                     Divider()
 
                     Text("Captured Image")

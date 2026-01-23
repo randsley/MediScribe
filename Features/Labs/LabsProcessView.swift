@@ -251,13 +251,15 @@ struct LabsProcessView: View {
             finding.id = UUID()
             finding.createdAt = Date()
             finding.documentType = "lab" // Mark as lab result
-            finding.findingsJSON = jsonString
             finding.reviewedAt = Date()
             finding.reviewedBy = "Clinician" // TODO: Get actual clinician name from settings
 
-            // Store original image
+            // Store findings JSON with encryption
+            try finding.setFindingsJSON(jsonString)
+
+            // Store original image with encryption
             if let imageData = image.jpegData(compressionQuality: 0.8) {
-                finding.imageData = imageData
+                try finding.setImage(imageData)
                 finding.imageType = "image/jpeg"
             }
 

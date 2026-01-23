@@ -205,14 +205,20 @@ struct ImagingGenerateView: View {
         finding.id = UUID()
         finding.createdAt = Date()
         finding.documentType = "imaging" // Mark as imaging finding
-        finding.findingsJSON = findingsJSON
-        finding.imageData = selectedImageData
         finding.reviewedAt = Date()
         finding.reviewedBy = "Clinician" // TODO: Get actual clinician name from app settings
         finding.imageType = "Imaging" // TODO: Extract from findings JSON
         finding.patient = patient
 
         do {
+            // Store findings JSON with encryption
+            try finding.setFindingsJSON(findingsJSON)
+
+            // Store image data with encryption if available
+            if let imageData = selectedImageData {
+                try finding.setImage(imageData)
+            }
+
             try viewContext.save()
             showSaveSuccess = true
             status = "Finding saved successfully."
