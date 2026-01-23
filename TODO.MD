@@ -4,16 +4,9 @@
 
 ### Extend Application-Level Encryption to Additional Entities
 
-**Status**: FieldNote encryption is ✅ COMPLETE. Infrastructure is in place (EncryptionService, KeychainManager, AES-256-GCM).
+**Status**: FieldNote and Finding encryption are ✅ COMPLETE. Infrastructure is in place (EncryptionService, KeychainManager, AES-256-GCM).
 
 **Future Tasks** - Extend encryption to remaining patient-identified health data:
-
--   **Finding Entity** (Imaging and Labs data):
-    *   Encrypt `findingsJSON` field (imaging findings, lab results)
-    *   Encrypt `imageData` field (medical images, lab report scans)
-    *   Add `setFindings()` and `getFindings()` methods following Note pattern
-    *   Implement migration for existing unencrypted findings
-    *   Update Imaging and Labs features to use encrypted storage
 
 -   **Referral Entity**:
     *   Encrypt `clinicalSummary`, `reason`, and other text fields
@@ -69,3 +62,16 @@
     *   **Migration**: Automatic migration of legacy unencrypted noteData
     *   **Test Coverage**: Comprehensive tests in EncryptionServiceTests.swift
     *   **Files**: Domain/Security/EncryptionService.swift, Domain/Security/KeychainManager.swift
+
+-   **✅ Application-Level Encryption for `Finding` Entity:**
+    *   **Status**: COMPLETE - Implemented in commit fcfbba5
+    *   **Implementation**: AES-256-GCM encryption using existing EncryptionService
+    *   **Finding Entity Methods**:
+        *   `setFindingsJSON()` / `getFindingsJSON()` for JSON string encryption
+        *   `setFindings()` / `getFindings()` for typed Codable encryption
+        *   `setImage()` / `getImage()` for image data encryption
+    *   **Migration**: `getFindingsJSONWithMigration()`, `getImageWithMigration()`, `migrateToEncryptedStorage()`
+    *   **Core Data Model**: Version 3 with `encryptedFindingsData`, `encryptedImageData`, `isEncrypted` fields
+    *   **Updated Features**: ImagingGenerateView, LabsProcessView (save), ImagingHistoryView (display)
+    *   **Test Coverage**: 14 tests in FindingEncryptionTests.swift
+    *   **Files**: Domain/Models/CoreData/Finding+CoreDataClass.swift, Finding+CoreDataProperties.swift
