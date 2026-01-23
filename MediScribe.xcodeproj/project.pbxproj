@@ -28,14 +28,18 @@
 		026FA9B32F203943001228BC /* Note+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 026FA9B12F203943001228BC /* Note+CoreDataClass.swift */; };
 		026FA9B42F203943001228BC /* Note+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 026FA9B22F203943001228BC /* Note+CoreDataProperties.swift */; };
 		08AB676E9D11323EE3C24765 /* FindingsValidator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4FD5959A160A596A5F390A /* FindingsValidator.swift */; };
+		137A7D8B41B35CE1A6AA07AB /* NoteAddendum+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B06EE87C4BC35D52B6DFE82 /* NoteAddendum+CoreDataClass.swift */; };
 		41B729B392F7559C7D71C9FC /* TextSanitizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DDE81485BAEFF6C7F8020DF /* TextSanitizer.swift */; };
 		557A8DB7713DBD3083A6351F /* ImagingFindingsSummary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A8EE4D08CD515CCA250F3F7 /* ImagingFindingsSummary.swift */; };
 		5646201F1622A1BBBD414767 /* ImagingModelProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5068F406A5B495B7F39BCECE /* ImagingModelProtocol.swift */; };
+		5A555A27ED8F9B758B7B9E3D /* Referral+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 439664C5284D158F9A21A0D7 /* Referral+CoreDataClass.swift */; };
 		62AD69B003827713330B056C /* Finding+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46D5BFD5D672CBF9647F85C4 /* Finding+CoreDataProperties.swift */; };
 		62E0D97EF8D6EB9F702C4F74 /* FindingsValidationError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41927F759BFD5E6FE051A08D /* FindingsValidationError.swift */; };
 		94DC2980FD1B65F1AA926404 /* AnatomicalObservations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0152C577A8AF7025A06A6BEF /* AnatomicalObservations.swift */; };
+		9C0F00EE436A08D86DFE2BA9 /* NoteAddendum+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = B926090DA2B90CDEC028343C /* NoteAddendum+CoreDataProperties.swift */; };
 		A1B2C3D4E5F6G7H8I9J0K1L2 /* LabsHomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = L2K1J0I9H8G7F6E5D4C3B2A1 /* LabsHomeView.swift */; };
 		B2C3D4E5F6G7H8I9J0K1L2M3 /* LabsCameraView.swift in Sources */ = {isa = PBXBuildFile; fileRef = M3L2K1J0I9H8G7F6E5D4C3B2 /* LabsCameraView.swift */; };
+		B2C60A63226675537447E87F /* Referral+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD98E5A450FEA2880A43D12E /* Referral+CoreDataProperties.swift */; };
 		B8B5CDEA15CD48F89A8E1BC2 /* MedGemmaModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F405F4AAA7843FFA21CA909 /* MedGemmaModel.swift */; };
 		C3D4E5F6G7H8I9J0K1L2M3N4 /* LabsHistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = N4M3L2K1J0I9H8G7F6E5D4C3 /* LabsHistoryView.swift */; };
 		CA2368C5B5CCE6EDC5A6E24A /* Finding+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55A12A1E29C0EA1A7D5BDA65 /* Finding+CoreDataClass.swift */; };
@@ -107,12 +111,16 @@
 		0C71C7FD89938FA7D333F195 /* ImagingModelManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagingModelManager.swift; sourceTree = "<group>"; };
 		0DDE81485BAEFF6C7F8020DF /* TextSanitizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextSanitizer.swift; sourceTree = "<group>"; };
 		27D2058574E80D2A27786BC7 /* PlaceholderImagingModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaceholderImagingModel.swift; sourceTree = "<group>"; };
+		2B06EE87C4BC35D52B6DFE82 /* NoteAddendum+CoreDataClass.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "NoteAddendum+CoreDataClass.swift"; sourceTree = "<group>"; };
 		41927F759BFD5E6FE051A08D /* FindingsValidationError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FindingsValidationError.swift; sourceTree = "<group>"; };
+		439664C5284D158F9A21A0D7 /* Referral+CoreDataClass.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "Referral+CoreDataClass.swift"; sourceTree = "<group>"; };
 		46D5BFD5D672CBF9647F85C4 /* Finding+CoreDataProperties.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "Finding+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		5068F406A5B495B7F39BCECE /* ImagingModelProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagingModelProtocol.swift; sourceTree = "<group>"; };
 		55A12A1E29C0EA1A7D5BDA65 /* Finding+CoreDataClass.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "Finding+CoreDataClass.swift"; sourceTree = "<group>"; };
 		9A8EE4D08CD515CCA250F3F7 /* ImagingFindingsSummary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagingFindingsSummary.swift; sourceTree = "<group>"; };
 		9F405F4AAA7843FFA21CA909 /* MedGemmaModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MedGemmaModel.swift; sourceTree = "<group>"; };
+		B926090DA2B90CDEC028343C /* NoteAddendum+CoreDataProperties.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "NoteAddendum+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		BD98E5A450FEA2880A43D12E /* Referral+CoreDataProperties.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "Referral+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		L2K1J0I9H8G7F6E5D4C3B2A1 /* LabsHomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LabsHomeView.swift; sourceTree = "<group>"; };
 		M3L2K1J0I9H8G7F6E5D4C3B2 /* LabsCameraView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LabsCameraView.swift; sourceTree = "<group>"; };
 		MEDGEMMA001REF0000000001 /* medgemma-1.5-4b-it-Q4_K_M.gguf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "medgemma-1.5-4b-it-Q4_K_M.gguf"; path = "Models/MedGemma/medgemma-1.5-4b-it-Q4_K_M.gguf"; sourceTree = "<group>"; };
@@ -290,6 +298,10 @@
 			children = (
 				55A12A1E29C0EA1A7D5BDA65 /* Finding+CoreDataClass.swift */,
 				46D5BFD5D672CBF9647F85C4 /* Finding+CoreDataProperties.swift */,
+				2B06EE87C4BC35D52B6DFE82 /* NoteAddendum+CoreDataClass.swift */,
+				B926090DA2B90CDEC028343C /* NoteAddendum+CoreDataProperties.swift */,
+				439664C5284D158F9A21A0D7 /* Referral+CoreDataClass.swift */,
+				BD98E5A450FEA2880A43D12E /* Referral+CoreDataProperties.swift */,
 			);
 			name = CoreData;
 			path = CoreData;
@@ -556,6 +568,10 @@
 				SVC001BUILD00000000001 /* SBARGenerator.swift in Sources */,
 				CA2368C5B5CCE6EDC5A6E24A /* Finding+CoreDataClass.swift in Sources */,
 				62AD69B003827713330B056C /* Finding+CoreDataProperties.swift in Sources */,
+				137A7D8B41B35CE1A6AA07AB /* NoteAddendum+CoreDataClass.swift in Sources */,
+				9C0F00EE436A08D86DFE2BA9 /* NoteAddendum+CoreDataProperties.swift in Sources */,
+				5A555A27ED8F9B758B7B9E3D /* Referral+CoreDataClass.swift in Sources */,
+				B2C60A63226675537447E87F /* Referral+CoreDataProperties.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

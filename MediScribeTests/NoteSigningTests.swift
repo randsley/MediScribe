@@ -104,7 +104,8 @@ final class NoteSigningTests: XCTestCase {
         // Verify addendum
         XCTAssertNotNil(addendum.id)
         XCTAssertNotNil(addendum.createdAt)
-        XCTAssertEqual(addendum.addendumText, "Patient's SpO2 was actually 82%, not 84% as originally documented.")
+        let addendumText = try addendum.getAddendumText()
+        XCTAssertEqual(addendumText, "Patient's SpO2 was actually 82%, not 84% as originally documented.")
         XCTAssertEqual(addendum.authorName, "Dr. Smith")
         XCTAssertEqual(addendum.authorID, "CLIN_001")
         XCTAssertEqual(addendum.correctionOf, "/objective/vitals/0/spo2")
@@ -164,9 +165,9 @@ final class NoteSigningTests: XCTestCase {
         XCTAssertEqual(sortedAddenda.count, 3)
 
         // Verify chronological order
-        XCTAssertEqual(sortedAddenda[0].addendumText, "First addendum")
-        XCTAssertEqual(sortedAddenda[1].addendumText, "Second addendum")
-        XCTAssertEqual(sortedAddenda[2].addendumText, "Third addendum")
+        XCTAssertEqual(try sortedAddenda[0].getAddendumText(), "First addendum")
+        XCTAssertEqual(try sortedAddenda[1].getAddendumText(), "Second addendum")
+        XCTAssertEqual(try sortedAddenda[2].getAddendumText(), "Third addendum")
     }
 
     func testAddendumWithoutCorrection() throws {
@@ -183,7 +184,7 @@ final class NoteSigningTests: XCTestCase {
         )
 
         XCTAssertNil(addendum.correctionOf)
-        XCTAssertEqual(addendum.addendumText, "Patient's family arrived and was updated on condition.")
+        XCTAssertEqual(try addendum.getAddendumText(), "Patient's family arrived and was updated on condition.")
     }
 
     // MARK: - Persistence Tests
@@ -228,7 +229,7 @@ final class NoteSigningTests: XCTestCase {
         XCTAssertEqual(results.count, 1)
         let fetchedAddendum = results[0]
 
-        XCTAssertEqual(fetchedAddendum.addendumText, "Test addendum for persistence")
+        XCTAssertEqual(try fetchedAddendum.getAddendumText(), "Test addendum for persistence")
         XCTAssertEqual(fetchedAddendum.authorName, "Dr. Smith")
         XCTAssertNotNil(fetchedAddendum.note)
     }

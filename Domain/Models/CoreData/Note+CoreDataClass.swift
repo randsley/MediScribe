@@ -92,7 +92,7 @@ public class Note: NSManagedObject {
     ///   - correctionOf: Optional field path being corrected (e.g., "/objective/vitals/0/spo2")
     ///   - context: Managed object context
     /// - Returns: The created addendum
-    /// - Throws: NoteSigningError if note is not signed
+    /// - Throws: NoteSigningError if note is not signed, EncryptionError if encryption fails
     func addAddendum(text: String, authorName: String, authorID: String, correctionOf: String? = nil, context: NSManagedObjectContext) throws -> NoteAddendum {
         // Only allow addenda on signed notes
         guard isLocked else {
@@ -103,11 +103,13 @@ public class Note: NSManagedObject {
         let addendum = NoteAddendum(context: context)
         addendum.id = UUID()
         addendum.createdAt = Date()
-        addendum.addendumText = text
         addendum.authorName = authorName
         addendum.authorID = authorID
         addendum.correctionOf = correctionOf
         addendum.note = self
+
+        // Store addendum text with encryption
+        try addendum.setAddendumText(text)
 
         return addendum
     }

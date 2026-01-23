@@ -4,23 +4,14 @@
 
 ### Extend Application-Level Encryption to Additional Entities
 
-**Status**: FieldNote and Finding encryption are ✅ COMPLETE. Infrastructure is in place (EncryptionService, KeychainManager, AES-256-GCM).
+**Status**: FieldNote, Finding, NoteAddendum, and Referral encryption are ✅ COMPLETE. Infrastructure is in place (EncryptionService, KeychainManager, AES-256-GCM).
 
 **Future Tasks** - Extend encryption to remaining patient-identified health data:
-
--   **Referral Entity**:
-    *   Encrypt `clinicalSummary`, `reason`, and other text fields
-    *   Add encryption methods following established pattern
-    *   Implement migration support
 
 -   **Patient Entity**:
     *   Encrypt demographics (name, DOB, medical record number)
     *   Consider impact on search/filtering performance
     *   May require encrypted search or tokenization approach
-
--   **NoteAddendum Entity**:
-    *   Encrypt `addendumText` field
-    *   Maintain referential integrity with parent Note
 
 **Infrastructure**: Reuse existing `EncryptionService` and `KeychainManager` - no additional security infrastructure needed.
 
@@ -75,3 +66,25 @@
     *   **Updated Features**: ImagingGenerateView, LabsProcessView (save), ImagingHistoryView (display)
     *   **Test Coverage**: 14 tests in FindingEncryptionTests.swift
     *   **Files**: Domain/Models/CoreData/Finding+CoreDataClass.swift, Finding+CoreDataProperties.swift
+
+-   **✅ Application-Level Encryption for `NoteAddendum` Entity:**
+    *   **Status**: COMPLETE
+    *   **Implementation**: AES-256-GCM encryption using existing EncryptionService
+    *   **NoteAddendum Entity Methods**:
+        *   `setAddendumText()` / `getAddendumText()` for addendum text encryption
+    *   **Migration**: `getAddendumTextWithMigration()`, `migrateToEncryptedStorage()`
+    *   **Core Data Model**: Version 4 with `encryptedAddendumText`, `isEncrypted` fields
+    *   **Updated Features**: Note+CoreDataClass (addAddendum), NoteDetailView (display)
+    *   **Test Coverage**: 14 tests in NoteAddendumEncryptionTests.swift
+    *   **Files**: Domain/Models/CoreData/NoteAddendum+CoreDataClass.swift, NoteAddendum+CoreDataProperties.swift
+
+-   **✅ Application-Level Encryption for `Referral` Entity:**
+    *   **Status**: COMPLETE
+    *   **Implementation**: AES-256-GCM encryption using existing EncryptionService
+    *   **Referral Entity Methods**:
+        *   `setClinicalSummary()` / `getClinicalSummary()` for clinical summary encryption
+        *   `setReason()` / `getReason()` for referral reason encryption
+    *   **Migration**: `getClinicalSummaryWithMigration()`, `getReasonWithMigration()`, `migrateToEncryptedStorage()`
+    *   **Core Data Model**: Version 4 with `encryptedClinicalSummary`, `encryptedReason`, `isEncrypted` fields
+    *   **Test Coverage**: 20 tests in ReferralEncryptionTests.swift
+    *   **Files**: Domain/Models/CoreData/Referral+CoreDataClass.swift, Referral+CoreDataProperties.swift

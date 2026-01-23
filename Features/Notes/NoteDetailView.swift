@@ -159,6 +159,11 @@ struct NoteDetailView: View {
         .cornerRadius(8)
     }
 
+    /// Decrypts addendum text with migration support for legacy data
+    private func decryptedAddendumText(_ addendum: NoteAddendum) -> String {
+        (try? addendum.getAddendumTextWithMigration()) ?? ""
+    }
+
     @ViewBuilder
     private func addendumCard(_ addendum: NoteAddendum) -> some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -176,7 +181,7 @@ struct NoteDetailView: View {
                 }
             }
 
-            Text(addendum.addendumText ?? "")
+            Text(decryptedAddendumText(addendum))
                 .font(.body)
 
             if let correction = addendum.correctionOf {
