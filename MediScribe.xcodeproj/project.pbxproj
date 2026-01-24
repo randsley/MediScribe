@@ -61,6 +61,9 @@
 		SEC002KEY2024010100000002 /* KeychainManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = SEC002REF2024010100000002 /* KeychainManager.swift */; };
 		SVC001BUILD00000000001 /* SBARGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = SVC001REF00000000001 /* SBARGenerator.swift */; };
 		UI001BUILD000000000001 /* FieldOptimizedComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = UI001REF000000000001 /* FieldOptimizedComponents.swift */; };
+		REFRL001CREBUILD00001 /* ReferralCreationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = REFRL001CRE0000000001 /* ReferralCreationView.swift */; };
+		REFRL001DETBUILD00002 /* ReferralDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = REFRL001DET0000000002 /* ReferralDetailView.swift */; };
+		APPSET001BUILD00000001 /* AppSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = APPSET001REF0000000001 /* AppSettings.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -140,6 +143,9 @@
 		SEC002REF2024010100000002 /* KeychainManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainManager.swift; sourceTree = "<group>"; };
 		SVC001REF00000000001 /* SBARGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SBARGenerator.swift; sourceTree = "<group>"; };
 		UI001REF000000000001 /* FieldOptimizedComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FieldOptimizedComponents.swift; sourceTree = "<group>"; };
+		REFRL001CRE0000000001 /* ReferralCreationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Features/Referrals/ReferralCreationView.swift; sourceTree = "<group>"; };
+		REFRL001DET0000000002 /* ReferralDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Features/Referrals/ReferralDetailView.swift; sourceTree = "<group>"; };
+		APPSET001REF0000000001 /* AppSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Domain/Models/AppSettings.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -572,7 +578,10 @@
 				9C0F00EE436A08D86DFE2BA9 /* NoteAddendum+CoreDataProperties.swift in Sources */,
 				5A555A27ED8F9B758B7B9E3D /* Referral+CoreDataClass.swift in Sources */,
 				B2C60A63226675537447E87F /* Referral+CoreDataProperties.swift in Sources */,
-			);
+
+				REFRL001CREBUILD00001 /* ReferralCreationView.swift in Sources */,
+
+				APPSET001BUILD00000001 /* AppSettings.swift in Sources */,				REFRL001DETBUILD00002 /* ReferralDetailView.swift in Sources */,			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		024D8CDD2F1B0FB800004385 /* Sources */ = {
