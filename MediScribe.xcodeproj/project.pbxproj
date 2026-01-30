@@ -430,6 +430,11 @@
 				024D8CD12F1B0FB700004385 /* MediScribe */,
 			);
 			name = MediScribe;
+			packageProductDependencies = (
+				2AD380E3EFCF995E53FD7B92 /* MLX */,
+				4EB2F80FDF592394614BD313 /* MLXNN */,
+				7B7C41B1B0CC33E205D2EEC7 /* MLXRandom */,
+			);
 			productName = MediScribe;
 			productReference = 024D8CCF2F1B0FB700004385 /* MediScribe.app */;
 			productType = "com.apple.product-type.application";
@@ -508,6 +513,9 @@
 			);
 			mainGroup = 024D8CC62F1B0FB700004385;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				E3E7A428A2ED918A2518E2C3 /* XCRemoteSwiftPackageReference "mlx-swift" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 024D8CD02F1B0FB700004385 /* Products */;
 			projectDirPath = "";
@@ -957,6 +965,35 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		E3E7A428A2ED918A2518E2C3 /* XCRemoteSwiftPackageReference "mlx-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/ml-explore/mlx-swift";
+			requirement = {
+				branch = main;
+				kind = branch;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		2AD380E3EFCF995E53FD7B92 /* MLX */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E3E7A428A2ED918A2518E2C3 /* XCRemoteSwiftPackageReference "mlx-swift" */;
+			productName = MLX;
+		};
+		4EB2F80FDF592394614BD313 /* MLXNN */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E3E7A428A2ED918A2518E2C3 /* XCRemoteSwiftPackageReference "mlx-swift" */;
+			productName = MLXNN;
+		};
+		7B7C41B1B0CC33E205D2EEC7 /* MLXRandom */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E3E7A428A2ED918A2518E2C3 /* XCRemoteSwiftPackageReference "mlx-swift" */;
+			productName = MLXRandom;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 024D8CC72F1B0FB700004385 /* Project object */;
 }
