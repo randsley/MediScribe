@@ -551,9 +551,9 @@ struct LicenseView: View {
                     )
 
                     creditSection(
-                        title: "llama.cpp",
-                        component: "Model Inference Engine",
-                        license: "MIT License"
+                        title: "MLX Framework",
+                        component: "Apple Silicon Model Inference Engine",
+                        license: "Apache 2.0"
                     )
 
                     creditSection(

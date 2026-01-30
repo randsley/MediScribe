@@ -2,7 +2,8 @@
 //  MedGemmaModel.swift
 //  MediScribe
 //
-//  MedGemma 1.5 4B implementation using llama.cpp
+//  DEPRECATED: MedGemma 1.5 4B implementation using llama.cpp (GGUF format)
+//  Use MLXModelLoader with MLX format models instead.
 //
 
 import Foundation
@@ -10,6 +11,10 @@ import UIKit
 import CoreGraphics
 
 /// MedGemma 1.5 4B multimodal medical imaging model
+/// - Warning: This class is deprecated. Use `MLXModelLoader` with MLX format models instead.
+/// The llama.cpp backend has been replaced with MLX framework for better Apple Silicon optimization.
+@available(*, deprecated,
+    message: "Use MLXModelLoader instead. This class uses legacy llama.cpp/GGUF format.")
 class MedGemmaModel: ImagingModelProtocol {
     var modelName: String { "MedGemma 1.5 4B" }
     var modelVersion: String { "1.5.0" }

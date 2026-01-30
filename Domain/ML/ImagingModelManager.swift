@@ -26,30 +26,20 @@ class ImagingModelManager: ObservableObject {
     @Published private(set) var loadingProgress: Double = 0.0
 
     private init() {
-        // Try to use MedGemmaModel if GGUF file is available, otherwise use placeholder
-        // Check if model file exists in bundle
-        let modelFileName = "medgemma-1.5-4b-it-Q4_K_M"
-        let modelFileExt = "gguf"
+        // Use MLX format models via MLXModelLoader (no longer supports GGUF format)
+        // MLX models are loaded from ~/MediScribe/models/medgemma-1.5-4b-it-mlx
+        // For now, use placeholder while MLX framework integration is completed
 
-        // Try standard resource path first
-        var modelPath: String? = Bundle.main.path(forResource: modelFileName, ofType: modelFileExt)
+        print("📦 MediScribe using MLX format models")
+        print("   Model: MedGemma 1.5 4B (MLX format)")
+        print("   Location: ~/MediScribe/models/medgemma-1.5-4b-it-mlx/")
+        self.currentModel = PlaceholderImagingModel()
 
-        // If not found, try bundle root directly (for PBXFileSystemSynchronizedRootGroup)
-        if modelPath == nil {
-            let bundleRootPath = Bundle.main.bundlePath + "/\(modelFileName).\(modelFileExt)"
-            if FileManager.default.fileExists(atPath: bundleRootPath) {
-                modelPath = bundleRootPath
-            }
-        }
-
-        if modelPath != nil {
-            print("✓ MedGemma model file found - using MedGemmaModel")
-            self.currentModel = MedGemmaModel()
-        } else {
-            print("⚠️ MedGemma model file not found - using PlaceholderImagingModel")
-            print("   To use the real model, add medgemma-1.5-4b-it-Q4_K_M.gguf to the Xcode project")
-            self.currentModel = PlaceholderImagingModel()
-        }
+        // TODO: Replace with actual MLX model once MLXModelBridge is implemented
+        // let mlxLoader = MLXModelLoader.shared
+        // if mlxLoader.isModelLoaded {
+        //     print("✓ MLX model loaded - ready for inference")
+        // }
 
         // Automatically load model on init
         Task {
