@@ -8,7 +8,20 @@ This folder contains comprehensive design specifications for MediScribe's field-
 
 ## 📋 Documentation Structure
 
-### 1. **FigmaDesignSystem.md**
+### 1. **DESIGN_SYSTEM.md** ⭐ NEW
+Comprehensive design system rules for SwiftUI implementation:
+- Design tokens (colors, typography, spacing, borders)
+- Component architecture and patterns
+- Technical stack and frameworks
+- Project structure and navigation
+- Safety-critical UI patterns
+- Accessibility guidelines
+- MVVM patterns and view organization
+- Code Connect integration for Figma
+
+**Use this as reference** when implementing SwiftUI components and integrating with Figma designs.
+
+### 2. **FigmaDesignSystem.md**
 Complete design system specification including:
 - Colors (field-optimized, high-contrast)
 - Typography (large, readable)
@@ -19,7 +32,7 @@ Complete design system specification including:
 
 **Start here first** - Build the design system before creating screens.
 
-### 2. **VitalsEntryScreen.md**
+### 3. **VitalsEntryScreen.md**
 Detailed specification for the field-optimized vitals entry interface:
 - Screen layouts (3 screens)
 - Component specifications
@@ -30,7 +43,7 @@ Detailed specification for the field-optimized vitals entry interface:
 
 **Build this second** - Demonstrates how to use the design system.
 
-### 3. **TODO Items**
+### 4. **TODO Items**
 - Generate SwiftUI code for Figma components
 - Set up design-to-code workflow and handoff process
 
@@ -347,6 +360,7 @@ Design System → Build Screens → Create Prototype → Test → Iterate
 
 ### MediScribe Context
 - Read: `CLAUDE.md` (safety philosophy)
+- Read: `Design/DESIGN_SYSTEM.md` (SwiftUI implementation guide)
 - Read: `TODO.md` (implementation priorities)
 - Read: Field Medical Notes design guide (clinical workflows)
 
