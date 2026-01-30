@@ -60,6 +60,22 @@ struct SettingsView: View {
                     }
                 }
 
+                // MARK: - Generation Settings
+                Section("Generation Settings") {
+                    Picker("Generation Language", selection: $appSettings.generationLanguage) {
+                        ForEach(Language.allCases, id: \.self) { language in
+                            Text(language.displayName).tag(language)
+                        }
+                    }
+
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("This language will be used for generating SOAP notes, imaging findings, and laboratory results.")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
+                    .padding(.vertical, 4)
+                }
+
                 // MARK: - Data Management
                 Section("Data Management") {
                     NavigationLink(destination: DataExportView()) {

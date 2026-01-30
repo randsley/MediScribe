@@ -34,46 +34,14 @@ struct LabResultsValidator {
         "method"
     ]
 
-    /// Forbidden phrases that indicate clinical interpretation
-    /// These represent assessment, diagnosis, or recommendations
-    static let forbiddenPhrases: [String] = [
-        // Clinical interpretation
-        "abnormal", "normal", "elevated", "high", "low", "decreased", "increased",
-        "borderline", "critical", "concerning", "worrying", "alarming",
-
-        // Clinical significance
-        "significant", "insignificant", "clinically significant", "important",
-        "suggests", "indicates", "consistent with", "indicative of",
-        "compatible with", "typical of", "characteristic of",
-
-        // Diagnostic language
-        "diagnosis", "diagnose", "diagnostic of", "pathognomonic",
-        "disease", "disorder", "condition", "syndrome",
-
-        // Probabilistic assessment
-        "likely", "unlikely", "probable", "possible", "suspicious",
-        "cannot rule out", "cannot exclude", "may indicate",
-
-        // Recommendations
-        "recommend", "should", "must", "needs", "requires",
-        "follow up", "repeat", "recheck", "monitor", "refer",
-        "urgent", "emergent", "immediate", "stat",
-
-        // Management
-        "treat", "treatment", "medication", "therapy", "intervention",
-        "adjust", "discontinue", "start", "stop",
-
-        // Prognosis
-        "prognosis", "outcome", "risk", "danger", "safe", "unsafe"
-    ]
-
     // MARK: - Validation
 
     /// Validates lab results JSON output against safety rules
     /// - Parameter jsonString: Raw JSON string from model
+    /// - Parameter language: Language to use for phrase validation
     /// - Returns: Validated LabResultsSummary struct
     /// - Throws: LabValidationError if validation fails
-    static func decodeAndValidate(_ jsonString: String) throws -> LabResultsSummary {
+    static func decodeAndValidate(_ jsonString: String, language: Language = .english) throws -> LabResultsSummary {
         // 1. Parse JSON
         guard let jsonData = jsonString.data(using: .utf8) else {
             throw LabValidationError.invalidJSON
@@ -107,7 +75,7 @@ struct LabResultsValidator {
 
         // 5. Check for forbidden phrases in all text content
         let allText = extractAllText(from: jsonObject)
-        if let forbiddenPhrase = containsForbiddenPhrase(allText) {
+        if let forbiddenPhrase = TextSanitizer.findForbiddenInLanguage(in: allText, language: language) {
             throw LabValidationError.forbiddenPhraseDetected(forbiddenPhrase)
         }
 
@@ -149,10 +117,4 @@ struct LabResultsValidator {
         return allText.lowercased()
     }
 
-    /// Checks if text contains any forbidden phrases
-    /// - Parameter text: Text to check
-    /// - Returns: The first forbidden phrase found, or nil if none
-    private static func containsForbiddenPhrase(_ text: String) -> String? {
-        return TextSanitizer.findForbidden(in: text, forbidden: forbiddenPhrases)
-    }
 }

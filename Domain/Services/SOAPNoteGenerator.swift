@@ -111,10 +111,12 @@ class SOAPNoteGenerator {
     /// Generate a SOAP note from patient context
     /// - Parameters:
     ///   - context: Patient information for the note
+    ///   - language: Language for generation (default: English)
     ///   - options: Generation options
     /// - Returns: Generated SOAP note
     func generateSOAPNote(
         from context: PatientContext,
+        language: Language = .english,
         options: SOAPGenerationOptions = .default
     ) async throws -> SOAPNote {
         // 1. Ensure model is loaded
@@ -123,7 +125,7 @@ class SOAPNoteGenerator {
         }
 
         // 2. Build prompt from context
-        let prompt = promptBuilder.buildSOAPPrompt(from: context)
+        let prompt = promptBuilder.buildSOAPPrompt(from: context, language: language)
 
         // 3. Generate response using MLX model
         let response = try await generateResponse(prompt: prompt, options: options)
@@ -137,10 +139,12 @@ class SOAPNoteGenerator {
     /// Generate streaming SOAP note updates
     /// - Parameters:
     ///   - context: Patient information
+    ///   - language: Language for generation (default: English)
     ///   - options: Generation options
     ///   - onPartialNote: Callback with partial note updates
     func generateSOAPNoteStreaming(
         from context: PatientContext,
+        language: Language = .english,
         options: SOAPGenerationOptions = .default,
         onPartialNote: @escaping (PartialSOAPNote) -> Void
     ) async throws {
@@ -150,7 +154,7 @@ class SOAPNoteGenerator {
         }
 
         // 2. Build prompt
-        let prompt = promptBuilder.buildSOAPPrompt(from: context)
+        let prompt = promptBuilder.buildSOAPPrompt(from: context, language: language)
 
         // 3. Stream generation with callbacks
         try await streamResponse(
@@ -166,10 +170,12 @@ class SOAPNoteGenerator {
     /// Generate streaming token updates as AsyncThrowingStream
     /// - Parameters:
     ///   - context: Patient information
+    ///   - language: Language for generation (default: English)
     ///   - options: Generation options
     /// - Returns: Stream of token strings
     func generateSOAPNoteTokenStream(
         from context: PatientContext,
+        language: Language = .english,
         options: SOAPGenerationOptions = .default
     ) -> AsyncThrowingStream<String, Error> {
         return AsyncThrowingStream { continuation in
@@ -181,7 +187,7 @@ class SOAPNoteGenerator {
                     }
 
                     // 2. Build prompt
-                    let prompt = self.promptBuilder.buildSOAPPrompt(from: context)
+                    let prompt = self.promptBuilder.buildSOAPPrompt(from: context, language: language)
 
                     // 3. Get streaming from model bridge
                     let stream = MLXModelBridge.generateStreaming(
@@ -250,81 +256,9 @@ class SOAPNoteGenerator {
 /// Builds SOAP generation prompts
 class SOAPPromptBuilder {
 
-    func buildSOAPPrompt(from context: PatientContext) -> String {
-        let vitalSigns = formatVitalSigns(context.vitalSigns)
-        let medicalHistory = formatList(context.medicalHistory ?? [])
-        let medications = formatList(context.currentMedications ?? [])
-        let allergies = formatList(context.allergies ?? [])
-
-        return """
-        You are a clinical documentation assistant. Generate a SOAP note based on the patient information below.
-
-        CRITICAL SAFETY GUIDELINES:
-        - Focus on documented findings only
-        - Use neutral, descriptive language
-        - Do NOT diagnose or speculate on diagnoses
-        - Do NOT recommend treatments or investigations
-        - Do NOT assess urgency or severity
-        - Do NOT use probabilistic language (likely, probably, concerning, etc.)
-        - All output must be reviewed by clinician before use
-
-        PATIENT INFORMATION:
-        Age: \(context.age)
-        Sex: \(context.sex)
-        Chief Complaint: \(context.chiefComplaint)
-
-        VITAL SIGNS:
-        \(vitalSigns)
-
-        MEDICAL HISTORY:
-        \(medicalHistory.isEmpty ? "Not provided" : medicalHistory)
-
-        CURRENT MEDICATIONS:
-        \(medications.isEmpty ? "Not provided" : medications)
-
-        ALLERGIES:
-        \(allergies.isEmpty ? "NKDA" : allergies)
-
-        INSTRUCTIONS:
-        Generate a SOAP note with distinct Subjective, Objective, Assessment, and Plan sections.
-        Output format must be valid JSON as shown below.
-
-        {
-          "subjective": "Patient's reported symptoms and history...",
-          "objective": "Vital signs and observable findings...",
-          "assessment": "Clinical impression based on findings (descriptive only, no diagnosis)...",
-          "plan": "Documentation of next steps (clinician review required)...",
-          "generated_at": "ISO8601 timestamp"
-        }
-
-        Generate the SOAP note in JSON format:
-        """
-    }
-
-    private func formatVitalSigns(_ vitals: VitalSigns) -> String {
-        var parts: [String] = []
-
-        if let temp = vitals.temperature {
-            parts.append("Temperature: \(String(format: "%.1f", temp))°C")
-        }
-        if let hr = vitals.heartRate {
-            parts.append("Heart Rate: \(hr) bpm")
-        }
-        if let rr = vitals.respiratoryRate {
-            parts.append("Respiratory Rate: \(rr) breaths/min")
-        }
-        if let sys = vitals.systolicBP, let dia = vitals.diastolicBP {
-            parts.append("Blood Pressure: \(sys)/\(dia) mmHg")
-        }
-        if let o2 = vitals.oxygenSaturation {
-            parts.append("Oxygen Saturation: \(o2)% (room air)")
-        }
-
-        return parts.isEmpty ? "Not recorded" : parts.joined(separator: "\n")
-    }
-
-    private func formatList(_ items: [String]) -> String {
-        items.isEmpty ? "None reported" : items.joined(separator: "\n- ")
+    func buildSOAPPrompt(from context: PatientContext, language: Language = .english) -> String {
+        let localizedPrompts = LocalizedPrompts(language: language)
+        return localizedPrompts.buildSOAPPrompt(from: context)
     }
 }
 

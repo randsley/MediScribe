@@ -37,8 +37,15 @@ class AppSettings: ObservableObject {
         }
     }
 
+    @Published var generationLanguage: Language = .english {
+        didSet {
+            saveLanguage()
+        }
+    }
+
     private let clinicianKey = "mediscribe.clinician"
     private let facilityKey = "mediscribe.facility"
+    private let languageKey = "mediscribe.language"
 
     init() {
         // Load from UserDefaults
@@ -53,6 +60,13 @@ class AppSettings: ObservableObject {
         } else {
             self.facilityInfo = FacilityInfo()
         }
+
+        if let languageCode = UserDefaults.standard.string(forKey: languageKey),
+           let language = Language(rawValue: languageCode) {
+            self.generationLanguage = language
+        } else {
+            self.generationLanguage = .english
+        }
     }
 
     private func saveClinician() {
@@ -65,6 +79,10 @@ class AppSettings: ObservableObject {
         if let encoded = try? JSONEncoder().encode(facilityInfo) {
             UserDefaults.standard.set(encoded, forKey: facilityKey)
         }
+    }
+
+    private func saveLanguage() {
+        UserDefaults.standard.set(generationLanguage.rawValue, forKey: languageKey)
     }
 
     var clinicianName: String {

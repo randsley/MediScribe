@@ -22,37 +22,9 @@ final class FindingsValidator {
         "lungs", "pleural_regions", "cardiomediastinal_silhouette", "bones_and_soft_tissues"
     ]
 
-    /// Forbidden phrases covering diagnostic, probabilistic, and prescriptive language
-    private static let forbiddenPhrases: [String] = [
-        // Disease names
-        "pneumonia", "tuberculosis", "tb", "covid", "covid-19", "infection",
-        "malignancy", "cancer", "tumor", "fracture", "heart failure", "cardiomegaly",
-        "edema", "emphysema", "fibrosis",
-
-        // Diagnostic language
-        "diagnosis", "diagnostic", "diagnostic of", "consistent with", "indicative of",
-        "suggests", "confirms", "rules out", "compatible with", "cannot exclude",
-
-        // Probabilistic terms
-        "likely", "unlikely", "probable", "possibly", "suspicious for",
-        "high probability", "low probability", "risk of",
-
-        // Prescriptive/management terms
-        "recommend", "recommendation", "treat", "treatment", "start", "stop", "manage",
-        "urgent", "emergency", "referral indicated", "hospitalize", "follow up required",
-
-        // Interpretive language
-        "may represent", "could represent", "appears to represent", "concerning for",
-        "suggests the presence of",
-
-        // AI overconfidence
-        "ai detected", "system identified", "algorithm determined", "more accurate than",
-        "better than clinician"
-    ]
-
     /// Validates imaging findings JSON against all safety rules
     /// Throws FindingsValidationError if any rule is violated
-    static func decodeAndValidate(_ data: Data) throws -> ImagingFindingsSummary {
+    static func decodeAndValidate(_ data: Data, language: Language = .english) throws -> ImagingFindingsSummary {
         // Check JSON structure
         guard let raw = try JSONSerialization.jsonObject(with: data) as? [String: Any] else {
             throw FindingsValidationError.invalidJSON
@@ -83,7 +55,7 @@ final class FindingsValidator {
         // IMPORTANT: The limitations sentence contains the word "diagnosis" by design.
         // We validate it by exact match above, but we must exclude it from forbidden phrase scanning.
         let textForScan = flattenStringsExcludingLimitations(decoded)
-        if let bad = TextSanitizer.findForbidden(in: textForScan, forbidden: forbiddenPhrases) {
+        if let bad = TextSanitizer.findForbiddenInLanguage(in: textForScan, language: language) {
             throw FindingsValidationError.forbiddenPhraseFound(bad)
         }
 

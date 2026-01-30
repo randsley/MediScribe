@@ -34,4 +34,10 @@ struct TextSanitizer {
         }
         return nil
     }
+
+    /// Searches for forbidden phrases in selected language
+    /// Returns the first forbidden phrase found, or nil if none detected
+    static func findForbiddenInLanguage(in input: String, language: Language) -> String? {
+        return findForbidden(in: input, forbidden: language.forbiddenPhrases)
+    }
 }
