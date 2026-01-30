@@ -9,6 +9,9 @@ import SwiftUI
 import UIKit
 import CoreData
 
+// Note: MLXModelLoader, MLXModelBridge, and LabPrompts are imported via module bridging
+// They are defined in Domain/ML/ and Domain/Prompts/ respectively
+
 struct LabsProcessView: View {
     let image: UIImage
     @Environment(\.dismiss) private var dismiss
@@ -200,8 +203,11 @@ struct LabsProcessView: View {
                 return
             }
 
-            // TODO: Replace with actual MLX model inference once MLXModelBridge is implemented
-            // For now, use placeholder JSON to demonstrate the validation pipeline
+            // PHASE 6: MLX inference will be integrated here
+            // For now, continue with placeholder JSON to demonstrate validation pipeline
+            // Once LabPrompts is available in build target, replace with:
+            // let modelResponse = try await extractLabResultsFromImage(imageData)
+
             let placeholderJSON = """
             {
                 "documentType": "laboratory_report",
