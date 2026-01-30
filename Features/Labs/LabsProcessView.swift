@@ -203,64 +203,11 @@ struct LabsProcessView: View {
                 return
             }
 
-            // PHASE 6: MLX inference will be integrated here
-            // For now, continue with placeholder JSON to demonstrate validation pipeline
-            // Once LabPrompts is available in build target, replace with:
-            // let modelResponse = try await extractLabResultsFromImage(imageData)
+            // Generate findings using MLX model via MLXModelBridge
+            let labJSON = try await extractLabResultsFromImage(imageData)
 
-            let placeholderJSON = """
-            {
-                "documentType": "laboratory_report",
-                "documentDate": "2026-01-30",
-                "laboratoryName": "Central Laboratory",
-                "testCategories": [
-                    {
-                        "category": "Complete Blood Count",
-                        "tests": [
-                            {
-                                "testName": "White Blood Cell Count",
-                                "value": "7.2",
-                                "unit": "K/uL",
-                                "referenceRange": "4.5-11.0"
-                            },
-                            {
-                                "testName": "Red Blood Cell Count",
-                                "value": "4.8",
-                                "unit": "M/uL",
-                                "referenceRange": "4.5-5.9"
-                            },
-                            {
-                                "testName": "Hemoglobin",
-                                "value": "14.2",
-                                "unit": "g/dL",
-                                "referenceRange": "13.5-17.5"
-                            }
-                        ]
-                    },
-                    {
-                        "category": "Metabolic Panel",
-                        "tests": [
-                            {
-                                "testName": "Glucose",
-                                "value": "95",
-                                "unit": "mg/dL",
-                                "referenceRange": "70-100"
-                            },
-                            {
-                                "testName": "Creatinine",
-                                "value": "0.9",
-                                "unit": "mg/dL",
-                                "referenceRange": "0.7-1.3"
-                            }
-                        ]
-                    }
-                ],
-                "limitations": "This extraction shows ONLY the visible values from the laboratory report and does not interpret clinical significance or provide recommendations."
-            }
-            """
-
-            // Validate output
-            let validatedResults = try LabResultsValidator.decodeAndValidate(placeholderJSON)
+            // Validate output through safety validator
+            let validatedResults = try LabResultsValidator.decodeAndValidate(labJSON)
 
             labResults = validatedResults
             isProcessing = false
@@ -274,6 +221,23 @@ struct LabsProcessView: View {
             processingError = "Processing failed: \(error.localizedDescription)"
             isProcessing = false
         }
+    }
+
+    private func extractLabResultsFromImage(_ imageData: Data) async throws -> String {
+        // Build prompt for lab extraction
+        let prompt = LabPrompts.resultsExtractionPrompt()
+
+        // Run inference using MLX model bridge
+        // This generates a JSON response describing visible lab values
+        let response = try await Task.detached(priority: .userInitiated) {
+            try MLXModelBridge.generate(
+                prompt: prompt,
+                maxTokens: 1024,
+                temperature: 0.2
+            )
+        }.value
+
+        return response
     }
 
     private func saveLabResults() {

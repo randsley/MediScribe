@@ -33,10 +33,12 @@
 		519F4E286825AC79374B6363 /* NoteSubjective.swift in Sources */ = {isa = PBXBuildFile; fileRef = 026FA99D2F2034AC001228BC /* NoteSubjective.swift */; };
 		57224BE5A52164C144FC278D /* LabsHomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = L2K1J0I9H8G7F6E5D4C3B2A1 /* LabsHomeView.swift */; };
 		5FAD818BE3AAE53FD5A18CE3 /* FieldOptimizedComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = UI001REF000000000001 /* FieldOptimizedComponents.swift */; };
+		5FB15A7C0A47477E8B537319 /* SOAPNoteGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D031B2F3052B32AFD167F33 /* SOAPNoteGenerator.swift */; };
 		6237D2B4C51E05A8A79B2F24 /* NoteProblem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 026FA99C2F2034AC001228BC /* NoteProblem.swift */; };
 		633125159C6A46A2D117196B /* ReferralsHomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 022AD76F2F1ED970004D771E /* ReferralsHomeView.swift */; };
 		6B4DFE1E52D82BB2B6F75EF7 /* Referral+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD98E5A450FEA2880A43D12E /* Referral+CoreDataProperties.swift */; };
 		6FD815B23962B72CC0831CA4 /* NoteEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = NOTES001REF00000000001 /* NoteEditorView.swift */; };
+		747BB6C99F91013EF40E5A1B /* InferenceOptions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02B1EA137D1E7879E2381DBF /* InferenceOptions.swift */; };
 		795B6AE154151AC9E7E1CDEA /* NoteIntervention.swift in Sources */ = {isa = PBXBuildFile; fileRef = 026FA9982F2034AC001228BC /* NoteIntervention.swift */; };
 		7ABFB6442ADD42042A88CD57 /* FindingsValidationError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41927F759BFD5E6FE051A08D /* FindingsValidationError.swift */; };
 		7C9423CC8EB0A03230FC1FFA /* NoteAssessment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 026FA9962F2034AC001228BC /* NoteAssessment.swift */; };
@@ -67,6 +69,7 @@
 		EDD0BEA7DB256E8971B9EC86 /* NoteAddendum+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B06EE87C4BC35D52B6DFE82 /* NoteAddendum+CoreDataClass.swift */; };
 		F17DC368FB41AF175134C7F1 /* LabsProcessView.swift in Sources */ = {isa = PBXBuildFile; fileRef = O5N4M3L2K1J0I9H8G7F6E5D4 /* LabsProcessView.swift */; };
 		F598E34E78F889BC1BDC14B5 /* ImagingModelManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C71C7FD89938FA7D333F195 /* ImagingModelManager.swift */; };
+		F889E0FA077C772D8BA5DC57 /* SOAPResponseParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DA3871FAD20DC59018C9391 /* SOAPResponseParser.swift */; };
 		MEDGEMMA001BLD0000000001 /* medgemma-1.5-4b-it-Q4_K_M.gguf in Resources */ = {isa = PBXBuildFile; fileRef = MEDGEMMA001REF0000000001 /* medgemma-1.5-4b-it-Q4_K_M.gguf */; };
 		MEDGEMMA002BLD0000000002 /* medgemma-1.5-4b-it.mmproj-Q8_0.gguf in Resources */ = {isa = PBXBuildFile; fileRef = MEDGEMMA002REF0000000002 /* medgemma-1.5-4b-it.mmproj-Q8_0.gguf */; };
 /* End PBXBuildFile section */
@@ -89,6 +92,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		013B1C3B0EFC9626BC4B658F /* ImagingPrompts.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ImagingPrompts.swift; path = Domain/Prompts/ImagingPrompts.swift; sourceTree = "<group>"; };
 		0152C577A8AF7025A06A6BEF /* AnatomicalObservations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnatomicalObservations.swift; sourceTree = "<group>"; };
 		022AD7652F1ED791004D771E /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
 		022AD7672F1ED815004D771E /* NotesHomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotesHomeView.swift; sourceTree = "<group>"; };
@@ -114,6 +118,7 @@
 		026FA99E2F2034AC001228BC /* NoteTriage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteTriage.swift; sourceTree = "<group>"; };
 		026FA9B12F203943001228BC /* Note+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "Note+CoreDataClass.swift"; path = "Domain/Models/CoreData/Note+CoreDataClass.swift"; sourceTree = "<group>"; };
 		026FA9B22F203943001228BC /* Note+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "Note+CoreDataProperties.swift"; path = "Domain/Models/CoreData/Note+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		02B1EA137D1E7879E2381DBF /* InferenceOptions.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = InferenceOptions.swift; path = Domain/ML/InferenceOptions.swift; sourceTree = "<group>"; };
 		050375340703414581755062 /* MediScribe.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = MediScribe.xcconfig; sourceTree = "<group>"; };
 		0A4FD5959A160A596A5F390A /* FindingsValidator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FindingsValidator.swift; sourceTree = "<group>"; };
 		0C71C7FD89938FA7D333F195 /* ImagingModelManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagingModelManager.swift; sourceTree = "<group>"; };
@@ -129,9 +134,13 @@
 		47FFF9F8C448DC8BACC52651 /* SOAPPrompts.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = SOAPPrompts.swift; path = Domain/Prompts/SOAPPrompts.swift; sourceTree = "<group>"; };
 		5068F406A5B495B7F39BCECE /* ImagingModelProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagingModelProtocol.swift; sourceTree = "<group>"; };
 		55A12A1E29C0EA1A7D5BDA65 /* Finding+CoreDataClass.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "Finding+CoreDataClass.swift"; sourceTree = "<group>"; };
+		572996E0D08B21AD579FB808 /* LabPrompts.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = LabPrompts.swift; path = Domain/Prompts/LabPrompts.swift; sourceTree = "<group>"; };
+		71A4317ED632EB00B4BCDECB /* SOAPPrompts.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = SOAPPrompts.swift; path = Domain/Prompts/SOAPPrompts.swift; sourceTree = "<group>"; };
 		72DAF5FBCA4D83ACA48B726C /* FindingsValidator.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = FindingsValidator.swift; path = Domain/Validators/FindingsValidator.swift; sourceTree = "<group>"; };
+		8DA3871FAD20DC59018C9391 /* SOAPResponseParser.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = SOAPResponseParser.swift; path = Domain/Validators/SOAPResponseParser.swift; sourceTree = "<group>"; };
 		9A6402CCA2A05EF5C06450EF /* LabResultsValidator.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = LabResultsValidator.swift; path = Domain/Validators/LabResultsValidator.swift; sourceTree = "<group>"; };
 		9A8EE4D08CD515CCA250F3F7 /* ImagingFindingsSummary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagingFindingsSummary.swift; sourceTree = "<group>"; };
+		9D031B2F3052B32AFD167F33 /* SOAPNoteGenerator.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = SOAPNoteGenerator.swift; path = Domain/Services/SOAPNoteGenerator.swift; sourceTree = "<group>"; };
 		9F405F4AAA7843FFA21CA909 /* MedGemmaModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MedGemmaModel.swift; sourceTree = "<group>"; };
 		A44E1EF1B3232EAC0255ABD9 /* MLXImagingModel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MLXImagingModel.swift; path = Domain/ML/MLXImagingModel.swift; sourceTree = "<group>"; };
 		APPSET001REF0000000001 /* AppSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Domain/Models/AppSettings.swift; sourceTree = "<group>"; };
@@ -272,6 +281,7 @@
 				D91531D70E2FB2253EAD92CF /* Models */,
 				SEC003GRP2024010100000003 /* Security */,
 				SVC002GRP2024010100000002 /* Services */,
+				B5FC246B3049BF27C2E05469 /* Prompts */,
 			);
 			path = Domain;
 			sourceTree = "<group>";
@@ -338,6 +348,16 @@
 			path = CoreData;
 			sourceTree = "<group>";
 		};
+		B5FC246B3049BF27C2E05469 /* Prompts */ = {
+			isa = PBXGroup;
+			children = (
+				013B1C3B0EFC9626BC4B658F /* ImagingPrompts.swift */,
+				572996E0D08B21AD579FB808 /* LabPrompts.swift */,
+				71A4317ED632EB00B4BCDECB /* SOAPPrompts.swift */,
+			);
+			name = Prompts;
+			sourceTree = "<group>";
+		};
 		D91531D70E2FB2253EAD92CF /* Models */ = {
 			isa = PBXGroup;
 			children = (
@@ -369,6 +389,7 @@
 				9F405F4AAA7843FFA21CA909 /* MedGemmaModel.swift */,
 				0C71C7FD89938FA7D333F195 /* ImagingModelManager.swift */,
 				S9R8Q7P6O5N4M3L2K1J0I9H8 /* DocumentType.swift */,
+				02B1EA137D1E7879E2381DBF /* InferenceOptions.swift */,
 			);
 			path = ML;
 			sourceTree = "<group>";
@@ -379,6 +400,7 @@
 				0A4FD5959A160A596A5F390A /* FindingsValidator.swift */,
 				0DDE81485BAEFF6C7F8020DF /* TextSanitizer.swift */,
 				R8Q7P6O5N4M3L2K1J0I9H8G7 /* LabResultsValidator.swift */,
+				8DA3871FAD20DC59018C9391 /* SOAPResponseParser.swift */,
 			);
 			path = Validators;
 			sourceTree = "<group>";
@@ -396,6 +418,7 @@
 			isa = PBXGroup;
 			children = (
 				SVC001REF00000000001 /* SBARGenerator.swift */,
+				9D031B2F3052B32AFD167F33 /* SOAPNoteGenerator.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -619,6 +642,9 @@
 				7F343B1FB6A51151349C945C /* SOAPPrompts.swift in Sources */,
 				BD056C89421DE6C0F0049C5D /* MLXImagingModel.swift in Sources */,
 				8DC490C1B34C9983E850C0EF /* MLXModelLoader.swift in Sources */,
+				747BB6C99F91013EF40E5A1B /* InferenceOptions.swift in Sources */,
+				F889E0FA077C772D8BA5DC57 /* SOAPResponseParser.swift in Sources */,
+				5FB15A7C0A47477E8B537319 /* SOAPNoteGenerator.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

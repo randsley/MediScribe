@@ -26,33 +26,29 @@ class ImagingModelManager: ObservableObject {
     @Published private(set) var loadingProgress: Double = 0.0
 
     private init() {
-        // Use MLX format models via MLXModelLoader (no longer supports GGUF format)
+        // Use MLX format models via MLXModelLoader
         // MLX models are loaded from ~/MediScribe/models/medgemma-1.5-4b-it-mlx
-        // For now, use placeholder while MLX framework integration is completed
 
         print("📦 MediScribe using MLX format models")
         print("   Model: MedGemma 1.5 4B (MLX format)")
         print("   Location: ~/MediScribe/models/medgemma-1.5-4b-it-mlx/")
-        self.currentModel = PlaceholderImagingModel()
 
-        // TODO: Replace with actual MLX model once MLXModelBridge is implemented
-        // let mlxLoader = MLXModelLoader.shared
-        // if mlxLoader.isModelLoaded {
-        //     print("✓ MLX model loaded - ready for inference")
-        // }
+        // Use MLXImagingModel for real inference
+        self.currentModel = MLXImagingModel()
 
         // Automatically load model on init
         Task {
             do {
                 try await loadCurrentModel()
+                print("✓ MLX model loaded - ready for inference")
             } catch {
-                // If MedGemma fails to load, fall back to placeholder
-                print("⚠️ Failed to load model: \(error.localizedDescription)")
-                if !(self.currentModel is PlaceholderImagingModel) {
-                    print("⚠️ Falling back to PlaceholderImagingModel")
+                // If MLX loading fails, fall back to placeholder
+                print("⚠️ Failed to load MLX model: \(error.localizedDescription)")
+                print("⚠️ Falling back to PlaceholderImagingModel for demonstration")
+                await MainActor.run {
                     self.currentModel = PlaceholderImagingModel()
-                    try? await loadCurrentModel()
                 }
+                try? await loadCurrentModel()
             }
         }
     }
