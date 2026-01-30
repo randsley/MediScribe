@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import Combine
 
 /// MLX-based imaging model for findings extraction
 class MLXImagingModel: ImagingModelProtocol {
@@ -40,10 +39,15 @@ class MLXImagingModel: ImagingModelProtocol {
     ) async throws -> ImagingInferenceResult {
         // Ensure model is loaded
         guard isLoaded else {
-            throw MLXModelError.modelNotLoaded
+            throw ImagingModelError.modelNotLoaded
         }
 
-        let opts = options ?? InferenceOptions()
+        let opts = options ?? InferenceOptions(
+            timeout: 60.0,
+            temperature: 0.2,
+            maxTokens: 1024,
+            systemPrompt: nil
+        )
 
         // Build image context prompt
         let imageContext = "Medical image provided for analysis"
@@ -53,52 +57,41 @@ class MLXImagingModel: ImagingModelProtocol {
 
         // Run inference
         do {
+            let startTime = Date()
             let responseText = try await Task.detached(priority: .userInitiated) {
                 try MLXModelBridge.generate(
                     prompt: prompt,
-                    maxTokens: opts.maxNewTokens,
+                    maxTokens: opts.maxTokens,
                     temperature: opts.temperature
                 )
             }.value
+            let processingTime = Date().timeIntervalSince(startTime)
 
-            // Validate response
-            let validationResult = try FindingsValidator.decodeAndValidate(responseText)
+            // Convert response to Data for validation
+            guard let responseData = responseText.data(using: String.Encoding.utf8) else {
+                throw ImagingModelError.invalidModelOutput
+            }
 
-            // Extract findings JSON
-            guard let findingsData = validationResult.findings else {
-                throw ImagingModelError.validationFailed("No findings extracted from model output")
+            // Validate response through safety validator
+            let validatedFindings = try FindingsValidator.decodeAndValidate(responseData)
+
+            // Re-encode validated findings to JSON
+            let encoder = JSONEncoder()
+            let findingsJSONData = try encoder.encode(validatedFindings)
+            guard let findingsJSON = String(data: findingsJSONData, encoding: String.Encoding.utf8) else {
+                throw ImagingModelError.invalidModelOutput
             }
 
             return ImagingInferenceResult(
-                findings: findingsData,
-                rawResponse: responseText,
-                tokensGenerated: 256, // Placeholder
-                executionTime: 0.0    // Placeholder
+                findingsJSON: findingsJSON,
+                processingTime: processingTime,
+                modelVersion: modelVersion
             )
 
-        } catch let error as FindingsValidationError {
-            throw ImagingModelError.validationFailed(error.description)
+        } catch let error as ImagingModelError {
+            throw error
         } catch {
-            throw ImagingModelError.inferenceError(error.localizedDescription)
-        }
-    }
-}
-
-// MARK: - Error Types
-
-enum ImagingModelError: LocalizedError {
-    case modelNotLoaded
-    case validationFailed(String)
-    case inferenceError(String)
-
-    var errorDescription: String? {
-        switch self {
-        case .modelNotLoaded:
-            return "Model not loaded"
-        case .validationFailed(let msg):
-            return "Validation failed: \(msg)"
-        case .inferenceError(let msg):
-            return "Inference error: \(msg)"
+            throw ImagingModelError.inferenceFailed
         }
     }
 }
