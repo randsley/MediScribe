@@ -7,6 +7,9 @@
 
 import Foundation
 
+// Note: MLXModelBridge is defined in Domain/ML/MLXModelLoader.swift
+// It's part of the internal module and doesn't require a separate import
+
 // MARK: - Data Models
 
 /// Vital signs for SOAP note context
@@ -160,6 +163,46 @@ class SOAPNoteGenerator {
         )
     }
 
+    /// Generate streaming token updates as AsyncThrowingStream
+    /// - Parameters:
+    ///   - context: Patient information
+    ///   - options: Generation options
+    /// - Returns: Stream of token strings
+    func generateSOAPNoteTokenStream(
+        from context: PatientContext,
+        options: SOAPGenerationOptions = .default
+    ) -> AsyncThrowingStream<String, Error> {
+        return AsyncThrowingStream { continuation in
+            Task {
+                do {
+                    // 1. Ensure model is loaded
+                    if !self.modelLoader.isModelLoaded {
+                        try self.modelLoader.loadModel()
+                    }
+
+                    // 2. Build prompt
+                    let prompt = self.promptBuilder.buildSOAPPrompt(from: context)
+
+                    // 3. Get streaming from model bridge
+                    let stream = MLXModelBridge.generateStreaming(
+                        prompt: prompt,
+                        maxTokens: options.maxTokens,
+                        temperature: options.temperature
+                    )
+
+                    // 4. Yield tokens from stream
+                    for try await token in stream {
+                        continuation.yield(token)
+                    }
+
+                    continuation.finish()
+                } catch {
+                    continuation.finish(throwing: error)
+                }
+            }
+        }
+    }
+
     // MARK: - Private Methods
 
     private func generateResponse(
@@ -181,9 +224,24 @@ class SOAPNoteGenerator {
         options: SOAPGenerationOptions,
         onPartialToken: @escaping (String) -> Void
     ) async throws {
-        // Stream implementation would iterate through token generation
-        // Placeholder for now
-        _ = try await generateResponse(prompt: prompt, options: options)
+        // Get streaming from model bridge
+        let stream = MLXModelBridge.generateStreaming(
+            prompt: prompt,
+            maxTokens: options.maxTokens,
+            temperature: options.temperature
+        )
+
+        // Yield each token via callback
+        for try await token in stream {
+            onPartialToken(token)
+        }
+    }
+
+    /// Parse raw response text into SOAP note
+    /// - Parameter responseText: Raw text output from model
+    /// - Returns: Parsed SOAP note
+    func parseResponse(_ responseText: String) throws -> SOAPNote {
+        return try responseParser.parseSOAPNote(from: responseText)
     }
 }
 

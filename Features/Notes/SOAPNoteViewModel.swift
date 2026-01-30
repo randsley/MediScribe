@@ -18,6 +18,8 @@ class SOAPNoteViewModel: ObservableObject {
     @Published var validationErrors: [SOAPValidationError] = []
     @Published var isReviewed: Bool = false
     @Published var streamingTokens: String = ""
+    @Published var streamingState: StreamingState = .idle
+    @Published var generationProgress: Float = 0.0
 
     // Input form state
     @Published var patientAge: String = ""
@@ -98,6 +100,63 @@ class SOAPNoteViewModel: ObservableObject {
                 self.isReviewed = false
             } catch {
                 handleError(error)
+            }
+        }
+    }
+
+    /// Start SOAP note generation with streaming token display
+    func generateSOAPNoteStreaming() {
+        guard validateInput() else { return }
+
+        streamingState = .generating
+        generationProgress = 0.0
+        streamingTokens = ""
+        validationErrors = []
+
+        Task {
+            do {
+                // Create patient context
+                let vitalSigns = buildVitalSigns()
+                let context = PatientContext(
+                    age: Int(patientAge) ?? 0,
+                    sex: patientSex,
+                    chiefComplaint: chiefComplaint,
+                    vitalSigns: vitalSigns,
+                    medicalHistory: medicalHistory.isEmpty ? nil : medicalHistory,
+                    currentMedications: medications.isEmpty ? nil : medications,
+                    allergies: allergies.isEmpty ? nil : allergies
+                )
+
+                // Get streaming token updates
+                let stream = soapGenerator.generateSOAPNoteTokenStream(from: context)
+                var tokenCount = 0
+                let maxExpectedTokens: Float = 1024.0
+
+                for try await token in stream {
+                    // Accumulate tokens
+                    streamingTokens.append(token)
+                    tokenCount += 1
+
+                    // Update progress
+                    generationProgress = min(0.95, Float(tokenCount) / maxExpectedTokens)
+                }
+
+                // Validate and parse complete output
+                streamingState = .validating
+
+                let soapNote = try soapGenerator.parseResponse(streamingTokens)
+
+                // Store in repository
+                _ = try repository.save(soapNote)
+
+                // Update UI
+                self.currentNote = soapNote
+                self.streamingState = .complete
+                self.generationState = .complete
+                self.isReviewed = false
+
+            } catch {
+                handleStreamingError(error)
             }
         }
     }
@@ -205,6 +264,13 @@ class SOAPNoteViewModel: ObservableObject {
     private func handleError(_ error: Error) {
         errorMessage = error.localizedDescription
         showError = true
+        generationState = .error(error)
+    }
+
+    private func handleStreamingError(_ error: Error) {
+        errorMessage = error.localizedDescription
+        showError = true
+        streamingState = .failed(error.localizedDescription)
         generationState = .error(error)
     }
 

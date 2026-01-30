@@ -62,35 +62,98 @@ struct SOAPNoteGeneratingView: View {
             Spacer()
 
             VStack(spacing: 16) {
-                ProgressView()
-                    .scaleEffect(1.5)
-                    .tint(.blue)
+                // Progress indicator
+                if viewModel.streamingState.isValidating {
+                    VStack(spacing: 12) {
+                        ProgressView()
+                            .scaleEffect(1.5)
+                            .tint(.blue)
 
-                Text("Generating SOAP Note")
-                    .font(.headline)
+                        Text("Validating for Safety")
+                            .font(.headline)
 
-                Text("Please wait while MedGemma generates your note...")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-                    .multilineTextAlignment(.center)
+                        Text("Checking output against safety requirements...")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                            .multilineTextAlignment(.center)
+                    }
+                } else {
+                    VStack(spacing: 12) {
+                        VStack {
+                            ProgressView(value: Double(viewModel.generationProgress))
+                                .tint(.blue)
+
+                            HStack {
+                                Text("Generating...")
+                                    .font(.caption2)
+                                    .foregroundColor(.secondary)
+                                Spacer()
+                                Text("\(Int(viewModel.generationProgress * 100))%")
+                                    .font(.caption2)
+                                    .fontWeight(.semibold)
+                                    .foregroundColor(.blue)
+                            }
+                        }
+                        .padding()
+                        .background(Color(.systemGray6))
+                        .cornerRadius(8)
+
+                        Text("Generating SOAP Note")
+                            .font(.headline)
+
+                        Text("Streaming tokens from MedGemma...")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                            .multilineTextAlignment(.center)
+                    }
+                }
             }
 
             // Streaming output display
             if !viewModel.streamingTokens.isEmpty {
                 VStack(alignment: .leading, spacing: 8) {
-                    Text("Generated Content")
-                        .font(.caption)
-                        .fontWeight(.semibold)
-                        .foregroundColor(.secondary)
-
-                    ScrollView {
-                        Text(viewModel.streamingTokens)
+                    HStack {
+                        Text("Live Output")
                             .font(.caption)
-                            .lineLimit(10)
-                            .padding(.vertical, 8)
-                            .padding(.horizontal, 12)
+                            .fontWeight(.semibold)
+                            .foregroundColor(.secondary)
+
+                        Spacer()
+
+                        if viewModel.streamingState.isGenerating {
+                            HStack(spacing: 4) {
+                                Circle()
+                                    .fill(Color.green)
+                                    .frame(width: 6, height: 6)
+                                    .animation(.easeInOut(duration: 0.6).repeatForever(autoreverses: true), value: viewModel.streamingState)
+
+                                Text("Streaming")
+                                    .font(.caption2)
+                                    .foregroundColor(.green)
+                            }
+                        }
+                    }
+
+                    ScrollViewReader { proxy in
+                        ScrollView {
+                            VStack(alignment: .leading, spacing: 0) {
+                                Text(viewModel.streamingTokens)
+                                    .font(.caption)
+                                    .lineLimit(.max)
+                                    .textSelection(.enabled)
+                                    .padding(.vertical, 8)
+                                    .padding(.horizontal, 12)
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                    .id("bottom")
+                            }
                             .background(Color(.systemGray6))
-                            .cornerRadius(8)
+                            .onChange(of: viewModel.streamingTokens) { _, _ in
+                                withAnimation {
+                                    proxy.scrollTo("bottom", anchor: .bottom)
+                                }
+                            }
+                        }
+                        .cornerRadius(8)
                     }
                     .frame(height: 200)
                 }
@@ -101,17 +164,17 @@ struct SOAPNoteGeneratingView: View {
 
             Spacer()
 
-            // Safety notice
+            // Status and safety notice
             VStack(alignment: .leading, spacing: 8) {
                 HStack {
                     Image(systemName: "info.circle.fill")
                         .foregroundColor(.blue)
-                    Text("Generation in Progress")
+                    Text(viewModel.streamingState.isValidating ? "Validating Output" : "Generation in Progress")
                         .font(.caption)
                         .fontWeight(.semibold)
                 }
 
-                Text("Do not close the app while generation is in progress.")
+                Text("All generated content is validated against safety requirements. Do not close the app while generation is in progress.")
                     .font(.caption)
                     .foregroundColor(.secondary)
             }

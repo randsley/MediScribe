@@ -275,6 +275,53 @@ class MLXModelBridge: NSObject {
         }
     }
 
+    /// Generate text with streaming token output
+    /// - Parameters:
+    ///   - prompt: Input text prompt
+    ///   - maxTokens: Maximum tokens to generate (default: 1024)
+    ///   - temperature: Sampling temperature 0.0-1.0 (default: 0.3)
+    /// - Returns: AsyncThrowingStream yielding tokens as they're generated
+    static func generateStreaming(
+        prompt: String,
+        maxTokens: Int = 1024,
+        temperature: Float = 0.3
+    ) -> AsyncThrowingStream<String, Error> {
+        return AsyncThrowingStream { continuation in
+            Task.detached(priority: .userInitiated) {
+                do {
+                    lock.lock()
+                    defer { lock.unlock() }
+
+                    guard loadedModel != nil else {
+                        throw MLXModelError.modelNotLoaded
+                    }
+
+                    guard tokenizer != nil else {
+                        throw MLXModelError.tokenizerNotLoaded
+                    }
+
+                    // Tokenize input
+                    let inputIds = try tokenizeText(prompt)
+
+                    // Run inference loop with streaming
+                    try streamingInferenceLoop(
+                        inputIds: inputIds,
+                        maxNewTokens: maxTokens,
+                        temperature: temperature,
+                        onToken: { token in
+                            continuation.yield(token)
+                        }
+                    )
+
+                    continuation.finish()
+
+                } catch {
+                    continuation.finish(throwing: error)
+                }
+            }
+        }
+    }
+
     // MARK: - Private Methods
 
     private static func loadTokenizer(from path: String) throws {
@@ -422,6 +469,55 @@ class MLXModelBridge: NSObject {
         return tokens
     }
 
+    private static func streamingInferenceLoop(
+        inputIds: [Int32],
+        maxNewTokens: Int,
+        temperature: Float,
+        onToken: @escaping (String) -> Void
+    ) throws {
+        guard let _ = loadedModel else {
+            throw MLXModelError.modelNotLoaded
+        }
+
+        var generatedIds = inputIds
+        let eosTokenId: Int32 = 2  // Standard EOS token for MedGemma
+
+        for _ in 0..<maxNewTokens {
+            do {
+                // Get logits for next token prediction (last position only for efficiency)
+                let lastLogits = try simulateModelForward(inputIds: generatedIds).first ?? []
+
+                if lastLogits.isEmpty {
+                    throw MLXModelError.invocationFailed("No logits generated")
+                }
+
+                // Sample next token based on temperature
+                let nextTokenId = try sampleToken(
+                    logits: lastLogits,
+                    temperature: temperature,
+                    topK: 50
+                )
+
+                // Add sampled token to sequence
+                generatedIds.append(nextTokenId)
+
+                // Detokenize and yield the token
+                let decodedToken = try detokenizeIds([nextTokenId])
+                onToken(decodedToken)
+
+                // Stop if EOS token is generated
+                if nextTokenId == eosTokenId {
+                    break
+                }
+
+            } catch let error as MLXModelError {
+                throw error
+            } catch {
+                throw MLXModelError.invocationFailed("Streaming inference failed: \(error)")
+            }
+        }
+    }
+
     private static func inferenceLoop(
         inputIds: [Int32],
         maxNewTokens: Int,
@@ -563,7 +659,7 @@ class MLXModelBridge: NSObject {
             // Handle subword merging
             if token.hasPrefix("##") {
                 // This token should be merged with previous (BPE marker)
-                result.append(token.dropFirst(2))
+                result.append(String(token.dropFirst(2)))
                 skipNextSpace = true
             } else {
                 // Add space before new word (unless first token)

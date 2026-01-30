@@ -207,15 +207,29 @@ struct SOAPNoteInputView: View {
                 // MARK: - Generate Button
 
                 Section {
-                    Button(action: { viewModel.generateSOAPNote() }) {
-                        if viewModel.generationState.isGenerating {
-                            HStack {
-                                ProgressView()
-                                    .tint(.white)
-                                Text("Generating...")
+                    Button(action: { viewModel.generateSOAPNoteStreaming() }) {
+                        if viewModel.streamingState.isGenerating || viewModel.streamingState.isValidating {
+                            VStack(spacing: 8) {
+                                HStack {
+                                    ProgressView(value: Double(viewModel.generationProgress))
+                                        .tint(.white)
+                                    Text("\(Int(viewModel.generationProgress * 100))%")
+                                        .font(.caption)
+                                        .foregroundColor(.white)
+                                }
+
+                                if viewModel.streamingState.isValidating {
+                                    Text("Validating for safety...")
+                                        .font(.caption2)
+                                        .foregroundColor(.white)
+                                } else {
+                                    Text("Generating...")
+                                        .font(.caption2)
+                                        .foregroundColor(.white)
+                                }
                             }
                             .frame(maxWidth: .infinity)
-                            .foregroundColor(.white)
+                            .padding(.vertical, 4)
                         } else {
                             Text("Generate SOAP Note")
                                 .frame(maxWidth: .infinity)
@@ -223,7 +237,7 @@ struct SOAPNoteInputView: View {
                         }
                     }
                     .listRowBackground(Color.blue)
-                    .disabled(!viewModel.isReadyToGenerate || viewModel.generationState.isGenerating)
+                    .disabled(!viewModel.isReadyToGenerate || viewModel.streamingState.isGenerating || viewModel.streamingState.isValidating)
                 }
             }
             .navigationTitle("New SOAP Note")
