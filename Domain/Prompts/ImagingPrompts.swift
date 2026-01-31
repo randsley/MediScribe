@@ -8,6 +8,8 @@
 import Foundation
 
 /// Imaging-specific prompt templates for MedGemma model
+/// - Important: Use LocalizedPrompts instead for multi-language support
+@available(*, deprecated, message: "Use LocalizedPrompts instead for multi-language support")
 enum ImagingPrompts {
 
     /// Generate prompt for imaging findings extraction

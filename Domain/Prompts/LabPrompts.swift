@@ -8,6 +8,8 @@
 import Foundation
 
 /// Laboratory-specific prompt templates for MedGemma model
+/// - Important: Use LocalizedPrompts instead for multi-language support
+@available(*, deprecated, message: "Use LocalizedPrompts instead for multi-language support")
 enum LabPrompts {
 
     /// Generate prompt for lab results extraction

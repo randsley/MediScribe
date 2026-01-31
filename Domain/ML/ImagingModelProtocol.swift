@@ -87,4 +87,7 @@ struct InferenceOptions {
 
     /// Additional context or instructions
     var systemPrompt: String? = nil
+
+    /// Language for prompt generation and validation
+    var language: Language = .english
 }

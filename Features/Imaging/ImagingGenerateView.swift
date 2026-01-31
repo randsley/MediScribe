@@ -151,11 +151,26 @@ struct ImagingGenerateView: View {
         status = "Reviewing visible features in the image…"
 
         do {
-            // Generate findings using model manager
-            let result = try await modelManager.generateFindings(from: imageData)
+            // Get user's selected language from AppSettings
+            let language = AppSettings.shared.generationLanguage
 
-            // Validate the model output
-            _ = try FindingsValidator.decodeAndValidate(Data(result.findingsJSON.utf8))
+            // Create inference options with language parameter
+            let options = InferenceOptions(
+                timeout: 60.0,
+                temperature: 0.2,
+                maxTokens: 1024,
+                systemPrompt: nil,
+                language: language
+            )
+
+            // Generate findings using model manager with language support
+            let result = try await modelManager.generateFindings(from: imageData, options: options)
+
+            // Validate the model output with language parameter
+            _ = try FindingsValidator.decodeAndValidate(
+                Data(result.findingsJSON.utf8),
+                language: language
+            )
 
             // If validation passes, update UI
             findingsJSON = result.findingsJSON

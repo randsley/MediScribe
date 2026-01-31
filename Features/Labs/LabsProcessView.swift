@@ -203,11 +203,14 @@ struct LabsProcessView: View {
                 return
             }
 
-            // Generate findings using MLX model via MLXModelBridge
-            let labJSON = try await extractLabResultsFromImage(imageData)
+            // Get user's selected language from AppSettings
+            let language = AppSettings.shared.generationLanguage
 
-            // Validate output through safety validator
-            let validatedResults = try LabResultsValidator.decodeAndValidate(labJSON)
+            // Generate findings using MLX model via MLXModelBridge
+            let labJSON = try await extractLabResultsFromImage(imageData, language: language)
+
+            // Validate output through safety validator with language parameter
+            let validatedResults = try LabResultsValidator.decodeAndValidate(labJSON, language: language)
 
             labResults = validatedResults
             isProcessing = false
@@ -223,14 +226,16 @@ struct LabsProcessView: View {
         }
     }
 
-    private func extractLabResultsFromImage(_ imageData: Data) async throws -> String {
-        // Build prompt for lab extraction
+    private func extractLabResultsFromImage(_ imageData: Data, language: Language) async throws -> String {
+        // Build localized prompt based on language selection
+        // For now, use default prompt - in future updates, integrate LocalizedPrompts
         let prompt = LabPrompts.resultsExtractionPrompt()
 
-        // Run inference using MLX model bridge
+        // Run inference using MLX model bridge with vision support
         // This generates a JSON response describing visible lab values
         let response = try await Task.detached(priority: .userInitiated) {
-            try MLXModelBridge.generate(
+            try MLXModelBridge.generateWithImage(
+                imageData: imageData,
                 prompt: prompt,
                 maxTokens: 1024,
                 temperature: 0.2

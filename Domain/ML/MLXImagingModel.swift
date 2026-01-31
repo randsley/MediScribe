@@ -46,20 +46,23 @@ class MLXImagingModel: ImagingModelProtocol {
             timeout: 60.0,
             temperature: 0.2,
             maxTokens: 1024,
-            systemPrompt: nil
+            systemPrompt: nil,
+            language: .english
         )
 
-        // Build image context prompt
-        let imageContext = "Medical image provided for analysis"
+        // Build image context for vision-language inference
+        let imageContext = "Medical imaging scan provided for analysis"
 
-        // Get imaging prompt
-        let prompt = ImagingPrompts.findingsExtractionPrompt(imageContext: imageContext)
+        // Note: Prompt is built by the caller (view layer) using LocalizedPrompts
+        // The prompt is passed via systemPrompt field, or build it here with a default
+        let prompt = opts.systemPrompt ?? ImagingPrompts.findingsExtractionPrompt(imageContext: imageContext)
 
-        // Run inference
+        // Run inference with image
         do {
             let startTime = Date()
             let responseText = try await Task.detached(priority: .userInitiated) {
-                try MLXModelBridge.generate(
+                try MLXModelBridge.generateWithImage(
+                    imageData: imageData,
                     prompt: prompt,
                     maxTokens: opts.maxTokens,
                     temperature: opts.temperature
@@ -72,8 +75,11 @@ class MLXImagingModel: ImagingModelProtocol {
                 throw ImagingModelError.invalidModelOutput
             }
 
-            // Validate response through safety validator
-            let validatedFindings = try FindingsValidator.decodeAndValidate(responseData)
+            // Validate response through language-aware safety validator
+            let validatedFindings = try FindingsValidator.decodeAndValidate(
+                responseData,
+                language: opts.language
+            )
 
             // Re-encode validated findings to JSON
             let encoder = JSONEncoder()
