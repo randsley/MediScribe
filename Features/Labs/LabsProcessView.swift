@@ -227,9 +227,9 @@ struct LabsProcessView: View {
     }
 
     private func extractLabResultsFromImage(_ imageData: Data, language: Language) async throws -> String {
-        // Build localized prompt based on language selection
-        // For now, use default prompt - in future updates, integrate LocalizedPrompts
-        let prompt = LabPrompts.resultsExtractionPrompt()
+        // Build localized prompt for this language
+        let localizedPrompts = LocalizedPrompts(language: language)
+        let prompt = localizedPrompts.buildLabPrompt()
 
         // Run inference using MLX model bridge with vision support
         // This generates a JSON response describing visible lab values

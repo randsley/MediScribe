@@ -11,20 +11,6 @@ import Foundation
 struct LocalizedPrompts {
     let language: Language
 
-    /// Build SOAP note generation prompt in selected language
-    func buildSOAPPrompt(from context: PatientContext) -> String {
-        switch language {
-        case .english:
-            return englishSOAPPrompt(context)
-        case .spanish:
-            return spanishSOAPPrompt(context)
-        case .french:
-            return frenchSOAPPrompt(context)
-        case .portuguese:
-            return portugueseSOAPPrompt(context)
-        }
-    }
-
     /// Build imaging findings prompt in selected language
     func buildImagingPrompt(imageContext: String) -> String {
         switch language {
@@ -54,57 +40,6 @@ struct LocalizedPrompts {
     }
 
     // MARK: - English Prompts
-
-    private func englishSOAPPrompt(_ context: PatientContext) -> String {
-        let vitalSigns = formatVitalSigns(context.vitalSigns)
-        let medicalHistory = formatList(context.medicalHistory ?? [])
-        let medications = formatList(context.currentMedications ?? [])
-        let allergies = formatList(context.allergies ?? [])
-
-        return """
-        You are a clinical documentation assistant. Generate a SOAP note based on the patient information below.
-
-        CRITICAL SAFETY GUIDELINES:
-        - Focus on documented findings only
-        - Use neutral, descriptive language
-        - Do NOT diagnose or speculate on diagnoses
-        - Do NOT recommend treatments or investigations
-        - Do NOT assess urgency or severity
-        - Do NOT use probabilistic language (likely, probably, concerning, etc.)
-        - All output must be reviewed by clinician before use
-
-        PATIENT INFORMATION:
-        Age: \(context.age)
-        Sex: \(context.sex)
-        Chief Complaint: \(context.chiefComplaint)
-
-        VITAL SIGNS:
-        \(vitalSigns)
-
-        MEDICAL HISTORY:
-        \(medicalHistory.isEmpty ? "Not provided" : medicalHistory)
-
-        CURRENT MEDICATIONS:
-        \(medications.isEmpty ? "Not provided" : medications)
-
-        ALLERGIES:
-        \(allergies.isEmpty ? "NKDA" : allergies)
-
-        INSTRUCTIONS:
-        Generate a SOAP note with distinct Subjective, Objective, Assessment, and Plan sections.
-        Output format must be valid JSON.
-
-        {
-          "subjective": "Patient's reported symptoms and history...",
-          "objective": "Vital signs and observable findings...",
-          "assessment": "Clinical impression based on findings (descriptive only, no diagnosis)...",
-          "plan": "Documentation of next steps (clinician review required)...",
-          "generated_at": "ISO8601 timestamp"
-        }
-
-        Generate the SOAP note in JSON format:
-        """
-    }
 
     private func englishImagingPrompt(_ imageContext: String) -> String {
         return """
@@ -166,57 +101,6 @@ struct LocalizedPrompts {
 
     // MARK: - Spanish Prompts
 
-    private func spanishSOAPPrompt(_ context: PatientContext) -> String {
-        let vitalSigns = formatVitalSigns(context.vitalSigns)
-        let medicalHistory = formatList(context.medicalHistory ?? [])
-        let medications = formatList(context.currentMedications ?? [])
-        let allergies = formatList(context.allergies ?? [])
-
-        return """
-        Eres un asistente de documentación clínica. Genera una nota SOAP basada en la información del paciente a continuación.
-
-        PAUTAS DE SEGURIDAD CRÍTICAS:
-        - Enfócate solo en los hallazgos documentados
-        - Usa lenguaje neutral y descriptivo
-        - NO diagnostiques ni especules sobre diagnósticos
-        - NO recomiendes tratamientos ni investigaciones
-        - NO evalúes urgencia o gravedad
-        - NO uses lenguaje probabilístico (probable, posible, preocupante, etc.)
-        - Todo el contenido debe ser revisado por el clínico antes de usarlo
-
-        INFORMACIÓN DEL PACIENTE:
-        Edad: \(context.age)
-        Sexo: \(context.sex)
-        Motivo de Consulta: \(context.chiefComplaint)
-
-        SIGNOS VITALES:
-        \(vitalSigns)
-
-        ANTECEDENTES MÉDICOS:
-        \(medicalHistory.isEmpty ? "No proporcionado" : medicalHistory)
-
-        MEDICAMENTOS ACTUALES:
-        \(medications.isEmpty ? "No proporcionado" : medications)
-
-        ALERGIAS:
-        \(allergies.isEmpty ? "NKDA" : allergies)
-
-        INSTRUCCIONES:
-        Genera una nota SOAP con secciones distintas de Subjetivo, Objetivo, Evaluación y Plan.
-        El formato de salida debe ser JSON válido.
-
-        {
-          "subjective": "Síntomas reportados e historia del paciente...",
-          "objective": "Signos vitales y hallazgos observables...",
-          "assessment": "Impresión clínica basada en hallazgos (solo descriptivo, sin diagnóstico)...",
-          "plan": "Documentación de los próximos pasos (se requiere revisión clínica)...",
-          "generated_at": "Marca de tiempo ISO8601"
-        }
-
-        Genera la nota SOAP en formato JSON:
-        """
-    }
-
     private func spanishImagingPrompt(_ imageContext: String) -> String {
         return """
         Eres un asistente de imágenes médicas. Describe SOLO lo que es visible en esta imagen.
@@ -276,57 +160,6 @@ struct LocalizedPrompts {
     }
 
     // MARK: - French Prompts
-
-    private func frenchSOAPPrompt(_ context: PatientContext) -> String {
-        let vitalSigns = formatVitalSigns(context.vitalSigns)
-        let medicalHistory = formatList(context.medicalHistory ?? [])
-        let medications = formatList(context.currentMedications ?? [])
-        let allergies = formatList(context.allergies ?? [])
-
-        return """
-        Vous êtes un assistant de documentation clinique. Générez une note SOAP basée sur les informations du patient ci-dessous.
-
-        DIRECTIVES DE SÉCURITÉ CRITIQUES:
-        - Concentrez-vous uniquement sur les constatations documentées
-        - Utilisez un langage neutre et descriptif
-        - NE PAS diagnostiquer ou spéculer sur les diagnostics
-        - NE PAS recommander de traitements ou d'investigations
-        - NE PAS évaluer l'urgence ou la gravité
-        - NE PAS utiliser de langage probabiliste (probable, possible, préoccupant, etc.)
-        - Tout le contenu doit être examiné par le clinicien avant utilisation
-
-        INFORMATIONS DU PATIENT:
-        Âge: \(context.age)
-        Sexe: \(context.sex)
-        Motif de Consultation: \(context.chiefComplaint)
-
-        SIGNES VITAUX:
-        \(vitalSigns)
-
-        ANTÉCÉDENTS MÉDICAUX:
-        \(medicalHistory.isEmpty ? "Non fourni" : medicalHistory)
-
-        MÉDICAMENTS ACTUELS:
-        \(medications.isEmpty ? "Non fourni" : medications)
-
-        ALLERGIES:
-        \(allergies.isEmpty ? "AUCUNE" : allergies)
-
-        INSTRUCTIONS:
-        Générez une note SOAP avec des sections distinctes Subjectif, Objectif, Évaluation et Plan.
-        Le format de sortie doit être JSON valide.
-
-        {
-          "subjective": "Symptômes rapportés et antécédents du patient...",
-          "objective": "Signes vitaux et constatations observables...",
-          "assessment": "Impression clinique basée sur les constatations (descriptif uniquement, pas de diagnostic)...",
-          "plan": "Documentation des prochaines étapes (révision clinique requise)...",
-          "generated_at": "Horodatage ISO8601"
-        }
-
-        Générez la note SOAP au format JSON:
-        """
-    }
 
     private func frenchImagingPrompt(_ imageContext: String) -> String {
         return """
@@ -388,57 +221,6 @@ struct LocalizedPrompts {
 
     // MARK: - Portuguese Prompts
 
-    private func portugueseSOAPPrompt(_ context: PatientContext) -> String {
-        let vitalSigns = formatVitalSigns(context.vitalSigns)
-        let medicalHistory = formatList(context.medicalHistory ?? [])
-        let medications = formatList(context.currentMedications ?? [])
-        let allergies = formatList(context.allergies ?? [])
-
-        return """
-        Você é um assistente de documentação clínica. Gere uma nota SOAP com base nas informações do paciente abaixo.
-
-        DIRETRIZES DE SEGURANÇA CRÍTICAS:
-        - Concentre-se apenas em achados documentados
-        - Use linguagem neutra e descritiva
-        - NÃO faça diagnósticos ou especule sobre diagnósticos
-        - NÃO recomende tratamentos ou investigações
-        - NÃO avalie urgência ou gravidade
-        - NÃO use linguagem probabilística (provável, possível, preocupante, etc.)
-        - Todo o conteúdo deve ser revisado pelo clínico antes do uso
-
-        INFORMAÇÕES DO PACIENTE:
-        Idade: \(context.age)
-        Sexo: \(context.sex)
-        Queixa Principal: \(context.chiefComplaint)
-
-        SINAIS VITAIS:
-        \(vitalSigns)
-
-        ANTECEDENTES MÉDICOS:
-        \(medicalHistory.isEmpty ? "Não fornecido" : medicalHistory)
-
-        MEDICAMENTOS ATUAIS:
-        \(medications.isEmpty ? "Não fornecido" : medications)
-
-        ALERGIAS:
-        \(allergies.isEmpty ? "NKDA" : allergies)
-
-        INSTRUÇÕES:
-        Gere uma nota SOAP com seções distintas de Subjetivo, Objetivo, Avaliação e Plano.
-        O formato de saída deve ser JSON válido.
-
-        {
-          "subjective": "Sintomas relatados e histórico do paciente...",
-          "objective": "Sinais vitais e achados observáveis...",
-          "assessment": "Impressão clínica com base nos achados (apenas descritivo, sem diagnóstico)...",
-          "plan": "Documentação das próximas etapas (revisão clínica obrigatória)...",
-          "generated_at": "Carimbo de data/hora ISO8601"
-        }
-
-        Gere a nota SOAP em formato JSON:
-        """
-    }
-
     private func portugueseImagingPrompt(_ imageContext: String) -> String {
         return """
         Você é um assistente de imagem médica. Descreva APENAS o que é visível nesta imagem.
@@ -495,37 +277,5 @@ struct LocalizedPrompts {
 
         Extraia os valores do laboratório em formato JSON:
         """
-    }
-
-    // MARK: - Helper Methods
-
-    private func formatVitalSigns(_ vitals: VitalSigns) -> String {
-        var parts: [String] = []
-
-        if let temp = vitals.temperature {
-            parts.append(language == .spanish ? "Temperatura: \(String(format: "%.1f", temp))°C" :
-                         language == .french ? "Température: \(String(format: "%.1f", temp))°C" :
-                         language == .portuguese ? "Temperatura: \(String(format: "%.1f", temp))°C" :
-                         "Temperature: \(String(format: "%.1f", temp))°C")
-        }
-        if let hr = vitals.heartRate {
-            let label = language == .spanish ? "Frecuencia Cardíaca:" :
-                       language == .french ? "Fréquence Cardiaque:" :
-                       language == .portuguese ? "Frequência Cardíaca:" :
-                       "Heart Rate:"
-            parts.append("\(label) \(hr) bpm")
-        }
-
-        return parts.isEmpty ? (language == .spanish ? "No registrado" :
-                               language == .french ? "Non enregistré" :
-                               language == .portuguese ? "Não registrado" :
-                               "Not recorded") : parts.joined(separator: "\n")
-    }
-
-    private func formatList(_ items: [String]) -> String {
-        items.isEmpty ? (language == .spanish ? "Ninguno reportado" :
-                        language == .french ? "Aucun signalé" :
-                        language == .portuguese ? "Nenhum relatado" :
-                        "None reported") : items.joined(separator: "\n- ")
     }
 }

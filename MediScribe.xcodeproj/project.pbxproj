@@ -35,6 +35,8 @@
 		5FAD818BE3AAE53FD5A18CE3 /* FieldOptimizedComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = UI001REF000000000001 /* FieldOptimizedComponents.swift */; };
 		
 		6237D2B4C51E05A8A79B2F24 /* NoteProblem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 026FA99C2F2034AC001228BC /* NoteProblem.swift */; };
+
+ttPATCTX001BLD00000001 /* PatientContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = PATCTX001REF00000001 /* PatientContext.swift */; };
 		633125159C6A46A2D117196B /* ReferralsHomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 022AD76F2F1ED970004D771E /* ReferralsHomeView.swift */; };
 		6B4DFE1E52D82BB2B6F75EF7 /* Referral+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD98E5A450FEA2880A43D12E /* Referral+CoreDataProperties.swift */; };
 		6FD815B23962B72CC0831CA4 /* NoteEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = NOTES001REF00000000001 /* NoteEditorView.swift */; };
@@ -43,6 +45,7 @@
 		7ABFB6442ADD42042A88CD57 /* FindingsValidationError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41927F759BFD5E6FE051A08D /* FindingsValidationError.swift */; };
 		7C9423CC8EB0A03230FC1FFA /* NoteAssessment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 026FA9962F2034AC001228BC /* NoteAssessment.swift */; };
 		7F343B1FB6A51151349C945C /* SOAPPrompts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47FFF9F8C448DC8BACC52651 /* SOAPPrompts.swift */; };
+		LOCPROMPTS001BLD00000001 /* LocalizedPrompts.swift in Sources */ = {isa = PBXBuildFile; fileRef = LOCPROMPTS001REF00000001 /* LocalizedPrompts.swift */; };
 		819DF8DEEDB0165325ACA9D2 /* SBARGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = SVC001REF00000000001 /* SBARGenerator.swift */; };
 		8337C53D9D094F8538236859 /* NoteMeta.swift in Sources */ = {isa = PBXBuildFile; fileRef = 026FA9992F2034AC001228BC /* NoteMeta.swift */; };
 		841D28CBA5248D1D76ABEB86 /* LabResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = P6O5N4M3L2K1J0I9H8G7F6E5 /* LabResult.swift */; };
@@ -115,6 +118,8 @@
 		026FA99A2F2034AC001228BC /* NoteObjective.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteObjective.swift; sourceTree = "<group>"; };
 		026FA99B2F2034AC001228BC /* NotePlan.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotePlan.swift; sourceTree = "<group>"; };
 		026FA99C2F2034AC001228BC /* NoteProblem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteProblem.swift; sourceTree = "<group>"; };
+
+ttPATCTX001REF00000001 /* PatientContext.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PatientContext.swift; sourceTree = "<group>"; };
 		026FA99D2F2034AC001228BC /* NoteSubjective.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteSubjective.swift; sourceTree = "<group>"; };
 		026FA99E2F2034AC001228BC /* NoteTriage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteTriage.swift; sourceTree = "<group>"; };
 		026FA9B12F203943001228BC /* Note+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "Note+CoreDataClass.swift"; path = "Domain/Models/CoreData/Note+CoreDataClass.swift"; sourceTree = "<group>"; };
@@ -130,6 +135,7 @@
 		27D2058574E80D2A27786BC7 /* PlaceholderImagingModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaceholderImagingModel.swift; sourceTree = "<group>"; };
 		2B06EE87C4BC35D52B6DFE82 /* NoteAddendum+CoreDataClass.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "NoteAddendum+CoreDataClass.swift"; sourceTree = "<group>"; };
 		2D7EF6473C1A7871D7BEE10D /* LabPrompts.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = LabPrompts.swift; path = Domain/Prompts/LabPrompts.swift; sourceTree = "<group>"; };
+		LOCPROMPTS001REF00000001 /* LocalizedPrompts.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = LocalizedPrompts.swift; path = Prompts/LocalizedPrompts.swift; sourceTree = "<group>"; };
 		41927F759BFD5E6FE051A08D /* FindingsValidationError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FindingsValidationError.swift; sourceTree = "<group>"; };
 		439664C5284D158F9A21A0D7 /* Referral+CoreDataClass.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "Referral+CoreDataClass.swift"; sourceTree = "<group>"; };
 		46D5BFD5D672CBF9647F85C4 /* Finding+CoreDataProperties.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "Finding+CoreDataProperties.swift"; sourceTree = "<group>"; };
@@ -356,6 +362,7 @@
 				013B1C3B0EFC9626BC4B658F /* ImagingPrompts.swift */,
 				572996E0D08B21AD579FB808 /* LabPrompts.swift */,
 				71A4317ED632EB00B4BCDECB /* SOAPPrompts.swift */,
+				LOCPROMPTS001REF00000001 /* LocalizedPrompts.swift */,
 			);
 			name = Prompts;
 			sourceTree = "<group>";
@@ -371,6 +378,7 @@
 				026FA99A2F2034AC001228BC /* NoteObjective.swift */,
 				026FA99B2F2034AC001228BC /* NotePlan.swift */,
 				026FA99C2F2034AC001228BC /* NoteProblem.swift */,
+ttttPATCTX001REF00000001 /* PatientContext.swift */,
 				026FA99D2F2034AC001228BC /* NoteSubjective.swift */,
 				026FA99E2F2034AC001228BC /* NoteTriage.swift */,
 				9A8EE4D08CD515CCA250F3F7 /* ImagingFindingsSummary.swift */,
@@ -593,6 +601,7 @@
 				B6E76379A02FB0EF4F5D8B4B /* MedGemmaModel.swift in Sources */,
 				F598E34E78F889BC1BDC14B5 /* ImagingModelManager.swift in Sources */,
 				6237D2B4C51E05A8A79B2F24 /* NoteProblem.swift in Sources */,
+ttttPATCTX001BLD00000001 /* PatientContext.swift in Sources */,
 				795B6AE154151AC9E7E1CDEA /* NoteIntervention.swift in Sources */,
 				7C9423CC8EB0A03230FC1FFA /* NoteAssessment.swift in Sources */,
 				9935E074C38B4C946E0F09F9 /* NotePlan.swift in Sources */,
@@ -640,6 +649,7 @@
 				2CBECED713FD4C361774C09E /* ImagingPrompts.swift in Sources */,
 				103227F499FB251EA8719B77 /* LabPrompts.swift in Sources */,
 				7F343B1FB6A51151349C945C /* SOAPPrompts.swift in Sources */,
+				LOCPROMPTS001BLD00000001 /* LocalizedPrompts.swift in Sources */,
 				BD056C89421DE6C0F0049C5D /* MLXImagingModel.swift in Sources */,
 				8DC490C1B34C9983E850C0EF /* MLXModelLoader.swift in Sources */,
 									);

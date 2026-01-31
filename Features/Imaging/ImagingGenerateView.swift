@@ -154,12 +154,17 @@ struct ImagingGenerateView: View {
             // Get user's selected language from AppSettings
             let language = AppSettings.shared.generationLanguage
 
-            // Create inference options with language parameter
+            // Build localized prompt for this language
+            let localizedPrompts = LocalizedPrompts(language: language)
+            let imageContext = "Medical imaging scan provided for analysis"
+            let prompt = localizedPrompts.buildImagingPrompt(imageContext: imageContext)
+
+            // Create inference options with language and localized prompt
             let options = InferenceOptions(
                 timeout: 60.0,
                 temperature: 0.2,
                 maxTokens: 1024,
-                systemPrompt: nil,
+                systemPrompt: prompt,
                 language: language
             )
 
