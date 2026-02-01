@@ -233,14 +233,13 @@ struct LabsProcessView: View {
 
         // Run inference using MLX model bridge with vision support
         // This generates a JSON response describing visible lab values
-        let response = try await Task.detached(priority: .userInitiated) {
-            try MLXModelBridge.generateWithImage(
-                imageData: imageData,
-                prompt: prompt,
-                maxTokens: 1024,
-                temperature: 0.2
-            )
-        }.value
+        let response = try await MLXModelBridge.generateWithImage(
+            imageData: imageData,
+            prompt: prompt,
+            maxTokens: 1024,
+            temperature: 0.2,
+            language: language
+        )
 
         return response
     }

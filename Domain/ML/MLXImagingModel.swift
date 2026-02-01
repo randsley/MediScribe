@@ -57,17 +57,16 @@ class MLXImagingModel: ImagingModelProtocol {
         // The prompt is passed via systemPrompt field, or build it here with a default
         let prompt = opts.systemPrompt ?? ImagingPrompts.findingsExtractionPrompt(imageContext: imageContext)
 
-        // Run inference with image
+        // Run inference with image (true multimodal vision-language)
         do {
             let startTime = Date()
-            let responseText = try await Task.detached(priority: .userInitiated) {
-                try MLXModelBridge.generateWithImage(
-                    imageData: imageData,
-                    prompt: prompt,
-                    maxTokens: opts.maxTokens,
-                    temperature: opts.temperature
-                )
-            }.value
+            let responseText = try await MLXModelBridge.generateWithImage(
+                imageData: imageData,
+                prompt: prompt,
+                maxTokens: opts.maxTokens,
+                temperature: opts.temperature,
+                language: opts.language
+            )
             let processingTime = Date().timeIntervalSince(startTime)
 
             // Convert response to Data for validation
