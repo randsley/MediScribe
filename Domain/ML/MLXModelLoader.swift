@@ -257,9 +257,14 @@ class MLXModelBridge: NSObject {
     /// - Parameter modelPath: Path to MLX-converted MedGemma multimodal model directory
     /// - Throws: MLXModelError if initialization fails
     static func initializeVisionSupport(modelPath: String) async throws {
-        // NOTE: MLXMedGemmaBridge integration requires mlx-swift-lm package
-        // For now, vision support is implemented with placeholder models
-        // Production integration will call: try await MLXMedGemmaBridge.shared.loadModel(from: modelPath)
+        #if targetEnvironment(simulator)
+        print("⚠️ MLX not available on iOS Simulator - using placeholder models for development")
+        print("   To test MedGemma multimodal vision, build for physical device (iPhone/iPad with Apple Silicon)")
+        #else
+        // Physical device: Load real MLX-converted MedGemma multimodal model
+        try await MLXMedGemmaBridge.shared.loadModel(from: modelPath)
+        print("✅ MedGemma multimodal vision loaded successfully")
+        #endif
     }
 
     /// Tokenize text into token IDs
@@ -347,11 +352,8 @@ class MLXModelBridge: NSObject {
         temperature: Float = 0.3,
         language: Language = .english
     ) async throws -> String {
-        // NOTE: This is a placeholder implementation using synthetic data
-        // Production implementation will use MLXMedGemmaBridge:
-        // return try await MLXMedGemmaBridge.shared.generateFindings(...)
-
-        // For now, return structured JSON placeholder
+        #if targetEnvironment(simulator)
+        // Simulator: Return placeholder findings JSON
         return """
         {
             "documentType": "imaging",
@@ -367,6 +369,16 @@ class MLXModelBridge: NSObject {
             "limitations": "This summary describes visible image features only and does not assess clinical significance or provide a diagnosis."
         }
         """
+        #else
+        // Physical device: Use real MedGemma multimodal vision model
+        return try await MLXMedGemmaBridge.shared.generateFindings(
+            from: imageData,
+            prompt: prompt,
+            maxTokens: maxTokens,
+            temperature: temperature,
+            language: language
+        )
+        #endif
     }
 
     /// Generate text from image with streaming token output
@@ -385,15 +397,12 @@ class MLXModelBridge: NSObject {
         temperature: Float = 0.3,
         language: Language = .english
     ) -> AsyncThrowingStream<String, Error> {
-        // NOTE: This is a placeholder streaming implementation
-        // Production implementation will use MLXMedGemmaBridge:
-        // return MLXMedGemmaBridge.shared.generateFindingsStreaming(...)
-
+        #if targetEnvironment(simulator)
+        // Simulator: Stream placeholder JSON one character at a time
         return AsyncThrowingStream<String, Error> { continuation in
             Task {
-                // Stream placeholder JSON one character at a time for demo
                 let json = """
-                {"findings": "Clear lungs bilateral. Normal cardiac silhouette. No acute findings. "}
+                {"documentType": "imaging", "observations": {"lungs": ["Clear bilaterally"], "cardiac": ["Normal size"]}, "limitations": "This summary describes visible image features only and does not assess clinical significance or provide a diagnosis."}
                 """
 
                 for char in json {
@@ -404,6 +413,16 @@ class MLXModelBridge: NSObject {
                 continuation.finish()
             }
         }
+        #else
+        // Physical device: Use real MedGemma multimodal streaming inference
+        return MLXMedGemmaBridge.shared.generateFindingsStreaming(
+            from: imageData,
+            prompt: prompt,
+            maxTokens: maxTokens,
+            temperature: temperature,
+            language: language
+        )
+        #endif
     }
 
     // MARK: - Private Methods

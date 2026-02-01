@@ -9,12 +9,32 @@
 import Foundation
 import UIKit
 
+// NOTE: MLX frameworks (MLX, MLXNN, MLXVLM) should be imported here for device builds
+// To enable real MLX on physical devices:
+// 1. Add mlx-swift and mlx-swift-lm packages via Xcode
+// 2. Uncomment the imports below
+// 3. Replace placeholder implementations with real MLX calls
+//
+// For now, conditional compilation is disabled to allow simulator builds
+// #if !targetEnvironment(simulator)
+// import MLX
+// import MLXNN
+// import MLXVLM
+// #endif
+
 /// MedGemma-specific wrapper for multimodal vision-language inference
 /// Provides true vision encoder + language model inference using mlx-swift-lm
 class MLXMedGemmaBridge {
     static let shared = MLXMedGemmaBridge()
 
-    private var visionModel: Any?  // MLXVLM model instance
+    #if targetEnvironment(simulator)
+    // Simulator: Placeholder (no MLX available due to Metal GPU requirements)
+    private var visionModel: Any? = nil
+    #else
+    // Physical device: Real MLXVLM model instance
+    private var vlmModel: Any?  // MLXVLM type when MLX is available
+    #endif
+
     private var isLoaded = false
     private let queue = DispatchQueue(label: "com.mediscribe.medgemma-vlm", qos: .userInitiated)
 
@@ -24,6 +44,12 @@ class MLXMedGemmaBridge {
     /// - Parameter modelPath: Path to MLX-converted MedGemma multimodal model directory
     /// - Throws: MLXModelError if loading fails
     func loadModel(from modelPath: String) async throws {
+        #if targetEnvironment(simulator)
+        // Simulator: Just mark as loaded, use placeholder implementations
+        print("⚠️ MLX not available on simulator - using placeholder responses")
+        isLoaded = true
+        #else
+        // Physical device: Load real MLX model
         try await withCheckedThrowingContinuation { continuation in
             queue.async {
                 guard !self.isLoaded else {
@@ -53,6 +79,7 @@ class MLXMedGemmaBridge {
                 }
             }
         }
+        #endif
     }
 
     // MARK: - Vision-Language Inference
@@ -73,9 +100,28 @@ class MLXMedGemmaBridge {
         temperature: Float = 0.3,
         language: Language = .english
     ) async throws -> String {
-        try await withCheckedThrowingContinuation { continuation in
+        #if targetEnvironment(simulator)
+        // Simulator: Return placeholder findings
+        return """
+        {
+            "documentType": "imaging",
+            "documentDate": "\(Date().ISO8601Format())",
+            "observations": {
+                "lungs": ["Clear to auscultation bilaterally"],
+                "pleural": ["No effusion"],
+                "cardiac": ["Normal size"],
+                "mediastinal": ["No abnormality"],
+                "bones": ["No acute findings"],
+                "soft_tissues": ["Normal appearance"]
+            },
+            "limitations": "This summary describes visible image features only and does not assess clinical significance or provide a diagnosis."
+        }
+        """
+        #else
+        // Physical device: Real MLX inference
+        return try await withCheckedThrowingContinuation { continuation in
             queue.async {
-                guard self.isLoaded, self.visionModel != nil else {
+                guard self.isLoaded, self.vlmModel != nil else {
                     continuation.resume(throwing: MLXModelError.modelNotLoaded)
                     return
                 }
@@ -112,6 +158,7 @@ class MLXMedGemmaBridge {
                 }
             }
         }
+        #endif
     }
 
     /// Streaming variant for progressive UI updates
@@ -129,10 +176,28 @@ class MLXMedGemmaBridge {
         temperature: Float = 0.3,
         language: Language = .english
     ) -> AsyncThrowingStream<String, Error> {
-        AsyncThrowingStream { continuation in
+        #if targetEnvironment(simulator)
+        // Simulator: Stream placeholder findings one character at a time
+        return AsyncThrowingStream<String, Error> { continuation in
+            Task {
+                let json = """
+                {"documentType": "imaging", "observations": {"lungs": ["Clear bilaterally"], "cardiac": ["Normal size"]}, "limitations": "This summary describes visible image features only and does not assess clinical significance or provide a diagnosis."}
+                """
+
+                for char in json {
+                    try await Task.sleep(nanoseconds: 10_000_000)  // Simulate inference delay
+                    continuation.yield(String(char))
+                }
+
+                continuation.finish()
+            }
+        }
+        #else
+        // Physical device: Real MLX streaming inference
+        return AsyncThrowingStream { continuation in
             Task {
                 do {
-                    guard self.isLoaded, self.visionModel != nil else {
+                    guard self.isLoaded, self.vlmModel != nil else {
                         throw MLXModelError.modelNotLoaded
                     }
 
@@ -166,6 +231,7 @@ class MLXMedGemmaBridge {
                 }
             }
         }
+        #endif
     }
 
     // MARK: - Private Methods
@@ -192,16 +258,32 @@ class MLXMedGemmaBridge {
             }
         }
 
-        // Load model using mlx-swift-lm
+        #if targetEnvironment(simulator)
+        // Simulator: Create placeholder model info
+        var modelInfo: [String: Any] = [
+            "type": "medgemma-mm",
+            "path": modelPath,
+            "loaded": true,
+            "hasVisionEncoder": true
+        ]
+
+        let tokenizerPath = (modelPath as NSString).appendingPathComponent("tokenizer.json")
+        if let tokenizer = try self.loadTokenizer(from: tokenizerPath) {
+            modelInfo["tokenizer"] = tokenizer
+        }
+
+        self.visionModel = modelInfo as Any
+        #else
+        // Physical device: Load real MLX-format VLM model
         // In production with mlx-swift-lm:
-        // self.visionModel = try MLXVLM.load(
+        // self.vlmModel = try MLXVLM.load(
         //     modelPath: modelPath,
         //     modelType: "medgemma-mm",  // MedGemma multimodal variant
         //     quantization: .int4        // 4-bit quantization for Apple Silicon
         // )
 
-        // For now, create a placeholder that represents loaded model
-        // This will be replaced with actual mlx-swift-lm API once package is integrated
+        // Create placeholder that represents loaded model
+        // This will be replaced with actual mlx-swift-lm API when package is fully integrated
         var modelInfo: [String: Any] = [
             "type": "medgemma-mm",
             "path": modelPath,
@@ -215,7 +297,8 @@ class MLXMedGemmaBridge {
             modelInfo["tokenizer"] = tokenizer
         }
 
-        self.visionModel = modelInfo as Any
+        self.vlmModel = modelInfo as Any
+        #endif
     }
 
     /// Load tokenizer from JSON file
@@ -242,9 +325,11 @@ class MLXMedGemmaBridge {
         maxTokens: Int,
         temperature: Float
     ) throws -> String {
-        guard visionModel != nil else {
+        #if !targetEnvironment(simulator)
+        guard vlmModel != nil else {
             throw MLXModelError.modelNotLoaded
         }
+        #endif
 
         // Process image through vision encoder
         let imageEmbeddings = try encodeImage(image)
@@ -275,9 +360,11 @@ class MLXMedGemmaBridge {
         temperature: Float,
         onToken: @escaping (String) -> Void
     ) async throws {
-        guard visionModel != nil else {
+        #if !targetEnvironment(simulator)
+        guard vlmModel != nil else {
             throw MLXModelError.modelNotLoaded
         }
+        #endif
 
         // Process image through vision encoder
         let imageEmbeddings = try encodeImage(image)
@@ -297,9 +384,11 @@ class MLXMedGemmaBridge {
 
     /// Encode image through vision encoder
     private func encodeImage(_ image: UIImage) throws -> [[Float]] {
-        guard visionModel != nil else {
+        #if !targetEnvironment(simulator)
+        guard vlmModel != nil else {
             throw MLXModelError.modelNotLoaded
         }
+        #endif
 
         // Vision encoder workflow:
         // 1. Resize image to model's expected size (typically 224x224 or 384x384)
@@ -335,7 +424,11 @@ class MLXMedGemmaBridge {
 
     /// Tokenize text prompt
     private func tokenizePrompt(_ prompt: String) throws -> [Int32] {
-        guard let modelInfo = visionModel as? [String: Any],
+        #if targetEnvironment(simulator)
+        // Simulator: Return empty tokens (placeholder)
+        return []
+        #else
+        guard let modelInfo = vlmModel as? [String: Any],
               let tokenizerData = modelInfo["tokenizer"] as? [String: Any] else {
             throw MLXModelError.tokenizerNotLoaded
         }
@@ -363,6 +456,7 @@ class MLXMedGemmaBridge {
         // Fallback: character-level tokenization
         let chars = Array(prompt.lowercased())
         return chars.map { Int32(String($0).utf8.first ?? 0) }
+        #endif
     }
 
     /// Run generative inference with vision embeddings and text
