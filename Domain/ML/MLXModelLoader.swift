@@ -263,9 +263,9 @@ class MLXModelBridge: NSObject {
         print("   To test MedGemma multimodal vision, build for physical device (iPhone/iPad with Apple Silicon)")
         #else
         // Physical device: Load real MLX-converted MedGemma multimodal model
-        // TODO: Uncomment once mlx-swift-gemma-port package is properly configured
+        // TODO: Uncomment when fork package is fully functional
         // try await MLXMedGemmaBridge.shared.loadModel(from: modelPath)
-        print("✅ MedGemma multimodal vision support placeholder")
+        print("✅ MedGemma multimodal vision support configured (using placeholders)")
         #endif
     }
 
@@ -351,8 +351,8 @@ class MLXModelBridge: NSObject {
         temperature: Float = 0.3,
         language: Language = .english
     ) async throws -> String {
-        // Using placeholder for now - mlx-swift-gemma-port not yet properly configured
-        // TODO: Uncomment real implementation once package is working
+        // Placeholder - waiting for fork package to build successfully
+        // TODO: Uncomment real implementation when fork is functional
         return """
         {
             "documentType": "imaging",
