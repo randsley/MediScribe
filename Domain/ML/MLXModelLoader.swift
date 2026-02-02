@@ -120,10 +120,8 @@ class MLXModelLoader {
     private func verifyModelFiles(at path: String) throws {
         let fm = FileManager.default
 
-        // Check for required files
-        // Note: MedGemma uses sharded model format with index file
+        // Check for required base files
         let requiredFiles = [
-            "model.safetensors.index.json",  // Index file for sharded models
             "tokenizer.json",
             "config.json"
         ]
@@ -135,13 +133,32 @@ class MLXModelLoader {
             }
         }
 
-        // Verify at least one model shard exists (should be ~5GB each)
-        let shard1Path = (path as NSString).appendingPathComponent("model-00001-of-00002.safetensors")
-        if let attrs = try? fm.attributesOfItem(atPath: shard1Path),
-           let size = attrs[.size] as? Int64 {
-            // Shard should be at least 4GB
-            if size < 4_000_000_000 {
-                throw MLXModelError.fileAccessError("Model shard too small: \(size) bytes")
+        // Check for model weights - support both sharded and non-sharded formats
+        let modelPath = (path as NSString).appendingPathComponent("model.safetensors")
+        let shardedIndexPath = (path as NSString).appendingPathComponent("model.safetensors.index.json")
+        let hasSingleModel = fm.fileExists(atPath: modelPath)
+        let hasShardedIndex = fm.fileExists(atPath: shardedIndexPath)
+
+        if !hasSingleModel && !hasShardedIndex {
+            throw MLXModelError.fileAccessError("Missing model weights: neither model.safetensors nor model.safetensors.index.json found")
+        }
+
+        // Verify model file size is reasonable (at least 1GB for 4-bit quantized)
+        if hasSingleModel {
+            if let attrs = try? fm.attributesOfItem(atPath: modelPath),
+               let size = attrs[.size] as? Int64 {
+                if size < 1_000_000_000 {
+                    throw MLXModelError.fileAccessError("Model file too small: \(size) bytes")
+                }
+            }
+        } else if hasShardedIndex {
+            // For sharded models, verify at least first shard exists
+            let shard1Path = (path as NSString).appendingPathComponent("model-00001-of-00002.safetensors")
+            if let attrs = try? fm.attributesOfItem(atPath: shard1Path),
+               let size = attrs[.size] as? Int64 {
+                if size < 1_000_000_000 {
+                    throw MLXModelError.fileAccessError("Model shard too small: \(size) bytes")
+                }
             }
         }
     }
@@ -258,14 +275,10 @@ class MLXModelBridge: NSObject {
     /// - Parameter modelPath: Path to MLX-converted MedGemma multimodal model directory
     /// - Throws: MLXModelError if initialization fails
     static func initializeVisionSupport(modelPath: String) async throws {
-        #if targetEnvironment(simulator)
+        // Placeholder initialization - waiting for proper model distribution mechanism
+        // TODO: Activate real MLX model loading once model files are accessible on device
         print("⚠️ MLX not available on iOS Simulator - using placeholder models for development")
         print("   To test MedGemma multimodal vision, build for physical device (iPhone/iPad with Apple Silicon)")
-        #else
-        // Physical device: Load real MLX-converted MedGemma multimodal model
-        try await MLXMedGemmaBridge.shared.loadModel(from: modelPath)
-        print("✅ MedGemma multimodal vision loaded successfully")
-        #endif
     }
 
     /// Tokenize text into token IDs
@@ -350,8 +363,9 @@ class MLXModelBridge: NSObject {
         temperature: Float = 0.3,
         language: Language = .english
     ) async throws -> String {
-        #if targetEnvironment(simulator)
-        // Simulator: Return placeholder findings JSON
+        // Placeholder - waiting for proper model distribution mechanism
+        // TODO: Activate real MLX inference once model files are accessible on device
+        // For now: return placeholder JSON (works on all builds)
         return """
         {
             "documentType": "imaging",
@@ -367,16 +381,6 @@ class MLXModelBridge: NSObject {
             "limitations": "This summary describes visible image features only and does not assess clinical significance or provide a diagnosis."
         }
         """
-        #else
-        // Physical device: Use real MedGemma multimodal vision model
-        return try await MLXMedGemmaBridge.shared.generateFindings(
-            from: imageData,
-            prompt: prompt,
-            maxTokens: maxTokens,
-            temperature: temperature,
-            language: language
-        )
-        #endif
     }
 
     /// Generate text from image with streaming token output
@@ -395,8 +399,8 @@ class MLXModelBridge: NSObject {
         temperature: Float = 0.3,
         language: Language = .english
     ) -> AsyncThrowingStream<String, Error> {
-        #if targetEnvironment(simulator)
-        // Simulator: Stream placeholder JSON one character at a time
+        // Placeholder streaming - waiting for proper model distribution mechanism
+        // TODO: Activate real MLX streaming inference once model files are accessible on device
         return AsyncThrowingStream<String, Error> { continuation in
             Task {
                 let json = """
@@ -411,16 +415,6 @@ class MLXModelBridge: NSObject {
                 continuation.finish()
             }
         }
-        #else
-        // Physical device: Use real MedGemma multimodal streaming inference
-        return MLXMedGemmaBridge.shared.generateFindingsStreaming(
-            from: imageData,
-            prompt: prompt,
-            maxTokens: maxTokens,
-            temperature: temperature,
-            language: language
-        )
-        #endif
     }
 
     // MARK: - Private Methods

@@ -14,6 +14,7 @@
 		02283A6B2F310B6E00A446F8 /* MLXRandom in Frameworks */ = {isa = PBXBuildFile; productRef = 02283A6A2F310B6E00A446F8 /* MLXRandom */; };
 		02283A6E2F310C7900A446F8 /* MLXLMCommon in Frameworks */ = {isa = PBXBuildFile; productRef = 02283A6D2F310C7900A446F8 /* MLXLMCommon */; };
 		02283A702F310C7900A446F8 /* MLXVLM in Frameworks */ = {isa = PBXBuildFile; productRef = 02283A6F2F310C7900A446F8 /* MLXVLM */; };
+		02283A722F31135900A446F8 /* MLXMedGemmaBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02283A712F31135900A446F8 /* MLXMedGemmaBridge.swift */; };
 		022AD77A2F1EE954004D771E /* README.MD in Resources */ = {isa = PBXBuildFile; fileRef = 022AD7792F1EE954004D771E /* README.MD */; };
 		0462D85569BC721636408EDB /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 022AD7712F1EDA9A004D771E /* SettingsView.swift */; };
 		094F5F6315EF71BDCE3EAA49 /* KeychainManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = SEC002REF2024010100000002 /* KeychainManager.swift */; };
@@ -99,6 +100,7 @@
 /* Begin PBXFileReference section */
 		013B1C3B0EFC9626BC4B658F /* ImagingPrompts.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ImagingPrompts.swift; path = Domain/Prompts/ImagingPrompts.swift; sourceTree = "<group>"; };
 		0152C577A8AF7025A06A6BEF /* AnatomicalObservations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnatomicalObservations.swift; sourceTree = "<group>"; };
+		02283A712F31135900A446F8 /* MLXMedGemmaBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MLXMedGemmaBridge.swift; sourceTree = "<group>"; };
 		022AD7652F1ED791004D771E /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
 		022AD7672F1ED815004D771E /* NotesHomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotesHomeView.swift; sourceTree = "<group>"; };
 		022AD7692F1ED857004D771E /* ImagingHomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagingHomeView.swift; sourceTree = "<group>"; };
@@ -392,6 +394,7 @@
 		E35421949957371D00D64AE2 /* ML */ = {
 			isa = PBXGroup;
 			children = (
+				02283A712F31135900A446F8 /* MLXMedGemmaBridge.swift */,
 				5068F406A5B495B7F39BCECE /* ImagingModelProtocol.swift */,
 				27D2058574E80D2A27786BC7 /* PlaceholderImagingModel.swift */,
 				9F405F4AAA7843FFA21CA909 /* MedGemmaModel.swift */,
@@ -635,6 +638,7 @@
 				33496EC919449C014F7A7C42 /* NoteDetailView.swift in Sources */,
 				9C5EE961A4D9B4CE0A9250A3 /* SBARView.swift in Sources */,
 				88156639A5424108C6CF9E2A /* FieldOptimizedVitalsView.swift in Sources */,
+				02283A722F31135900A446F8 /* MLXMedGemmaBridge.swift in Sources */,
 				2A4AAE7D667CCA2A1F10F34E /* OrganSystemExamInput.swift in Sources */,
 				5FAD818BE3AAE53FD5A18CE3 /* FieldOptimizedComponents.swift in Sources */,
 				819DF8DEEDB0165325ACA9D2 /* SBARGenerator.swift in Sources */,

@@ -13,10 +13,11 @@ import UIKit
 // For device builds: imports come from mlx-swift-gemma-port package
 // For simulator builds: conditional compilation uses placeholder implementations
 #if !targetEnvironment(simulator)
-import MLX
-import MLXNN
-import MLXVLM          // Vision-Language Models (includes Gemma3 implementation)
-import MLXLMCommon     // Common utilities
+// TODO: Uncomment for device builds - commented to avoid simulator linker errors
+// import MLX
+// import MLXNN
+// import MLXVLM          // Vision-Language Models (includes Gemma3 implementation)
+// import MLXLMCommon     // Common utilities
 #endif
 
 /// MedGemma-specific wrapper for multimodal vision-language inference
