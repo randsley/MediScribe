@@ -100,8 +100,8 @@ class PubMedQAEvaluator:
         print("\n🔄 Loading PubMedQA dataset...")
 
         try:
-            # Load PubMedQA (includes question, context, long_answer, final_decision)
-            self.dataset = load_dataset("pubmedqa", "pqa_artificial", split="train")
+            # Load PubMedQA from qiaojin/PubMedQA (includes question, context, long_answer, final_decision)
+            self.dataset = load_dataset("qiaojin/PubMedQA", "pqa_artificial", split="train")
             print(f"✅ PubMedQA loaded: {len(self.dataset)} samples available")
             return True
         except Exception as e:
@@ -142,7 +142,19 @@ class PubMedQAEvaluator:
             Tuple of (predicted_answer, inference_time)
         """
         question = sample.get("question", "")
-        context = sample.get("context", "")[:500]  # Limit context length
+
+        # Handle both dict and string context formats
+        context_raw = sample.get("context", "")
+        if isinstance(context_raw, dict):
+            # Real dataset format: context is a dict with 'contexts' list
+            context_texts = context_raw.get("contexts", [])
+            context = " ".join(context_texts[:2])  # Use first 2 context sections
+        else:
+            # Mock dataset format: context is a string
+            context = str(context_raw)
+
+        # Limit context length
+        context = context[:500]
 
         # Format prompt for biomedical QA using Gemma3 chat format
         user_prompt = f"""Based on the following biomedical context, answer the question with yes, no, or maybe.
