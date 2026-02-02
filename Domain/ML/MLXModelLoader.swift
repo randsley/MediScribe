@@ -263,9 +263,8 @@ class MLXModelBridge: NSObject {
         print("   To test MedGemma multimodal vision, build for physical device (iPhone/iPad with Apple Silicon)")
         #else
         // Physical device: Load real MLX-converted MedGemma multimodal model
-        // TODO: Uncomment when fork package is fully functional
-        // try await MLXMedGemmaBridge.shared.loadModel(from: modelPath)
-        print("✅ MedGemma multimodal vision support configured (using placeholders)")
+        try await MLXMedGemmaBridge.shared.loadModel(from: modelPath)
+        print("✅ MedGemma multimodal vision loaded successfully")
         #endif
     }
 
@@ -351,8 +350,8 @@ class MLXModelBridge: NSObject {
         temperature: Float = 0.3,
         language: Language = .english
     ) async throws -> String {
-        // Placeholder - waiting for fork package to build successfully
-        // TODO: Uncomment real implementation when fork is functional
+        #if targetEnvironment(simulator)
+        // Simulator: Return placeholder findings JSON
         return """
         {
             "documentType": "imaging",
@@ -368,6 +367,16 @@ class MLXModelBridge: NSObject {
             "limitations": "This summary describes visible image features only and does not assess clinical significance or provide a diagnosis."
         }
         """
+        #else
+        // Physical device: Use real MedGemma multimodal vision model
+        return try await MLXMedGemmaBridge.shared.generateFindings(
+            from: imageData,
+            prompt: prompt,
+            maxTokens: maxTokens,
+            temperature: temperature,
+            language: language
+        )
+        #endif
     }
 
     /// Generate text from image with streaming token output
@@ -386,7 +395,8 @@ class MLXModelBridge: NSObject {
         temperature: Float = 0.3,
         language: Language = .english
     ) -> AsyncThrowingStream<String, Error> {
-        // Stream placeholder JSON one character at a time
+        #if targetEnvironment(simulator)
+        // Simulator: Stream placeholder JSON one character at a time
         return AsyncThrowingStream<String, Error> { continuation in
             Task {
                 let json = """
@@ -401,6 +411,16 @@ class MLXModelBridge: NSObject {
                 continuation.finish()
             }
         }
+        #else
+        // Physical device: Use real MedGemma multimodal streaming inference
+        return MLXMedGemmaBridge.shared.generateFindingsStreaming(
+            from: imageData,
+            prompt: prompt,
+            maxTokens: maxTokens,
+            temperature: temperature,
+            language: language
+        )
+        #endif
     }
 
     // MARK: - Private Methods

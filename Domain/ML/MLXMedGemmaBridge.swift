@@ -13,11 +13,10 @@ import UIKit
 // For device builds: imports come from mlx-swift-gemma-port package
 // For simulator builds: conditional compilation uses placeholder implementations
 #if !targetEnvironment(simulator)
-// TODO: Uncomment once fork package builds successfully
-// import MLX
-// import MLXNN
-// import MLXVLM          // Vision-Language Models (includes Gemma3 implementation)
-// import MLXLMCommon     // Common utilities
+import MLX
+import MLXNN
+import MLXVLM          // Vision-Language Models (includes Gemma3 implementation)
+import MLXLMCommon     // Common utilities
 #endif
 
 /// MedGemma-specific wrapper for multimodal vision-language inference
@@ -432,7 +431,7 @@ class MLXMedGemmaBridge {
 
         let resizedImage = resizeImage(image, to: CGSize(width: 384, height: 384))
         let pixelData = try extractPixelData(from: resizedImage)
-        let normalized = normalizePixels(pixelData)
+        _ = normalizePixels(pixelData)
 
         // Extract image patches (384x384 with 16x16 patches = 24x24 = 576 patches)
         // After vision encoder transformer, output shape: [576, vision_hidden_dim]
@@ -442,7 +441,7 @@ class MLXMedGemmaBridge {
         let patchSize = 16
         let numPatches = (384 / patchSize) * (384 / patchSize)
 
-        for i in 0..<numPatches {
+        for _ in 0..<numPatches {
             // In production, would extract patch and run through vision encoder
             // For now, simulate with random embeddings (same shape as real output)
             var embedding: [Float] = []
