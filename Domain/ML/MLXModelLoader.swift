@@ -121,8 +121,9 @@ class MLXModelLoader {
         let fm = FileManager.default
 
         // Check for required files
+        // Note: MedGemma uses sharded model format with index file
         let requiredFiles = [
-            "model.safetensors",
+            "model.safetensors.index.json",  // Index file for sharded models
             "tokenizer.json",
             "config.json"
         ]
@@ -134,13 +135,13 @@ class MLXModelLoader {
             }
         }
 
-        // Verify model file size (should be ~2GB)
-        let modelPath = (path as NSString).appendingPathComponent("model.safetensors")
-        if let attrs = try? fm.attributesOfItem(atPath: modelPath),
+        // Verify at least one model shard exists (should be ~5GB each)
+        let shard1Path = (path as NSString).appendingPathComponent("model-00001-of-00002.safetensors")
+        if let attrs = try? fm.attributesOfItem(atPath: shard1Path),
            let size = attrs[.size] as? Int64 {
-            // File should be at least 1GB
-            if size < 1_000_000_000 {
-                throw MLXModelError.fileAccessError("Model file too small: \(size) bytes")
+            // Shard should be at least 4GB
+            if size < 4_000_000_000 {
+                throw MLXModelError.fileAccessError("Model shard too small: \(size) bytes")
             }
         }
     }
