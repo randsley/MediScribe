@@ -76,8 +76,6 @@
 		F17DC368FB41AF175134C7F1 /* LabsProcessView.swift in Sources */ = {isa = PBXBuildFile; fileRef = O5N4M3L2K1J0I9H8G7F6E5D4 /* LabsProcessView.swift */; };
 		F598E34E78F889BC1BDC14B5 /* ImagingModelManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C71C7FD89938FA7D333F195 /* ImagingModelManager.swift */; };
 		LOCPROMPTS001BLD00000001 /* LocalizedPrompts.swift in Sources */ = {isa = PBXBuildFile; fileRef = LOCPROMPTS001REF00000001 /* LocalizedPrompts.swift */; };
-		MEDGEMMA001BLD0000000001 /* medgemma-1.5-4b-it-Q4_K_M.gguf in Resources */ = {isa = PBXBuildFile; fileRef = MEDGEMMA001REF0000000001 /* medgemma-1.5-4b-it-Q4_K_M.gguf */; };
-		MEDGEMMA002BLD0000000002 /* medgemma-1.5-4b-it.mmproj-Q8_0.gguf in Resources */ = {isa = PBXBuildFile; fileRef = MEDGEMMA002REF0000000002 /* medgemma-1.5-4b-it.mmproj-Q8_0.gguf */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -157,8 +155,6 @@
 		L2K1J0I9H8G7F6E5D4C3B2A1 /* LabsHomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LabsHomeView.swift; sourceTree = "<group>"; };
 		LOCPROMPTS001REF00000001 /* LocalizedPrompts.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = LocalizedPrompts.swift; path = Prompts/LocalizedPrompts.swift; sourceTree = "<group>"; };
 		M3L2K1J0I9H8G7F6E5D4C3B2 /* LabsCameraView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LabsCameraView.swift; sourceTree = "<group>"; };
-		MEDGEMMA001REF0000000001 /* medgemma-1.5-4b-it-Q4_K_M.gguf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "medgemma-1.5-4b-it-Q4_K_M.gguf"; path = "Models/MedGemma/medgemma-1.5-4b-it-Q4_K_M.gguf"; sourceTree = "<group>"; };
-		MEDGEMMA002REF0000000002 /* medgemma-1.5-4b-it.mmproj-Q8_0.gguf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "medgemma-1.5-4b-it.mmproj-Q8_0.gguf"; path = "Models/MedGemma/medgemma-1.5-4b-it.mmproj-Q8_0.gguf"; sourceTree = "<group>"; };
 		N4M3L2K1J0I9H8G7F6E5D4C3 /* LabsHistoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LabsHistoryView.swift; sourceTree = "<group>"; };
 		NOTES001REF00000000001 /* NoteEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteEditorView.swift; sourceTree = "<group>"; };
 		NOTES002REF00000000002 /* NoteDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteDetailView.swift; sourceTree = "<group>"; };
@@ -299,8 +295,6 @@
 				026FA9B22F203943001228BC /* Note+CoreDataProperties.swift */,
 				022AD77B2F1EEABE004D771E /* CLINICAL_OVERVIEW.MD */,
 				022AD7792F1EE954004D771E /* README.MD */,
-				MEDGEMMA001REF0000000001 /* medgemma-1.5-4b-it-Q4_K_M.gguf */,
-				MEDGEMMA002REF0000000002 /* medgemma-1.5-4b-it.mmproj-Q8_0.gguf */,
 				022AD7612F1ED6D2004D771E /* Domain */,
 				022AD75D2F1ED666004D771E /* Features */,
 				022AD75C2F1ED654004D771E /* UI */,
@@ -569,8 +563,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				022AD77A2F1EE954004D771E /* README.MD in Resources */,
-				MEDGEMMA001BLD0000000001 /* medgemma-1.5-4b-it-Q4_K_M.gguf in Resources */,
-				MEDGEMMA002BLD0000000002 /* medgemma-1.5-4b-it.mmproj-Q8_0.gguf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

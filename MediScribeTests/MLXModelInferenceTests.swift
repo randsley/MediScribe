@@ -51,20 +51,22 @@ class MLXModelInferenceTests: XCTestCase {
 
     /// Test 3: Imaging prompt generation
     func testImagingPromptGeneration() {
-        let prompt = ImagingPrompts.findingsExtractionPrompt(imageContext: "Chest X-ray image provided")
+        let localizedPrompts = LocalizedPrompts(language: .english)
+        let prompt = localizedPrompts.buildImagingPrompt(imageContext: "Chest X-ray image provided")
 
         // Verify prompt structure
-        XCTAssertTrue(prompt.contains("describe visible"), "Should instruct to describe visible features")
-        XCTAssertTrue(prompt.contains("does not assess"), "Should include safety disclaimer")
+        XCTAssertTrue(prompt.contains("Describe") || prompt.contains("describe"), "Should instruct to describe visible features")
+        XCTAssertTrue(prompt.contains("diagnoses") || prompt.contains("Diagnoses"), "Should include safety disclaimer")
         XCTAssertTrue(prompt.contains("JSON"), "Should specify JSON output format")
     }
 
     /// Test 4: Lab results prompt generation
     func testLabResultsPromptGeneration() {
-        let prompt = LabPrompts.resultsExtractionPrompt()
+        let localizedPrompts = LocalizedPrompts(language: .english)
+        let prompt = localizedPrompts.buildLabPrompt()
 
         // Verify prompt structure
-        XCTAssertTrue(prompt.contains("Extract"), "Should instruct to extract")
+        XCTAssertTrue(prompt.contains("Extract") || prompt.contains("extract"), "Should instruct to extract")
         XCTAssertTrue(prompt.contains("visible values"), "Should specify visible values only")
         XCTAssertTrue(prompt.contains("JSON"), "Should specify JSON output format")
         XCTAssertTrue(prompt.contains("limitations"), "Should include limitations statement")

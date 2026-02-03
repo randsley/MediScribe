@@ -9,8 +9,8 @@ import SwiftUI
 import UIKit
 import CoreData
 
-// Note: MLXModelLoader, MLXModelBridge, and LabPrompts are imported via module bridging
-// They are defined in Domain/ML/ and Domain/Prompts/ respectively
+// Note: MLXModelLoader and MLXModelBridge are imported via module bridging
+// Lab prompts are generated via LocalizedPrompts in Domain/Prompts/
 
 struct LabsProcessView: View {
     let image: UIImage

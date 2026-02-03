@@ -55,7 +55,8 @@ class MLXImagingModel: ImagingModelProtocol {
 
         // Note: Prompt is built by the caller (view layer) using LocalizedPrompts
         // The prompt is passed via systemPrompt field, or build it here with a default
-        let prompt = opts.systemPrompt ?? ImagingPrompts.findingsExtractionPrompt(imageContext: imageContext)
+        let localizedPrompts = LocalizedPrompts(language: opts.language)
+        let prompt = opts.systemPrompt ?? localizedPrompts.buildImagingPrompt(imageContext: imageContext)
 
         // Run inference with image (true multimodal vision-language)
         do {
