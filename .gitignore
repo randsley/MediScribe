@@ -45,7 +45,6 @@ DerivedData/
 ## Build generated
 build/
 DerivedData/
-Resources/
 
 ## Various settings
 *.xcscheme
