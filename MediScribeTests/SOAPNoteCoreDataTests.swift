@@ -326,6 +326,139 @@ class SOAPNoteCoreDataTests: XCTestCase {
         XCTAssertEqual(results.count, 0)
     }
 
+    /// Test 11: Query indexes are populated on create
+    func testQueryIndexesPopulatedOnCreate() throws {
+        let testData = createTestSOAPNoteData()
+
+        let entity = try SOAPNote.create(
+            from: testData,
+            in: managedObjectContext,
+            encryptedBy: encryptionService
+        )
+
+        // Verify indexes are populated
+        XCTAssertNotNil(entity.createdAtIndex)
+        XCTAssertNotNil(entity.statusIndex)
+        XCTAssertEqual(entity.createdAtIndex, testData.generatedAt)
+        XCTAssertEqual(entity.statusIndex, ValidationStatus.unvalidated.rawValue)
+    }
+
+    /// Test 12: Query indexes are updated on status change
+    func testQueryIndexesUpdatedOnStatusChange() throws {
+        let testData = createTestSOAPNoteData()
+        let clinicianID = "test-clinician"
+
+        let entity = try SOAPNote.create(
+            from: testData,
+            in: managedObjectContext,
+            encryptedBy: encryptionService
+        )
+
+        // Verify initial index
+        XCTAssertEqual(entity.statusIndex, ValidationStatus.unvalidated.rawValue)
+
+        // Mark as reviewed
+        try entity.markReviewed(by: clinicianID, encryptedBy: encryptionService)
+
+        // Verify index is updated
+        XCTAssertEqual(entity.statusIndex, ValidationStatus.reviewed.rawValue)
+
+        // Mark as signed
+        try entity.markSigned(by: clinicianID, encryptedBy: encryptionService)
+
+        // Verify index is updated again
+        XCTAssertEqual(entity.statusIndex, ValidationStatus.signed.rawValue)
+    }
+
+    /// Test 13: Fetch by status uses index for fast filtering
+    func testFetchByStatusUsesIndex() throws {
+        let patientID = "index-test-patient"
+
+        // Create notes with different statuses
+        var unvalidatedData = createTestSOAPNoteData(patientIdentifier: patientID)
+        let unvalidatedEntity = try SOAPNote.create(
+            from: unvalidatedData,
+            in: managedObjectContext,
+            encryptedBy: encryptionService
+        )
+
+        var reviewedData = createTestSOAPNoteData(patientIdentifier: patientID)
+        reviewedData.validationStatus = .reviewed
+        let reviewedEntity = try SOAPNote.create(
+            from: reviewedData,
+            in: managedObjectContext,
+            encryptedBy: encryptionService
+        )
+        try reviewedEntity.markReviewed(by: "clinician-1", encryptedBy: encryptionService)
+
+        try managedObjectContext.save()
+
+        // Fetch by status using new fetch request
+        let fetchRequest = SOAPNote.fetchRequestForStatus(.reviewed)
+        fetchRequest.returnsObjectsAsFaults = false
+        let reviewedNotes = try managedObjectContext.fetch(fetchRequest)
+
+        XCTAssertEqual(reviewedNotes.count, 1)
+        XCTAssertEqual(reviewedNotes[0].validationStatus, ValidationStatus.reviewed.rawValue)
+    }
+
+    /// Test 14: Fetch by patient uses index for fast filtering
+    func testFetchByPatientUsesIndex() throws {
+        let patientID = "patient-index-test"
+
+        // Create multiple notes for same patient
+        let note1 = try SOAPNote.create(
+            from: createTestSOAPNoteData(patientIdentifier: patientID),
+            in: managedObjectContext,
+            encryptedBy: encryptionService
+        )
+
+        let note2 = try SOAPNote.create(
+            from: createTestSOAPNoteData(patientIdentifier: patientID),
+            in: managedObjectContext,
+            encryptedBy: encryptionService
+        )
+
+        // Create note for different patient
+        _ = try SOAPNote.create(
+            from: createTestSOAPNoteData(patientIdentifier: "other-patient"),
+            in: managedObjectContext,
+            encryptedBy: encryptionService
+        )
+
+        try managedObjectContext.save()
+
+        // Fetch by patient using new fetch request
+        let fetchRequest = SOAPNote.fetchRequestForPatient(patientID)
+        fetchRequest.returnsObjectsAsFaults = false
+        let patientNotes = try managedObjectContext.fetch(fetchRequest)
+
+        XCTAssertEqual(patientNotes.count, 2)
+        XCTAssertTrue(patientNotes.allSatisfy { $0.patientIdentifier == patientID })
+    }
+
+    /// Test 15: Fetch recent notes with limit
+    func testFetchRecentNotesWithLimit() throws {
+        // Create 5 notes
+        for i in 0..<5 {
+            let data = createTestSOAPNoteData()
+            _ = try SOAPNote.create(
+                from: data,
+                in: managedObjectContext,
+                encryptedBy: encryptionService
+            )
+        }
+
+        try managedObjectContext.save()
+
+        // Fetch limited to 3
+        let fetchRequest = SOAPNote.fetchRecentNotes(limit: 3)
+        fetchRequest.returnsObjectsAsFaults = false
+        let results = try managedObjectContext.fetch(fetchRequest)
+
+        XCTAssertEqual(results.count, 3)
+    }
+
     // MARK: - Helper Methods
 
     private func createTestSOAPNoteData(

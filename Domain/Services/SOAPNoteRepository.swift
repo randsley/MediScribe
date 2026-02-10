@@ -27,10 +27,14 @@ class SOAPNoteRepository {
 
     // MARK: - CRUD Operations
 
-    /// Save SOAP note with encryption
+    /// Save SOAP note with encryption and validation
     /// - Parameter noteData: Structured SOAP note data
     /// - Returns: Note ID for retrieval
+    /// - Throws: Validation error if note violates safety constraints
     func save(_ noteData: SOAPNoteData) throws -> UUID {
+        // Validate before persisting
+        _ = try SOAPNoteValidator.validate(noteData)
+
         let note = try SOAPNote.create(
             from: noteData,
             in: managedObjectContext,
@@ -59,15 +63,14 @@ class SOAPNoteRepository {
     /// - Parameter patientID: Patient identifier
     /// - Returns: Array of decrypted SOAP notes
     func fetchAllForPatient(_ patientID: String?) -> [SOAPNoteData] {
-        let fetchRequest = NSFetchRequest<SOAPNote>(entityName: "SOAPNote")
+        let fetchRequest: NSFetchRequest<SOAPNote>
 
         if let patientID = patientID {
-            fetchRequest.predicate = NSPredicate(format: "patientIdentifier == %@", patientID)
+            fetchRequest = SOAPNote.fetchRequestForPatient(patientID)
+        } else {
+            fetchRequest = SOAPNote.fetchRecentNotes(limit: Int.max)
         }
 
-        fetchRequest.sortDescriptors = [
-            NSSortDescriptor(key: "generatedAt", ascending: false)
-        ]
         fetchRequest.returnsObjectsAsFaults = false
 
         guard let results = try? managedObjectContext.fetch(fetchRequest) else {
@@ -83,11 +86,25 @@ class SOAPNoteRepository {
     /// - Parameter status: Validation status to filter by
     /// - Returns: Array of matching notes
     func fetchByStatus(_ status: ValidationStatus) -> [SOAPNoteData] {
-        let fetchRequest = NSFetchRequest<SOAPNote>(entityName: "SOAPNote")
-        fetchRequest.predicate = NSPredicate(format: "statusIndex == %@", status.rawValue)
-        fetchRequest.sortDescriptors = [
-            NSSortDescriptor(key: "generatedAt", ascending: false)
-        ]
+        let fetchRequest = SOAPNote.fetchRequestForStatus(status)
+        fetchRequest.returnsObjectsAsFaults = false
+
+        guard let results = try? managedObjectContext.fetch(fetchRequest) else {
+            return []
+        }
+
+        return results.compactMap { note in
+            try? note.getDecryptedData(encryptedBy: encryptionService)
+        }
+    }
+
+    /// Retrieve notes for a patient with a specific status
+    /// - Parameters:
+    ///   - patientID: Patient identifier
+    ///   - status: Validation status to filter by
+    /// - Returns: Array of matching notes
+    func fetchForPatient(_ patientID: String, status: ValidationStatus) -> [SOAPNoteData] {
+        let fetchRequest = SOAPNote.fetchRequestForPatient(patientID, status: status)
         fetchRequest.returnsObjectsAsFaults = false
 
         guard let results = try? managedObjectContext.fetch(fetchRequest) else {

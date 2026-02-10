@@ -121,6 +121,8 @@ struct LabResultDetailView: View {
         try? finding.getImageWithMigration()
     }
 
+    @State private var showingFHIRExport = false
+
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
@@ -227,6 +229,22 @@ struct LabResultDetailView: View {
         }
         .navigationTitle("Lab Results")
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            if finding.reviewedAt != nil, labResults != nil {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button {
+                        showingFHIRExport = true
+                    } label: {
+                        Image(systemName: "arrow.triangle.2.circlepath.doc.on.clipboard")
+                    }
+                }
+            }
+        }
+        .sheet(isPresented: $showingFHIRExport) {
+            if let summary = labResults {
+                FHIRExportView(source: .labFinding(finding, summary))
+            }
+        }
     }
 
     private func labDetailRow(_ label: String, _ value: String) -> some View {

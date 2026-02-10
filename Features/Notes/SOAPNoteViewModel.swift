@@ -15,7 +15,7 @@ class SOAPNoteViewModel: ObservableObject {
 
     @Published var generationState: GenerationState = .idle
     @Published var currentNote: SOAPNoteData?
-    @Published var validationErrors: [SOAPValidationError] = []
+    @Published var validationErrors: [SOAPNoteValidationError] = []
     @Published var isReviewed: Bool = false
     @Published var streamingTokens: String = ""
     @Published var streamingState: StreamingState = .idle
@@ -39,6 +39,8 @@ class SOAPNoteViewModel: ObservableObject {
 
     @Published var showError: Bool = false
     @Published var errorMessage: String = ""
+    @Published var validationFailureReason: String? = nil
+    @Published var hasValidationErrors: Bool = false
 
     // MARK: - Properties
 
@@ -91,13 +93,18 @@ class SOAPNoteViewModel: ObservableObject {
                     options: .soapGeneration
                 )
 
-                // Store in repository
+                // Store in repository (validates before persisting)
                 let noteID = try repository.save(note)
 
                 // Update UI
                 self.currentNote = note
                 self.generationState = .complete
                 self.isReviewed = false
+                self.validationErrors = []
+                self.hasValidationErrors = false
+                self.validationFailureReason = nil
+            } catch let error as SOAPNoteValidationError {
+                handleValidationError(error)
             } catch {
                 handleError(error)
             }
@@ -146,7 +153,7 @@ class SOAPNoteViewModel: ObservableObject {
 
                 let soapNote = try soapGenerator.parseResponse(streamingTokens)
 
-                // Store in repository
+                // Store in repository (validates before persisting)
                 _ = try repository.save(soapNote)
 
                 // Update UI
@@ -154,7 +161,12 @@ class SOAPNoteViewModel: ObservableObject {
                 self.streamingState = .complete
                 self.generationState = .complete
                 self.isReviewed = false
+                self.validationErrors = []
+                self.hasValidationErrors = false
+                self.validationFailureReason = nil
 
+            } catch let error as SOAPNoteValidationError {
+                handleStreamingValidationError(error)
             } catch {
                 handleStreamingError(error)
             }
@@ -261,12 +273,45 @@ class SOAPNoteViewModel: ObservableObject {
         )
     }
 
+    /// Handle validation errors specifically
+    private func handleValidationError(_ error: SOAPNoteValidationError) {
+        // Set validation error state
+        self.validationErrors = [error]
+        self.hasValidationErrors = true
+        self.validationFailureReason = error.displayMessage
+
+        // Also set generic error display for user
+        self.errorMessage = error.displayMessage
+        self.showError = true
+
+        // Mark state as validation error
+        self.generationState = .validationFailed(error)
+    }
+
+    /// Handle validation errors during streaming
+    private func handleStreamingValidationError(_ error: SOAPNoteValidationError) {
+        // Set validation error state
+        self.validationErrors = [error]
+        self.hasValidationErrors = true
+        self.validationFailureReason = error.displayMessage
+
+        // Also set generic error display for user
+        self.errorMessage = error.displayMessage
+        self.showError = true
+
+        // Mark states
+        self.streamingState = .validationFailed(error.displayMessage)
+        self.generationState = .validationFailed(error)
+    }
+
+    /// Handle generic errors (non-validation)
     private func handleError(_ error: Error) {
         errorMessage = error.localizedDescription
         showError = true
         generationState = .error(error)
     }
 
+    /// Handle generic errors during streaming (non-validation)
     private func handleStreamingError(_ error: Error) {
         errorMessage = error.localizedDescription
         showError = true
@@ -282,7 +327,7 @@ class SOAPNoteViewModel: ObservableObject {
     }
 
     var canReview: Bool {
-        generationState == .complete && currentNote != nil && !validationErrors.isEmpty == false
+        generationState == .complete && currentNote != nil && validationErrors.isEmpty
     }
 
     var canSign: Bool {
@@ -297,12 +342,15 @@ enum GenerationState: Equatable {
     case generating
     case complete
     case signed
+    case validationFailed(SOAPNoteValidationError)
     case error(Error)
 
     static func == (lhs: GenerationState, rhs: GenerationState) -> Bool {
         switch (lhs, rhs) {
         case (.idle, .idle), (.generating, .generating), (.complete, .complete), (.signed, .signed):
             return true
+        case (.validationFailed, .validationFailed):
+            return true // Simplified for Equatable
         case (.error, .error):
             return true // Simplified for Equatable
         default:
@@ -319,6 +367,66 @@ enum GenerationState: Equatable {
 
     var isComplete: Bool {
         if case .complete = self {
+            return true
+        }
+        return false
+    }
+
+    var isValidationFailed: Bool {
+        if case .validationFailed = self {
+            return true
+        }
+        return false
+    }
+
+    var isError: Bool {
+        if case .error = self {
+            return true
+        }
+        return false
+    }
+}
+
+// MARK: - Streaming State
+
+enum StreamingState: Equatable {
+    case idle
+    case generating
+    case validating
+    case complete
+    case validationFailed(String)
+    case failed(String)
+
+    var isGenerating: Bool {
+        if case .generating = self {
+            return true
+        }
+        return false
+    }
+
+    var isValidating: Bool {
+        if case .validating = self {
+            return true
+        }
+        return false
+    }
+
+    var isComplete: Bool {
+        if case .complete = self {
+            return true
+        }
+        return false
+    }
+
+    var isFailed: Bool {
+        if case .failed = self {
+            return true
+        }
+        return false
+    }
+
+    var isValidationFailed: Bool {
+        if case .validationFailed = self {
             return true
         }
         return false

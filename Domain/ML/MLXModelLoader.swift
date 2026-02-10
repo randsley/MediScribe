@@ -103,16 +103,17 @@ class MLXModelLoader {
     // MARK: - Private Methods
 
     private func setupModelPath() {
-        // Model is in ~/MediScribe/models/medgemma-1.5-4b-it-mlx
-        // Use NSSearchPathForDirectoriesInDomains for iOS compatibility
-        if let homeDir = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).first {
-            let modelDir = (homeDir as NSString).appendingPathComponent("../MediScribe/models/medgemma-1.5-4b-it-mlx")
-            modelPath = modelDir
+        // Model is bundled with the app at: MediScribe/Models/medgemma-4b-it/
+        // Use Bundle.main to access app-bundled resources
+        if let bundlePath = Bundle.main.path(forResource: "medgemma-4b-it", ofType: nil) {
+            modelPath = bundlePath
         } else {
-            // Fallback: try using app bundle
+            // Fallback: try constructing path relative to app bundle
             if let bundlePath = Bundle.main.bundlePath as String? {
-                let modelDir = (bundlePath as NSString).appendingPathComponent("../../../MediScribe/models/medgemma-1.5-4b-it-mlx")
-                modelPath = modelDir
+                let modelDir = (bundlePath as NSString).appendingPathComponent("Models/medgemma-4b-it")
+                if FileManager.default.fileExists(atPath: modelDir) {
+                    modelPath = modelDir
+                }
             }
         }
     }

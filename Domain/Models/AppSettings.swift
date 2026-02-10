@@ -20,6 +20,10 @@ struct FacilityInfo: Codable {
     var location: String = ""
     var phoneNumber: String = ""
     var email: String = ""
+    /// Optional FHIR identifier system URI for patient identifiers.
+    /// E.g. "https://fhir.nhs.uk/Id/nhs-number" or "urn:oid:2.16.840.1.113883.2.4.6.3"
+    /// Defaults to "urn:mediscribe:local" when nil.
+    var patientIdentifierSystemURI: String? = nil
 }
 
 class AppSettings: ObservableObject {

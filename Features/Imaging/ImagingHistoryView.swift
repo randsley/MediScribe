@@ -95,6 +95,14 @@ struct FindingDetailView: View {
         try? finding.getImageWithMigration()
     }
 
+    private var imagingFindingsSummary: ImagingFindingsSummary? {
+        guard let json = decryptedFindingsJSON else { return nil }
+        let decoder = JSONDecoder()
+        return try? decoder.decode(ImagingFindingsSummary.self, from: json.data(using: .utf8) ?? Data())
+    }
+
+    @State private var showingFHIRExport = false
+
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
@@ -156,6 +164,22 @@ struct FindingDetailView: View {
         }
         .navigationTitle("Finding Details")
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            if finding.reviewedAt != nil, imagingFindingsSummary != nil {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button {
+                        showingFHIRExport = true
+                    } label: {
+                        Image(systemName: "arrow.triangle.2.circlepath.doc.on.clipboard")
+                    }
+                }
+            }
+        }
+        .sheet(isPresented: $showingFHIRExport) {
+            if let summary = imagingFindingsSummary {
+                FHIRExportView(source: .imagingFinding(finding, summary))
+            }
+        }
     }
 }
 

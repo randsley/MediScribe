@@ -29,6 +29,11 @@ extension SOAPNote {
         ) as! SOAPNote
 
         try entity.update(from: noteData, encryptedBy: encryptionService)
+
+        // Populate query optimization indexes
+        entity.createdAtIndex = noteData.generatedAt
+        entity.statusIndex = noteData.validationStatus.rawValue
+
         return entity
     }
 
@@ -80,6 +85,10 @@ extension SOAPNote {
         self.clinicianReviewedBy = noteData.metadata.clinicianReviewedBy
         self.reviewedAt = noteData.metadata.reviewedAt
         self.encryptionVersion = noteData.metadata.encryptionVersion
+
+        // Update query optimization indexes
+        self.createdAtIndex = noteData.generatedAt
+        self.statusIndex = noteData.validationStatus.rawValue
     }
 
     /// Decrypt and retrieve structured SOAP note data
@@ -141,6 +150,9 @@ extension SOAPNote {
         reviewedAt = Date()
         validationStatus = ValidationStatus.reviewed.rawValue
 
+        // Update query optimization index
+        statusIndex = ValidationStatus.reviewed.rawValue
+
         // Update metadata with review information
         guard let metadataEncrypted = metadataEncrypted else {
             throw CoreDataError.missingEncryptedData
@@ -172,6 +184,9 @@ extension SOAPNote {
     ) throws {
         try markReviewed(by: clinicianIdentifier, encryptedBy: encryptionService)
         validationStatus = ValidationStatus.signed.rawValue
+
+        // Update query optimization index
+        statusIndex = ValidationStatus.signed.rawValue
     }
 
     /// Get plain text summary (without encryption overhead)
@@ -236,4 +251,64 @@ public class SOAPNote: NSManagedObject {
     // Relationships
     @NSManaged public var clinic: NSManagedObject?
     @NSManaged public var clinician: NSManagedObject?
+}
+
+// MARK: - Fetch Request Extensions
+
+extension SOAPNote {
+    /// Create a fetch request for SOAPNote entities
+    static func fetchRequest() -> NSFetchRequest<SOAPNote> {
+        return NSFetchRequest<SOAPNote>(entityName: "SOAPNote")
+    }
+
+    /// Fetch notes for a specific patient
+    /// Uses index to avoid decrypting all notes
+    static func fetchRequestForPatient(_ patientID: String) -> NSFetchRequest<SOAPNote> {
+        let request = fetchRequest()
+        request.predicate = NSPredicate(format: "patientIdentifier == %@", patientID)
+        request.sortDescriptors = [NSSortDescriptor(key: "createdAtIndex", ascending: false)]
+        return request
+    }
+
+    /// Fetch notes by validation status
+    /// Uses statusIndex for fast filtering without decryption
+    static func fetchRequestForStatus(_ status: ValidationStatus) -> NSFetchRequest<SOAPNote> {
+        let request = fetchRequest()
+        request.predicate = NSPredicate(format: "statusIndex == %@", status.rawValue)
+        request.sortDescriptors = [NSSortDescriptor(key: "createdAtIndex", ascending: false)]
+        return request
+    }
+
+    /// Fetch recent notes (default: 10)
+    /// Uses createdAtIndex for sorting without decryption
+    static func fetchRecentNotes(limit: Int = 10) -> NSFetchRequest<SOAPNote> {
+        let request = fetchRequest()
+        request.sortDescriptors = [NSSortDescriptor(key: "createdAtIndex", ascending: false)]
+        request.fetchLimit = limit
+        return request
+    }
+
+    /// Fetch notes by patient AND status
+    static func fetchRequestForPatient(_ patientID: String, status: ValidationStatus) -> NSFetchRequest<SOAPNote> {
+        let request = fetchRequest()
+        request.predicate = NSPredicate(
+            format: "patientIdentifier == %@ AND statusIndex == %@",
+            patientID,
+            status.rawValue
+        )
+        request.sortDescriptors = [NSSortDescriptor(key: "createdAtIndex", ascending: false)]
+        return request
+    }
+
+    /// Fetch notes created between two dates
+    static func fetchRequestForDateRange(_ startDate: Date, endDate: Date) -> NSFetchRequest<SOAPNote> {
+        let request = fetchRequest()
+        request.predicate = NSPredicate(
+            format: "createdAtIndex >= %@ AND createdAtIndex <= %@",
+            startDate as NSDate,
+            endDate as NSDate
+        )
+        request.sortDescriptors = [NSSortDescriptor(key: "createdAtIndex", ascending: false)]
+        return request
+    }
 }

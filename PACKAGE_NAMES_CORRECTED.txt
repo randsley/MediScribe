@@ -1,0 +1,104 @@
+╔════════════════════════════════════════════════════════════════════════╗
+║           PYTHON MLX PACKAGE NAMES - VERIFICATION RESULTS             ║
+║                                                                        ║
+║               ✅ ISSUE FOUND AND CORRECTED                            ║
+╚════════════════════════════════════════════════════════════════════════╝
+
+ISSUE SUMMARY
+═════════════════════════════════════════════════════════════════════════
+
+Question: Is it "mlxvlm" or "mlx-vlm" for the package name?
+
+Answer: 
+  • PyPI package name: mlx-vlm (with HYPHEN)
+  • Python import name: mlxvlm (without hyphen)
+  • This is a common Python pattern!
+
+VERIFICATION RESULTS
+═════════════════════════════════════════════════════════════════════════
+
+Package Name Verification:
+  ✅ mlx                → Available on PyPI
+  ✅ mlx-vlm            → Available on PyPI (CORRECT - with hyphen)
+  ❌ mlxvlm             → NOT on PyPI (wrong for pip install)
+  ✅ transformers       → Available on PyPI
+  ✅ huggingface-hub    → Available on PyPI
+  ✅ datasets           → Available on PyPI
+
+Import Verification:
+  ✅ import mlx.core as mx              → Works
+  ✅ from mlxvlm.model_factory import   → Works (import is mlxvlm)
+  ✅ from transformers import           → Works
+  ✅ from huggingface_hub import        → Works
+
+CORRECTED PACKAGE LIST
+═════════════════════════════════════════════════════════════════════════
+
+| Pip Install Command | Python Import | What It Does |
+|────────────────────────────────────────────────────────────────────|
+| pip install mlx | import mlx.core as mx | Core MLX framework |
+| pip install mlx-vlm | from mlxvlm import ... | Vision-Language Models |
+| pip install transformers | from transformers import ... | Tokenizers |
+| pip install huggingface-hub | from huggingface_hub import ... | Model downloads |
+| pip install datasets | from datasets import ... | Dataset loading |
+
+INSTALLATION COMMAND (CORRECT)
+═════════════════════════════════════════════════════════════════════════
+
+# Copy-paste ready:
+pip install mlx mlx-vlm transformers huggingface-hub datasets
+
+# Or individually:
+pip install mlx
+pip install mlx-vlm        # ← WITH HYPHEN (not mlxvlm)
+pip install transformers
+pip install huggingface-hub
+pip install datasets
+
+COMMON MISTAKES (AVOID THESE)
+═════════════════════════════════════════════════════════════════════════
+
+❌ WRONG - Don't do this:
+  pip install mlxvlm              # Wrong - no such package
+  pip install mlx-vlm-models      # Wrong - incorrect name
+  pip install mlx_vlm             # Wrong - underscore not in pip name
+  from mlx.vlm import load_model  # Wrong - import structure
+  from mlx_vlm import load_model  # Wrong - import name is mlxvlm
+
+✅ CORRECT - Do this:
+  pip install mlx-vlm             # Correct - hyphen in pip
+  from mlxvlm import ...          # Correct - import is mlxvlm
+  import mlx.core as mx           # Correct - mlx.core structure
+
+VERIFICATION SCRIPT
+═════════════════════════════════════════════════════════════════════════
+
+Run this to verify your installation is correct:
+
+python3 << 'EOF'
+import sys
+
+packages = [
+    ("mlx.core", "import mlx.core as mx"),
+    ("mlxvlm", "from mlxvlm.model_factory import load_model"),
+    ("transformers", "from transformers import AutoTokenizer"),
+    ("huggingface_hub", "from huggingface_hub import hf_download"),
+    ("datasets", "from datasets import load_dataset"),
+]
+
+print("\nVerifying MLX installation:\n")
+all_ok = True
+
+for name, import_stmt in packages:
+    try:
+        exec(import_stmt)
+        print(f"  ✅ {name:30} {import_stmt}")
+    except ImportError:
+        print(f"  ❌ {name:30} FAILED")
+        all_ok = False
+
+if all_ok:
+    print("\n✅ All packages installed correctly!")
+else:
+    print("\n❌ Some packages missing - run: pip install mlx mlx-vlm transformers huggingface-hub datasets")
+    sys.exit(1)

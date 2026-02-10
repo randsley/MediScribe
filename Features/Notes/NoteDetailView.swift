@@ -18,6 +18,7 @@ struct NoteDetailView: View {
     @State private var showingError = false
     @State private var errorMessage = ""
     @State private var fieldNote: FieldNote?
+    @State private var showingFHIRExport = false
 
     var body: some View {
         ScrollView {
@@ -57,6 +58,35 @@ struct NoteDetailView: View {
         }
         .sheet(isPresented: $showingAddendumSheet) {
             AddendumEditorView(noteEntity: noteEntity)
+        }
+        .sheet(isPresented: $showingFHIRExport) {
+            fhirExportSheet
+        }
+    }
+
+    @ViewBuilder
+    private var fhirExportSheet: some View {
+        // FHIR export requires a SOAPNoteData; this view uses legacy Note entity.
+        // Show a message directing to the SOAP note export flow.
+        NavigationStack {
+            VStack(spacing: 16) {
+                Image(systemName: "arrow.triangle.2.circlepath.doc.on.clipboard")
+                    .font(.largeTitle)
+                    .foregroundStyle(.blue)
+                Text("FHIR Export")
+                    .font(.title2.bold())
+                Text("To export a FHIR R4 bundle, use the SOAP Note workflow to generate and review a structured note, then export from the SOAP note review screen.")
+                    .multilineTextAlignment(.center)
+                    .foregroundStyle(.secondary)
+                    .padding(.horizontal)
+            }
+            .padding()
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Done") { showingFHIRExport = false }
+                }
+            }
         }
     }
 
@@ -222,6 +252,14 @@ struct NoteDetailView: View {
                     showingAddendumSheet = true
                 }) {
                     Label("Add Addendum", systemImage: "doc.append")
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.bordered)
+
+                Button(action: {
+                    showingFHIRExport = true
+                }) {
+                    Label("Export as FHIR R4", systemImage: "arrow.triangle.2.circlepath.doc.on.clipboard")
                         .frame(maxWidth: .infinity)
                 }
                 .buttonStyle(.bordered)

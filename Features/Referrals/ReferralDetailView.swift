@@ -16,6 +16,7 @@ struct ReferralDetailView: View {
     @State private var editSummary = ""
     @State private var showingSaveError = false
     @State private var saveErrorMessage = ""
+    @State private var showingFHIRExport = false
 
     private var decryptedReason: String {
         (try? referral.getReasonWithMigration()) ?? ""
@@ -177,6 +178,11 @@ struct ReferralDetailView: View {
                                 Text("Mark Sent")
                             }
                         }
+                        Button {
+                            showingFHIRExport = true
+                        } label: {
+                            Image(systemName: "arrow.triangle.2.circlepath.doc.on.clipboard")
+                        }
                     }
                 }
             }
@@ -185,6 +191,9 @@ struct ReferralDetailView: View {
             Button("OK", role: .cancel) { }
         } message: {
             Text(saveErrorMessage)
+        }
+        .sheet(isPresented: $showingFHIRExport) {
+            FHIRExportView(source: .referral(referral))
         }
     }
 

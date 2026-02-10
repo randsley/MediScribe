@@ -76,6 +76,21 @@ struct SettingsView: View {
                     .padding(.vertical, 4)
                 }
 
+                // MARK: - Export & Interoperability
+                Section("Export & Interoperability") {
+                    NavigationLink(destination: FHIRInteroperabilityView(appSettings: appSettings)) {
+                        HStack {
+                            Image(systemName: "arrow.triangle.2.circlepath.doc.on.clipboard")
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text("FHIR R4 / IPS Export")
+                                Text("EU Base · EHDS · IPS")
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                            }
+                        }
+                    }
+                }
+
                 // MARK: - Data Management
                 Section("Data Management") {
                     NavigationLink(destination: DataExportView()) {
@@ -618,6 +633,87 @@ struct LicenseView: View {
         .padding()
         .background(Color.gray.opacity(0.05))
         .cornerRadius(8)
+    }
+}
+
+// MARK: - FHIR Interoperability View
+
+struct FHIRInteroperabilityView: View {
+    @ObservedObject var appSettings: AppSettings
+
+    @State private var identifierSystemURI: String = ""
+
+    var body: some View {
+        Form {
+            Section("Patient Identifier System") {
+                TextField(
+                    "e.g. urn:mediscribe:local",
+                    text: Binding(
+                        get: { appSettings.facilityInfo.patientIdentifierSystemURI ?? "" },
+                        set: { newVal in
+                            var updated = appSettings.facilityInfo
+                            updated.patientIdentifierSystemURI = newVal.isEmpty ? nil : newVal
+                            appSettings.facilityInfo = updated
+                        }
+                    )
+                )
+                .autocorrectionDisabled()
+                .textInputAutocapitalization(.never)
+                Text(
+                    "Identifier system URI for patient records in FHIR exports. " +
+                    "Leave blank to use \"urn:mediscribe:local\" (pseudonymous, default). " +
+                    "Examples: \"https://fhir.nhs.uk/Id/nhs-number\" (NHS), " +
+                    "\"urn:oid:2.16.840.1.113883.2.4.6.3\" (Netherlands BSN)"
+                )
+                .font(.caption)
+                .foregroundStyle(.secondary)
+            }
+
+            Section("Supported Profiles") {
+                LabeledContent("Base Standard", value: "FHIR R4")
+                LabeledContent("Patient Summary", value: "IPS (HL7 UV IPS)")
+                LabeledContent("EU Base", value: "HL7 Europe Base/Core")
+                LabeledContent("Lab Reports", value: "EU Lab IG")
+                LabeledContent("eRx (Documented)", value: "EHDS ePrescription (draft/proposal)")
+                LabeledContent("Imaging Metadata", value: "EHDS Medical Imaging")
+                LabeledContent("Output Format", value: "application/fhir+json")
+            }
+
+            Section("Privacy") {
+                VStack(alignment: .leading, spacing: 6) {
+                    Text("GDPR / De-identification")
+                        .font(.subheadline.bold())
+                    Text(
+                        "Patient.name and date-of-birth are not included in exports by default. " +
+                        "Exports use the de-identified patient identifier configured in MediScribe. " +
+                        "Only the year of birth is included when available (IPS cross-border). " +
+                        "Clinicians are responsible for ensuring export complies with applicable data protection regulations."
+                    )
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                }
+                .padding(.vertical, 4)
+            }
+
+            Section("AI Safety in FHIR Export") {
+                VStack(alignment: .leading, spacing: 6) {
+                    Text("AI-Generated Resources")
+                        .font(.subheadline.bold())
+                    Text(
+                        "AI-generated assessments are exported as ClinicalImpression (not Condition) " +
+                        "with status: in-progress. Lab and imaging findings are exported as " +
+                        "DiagnosticReport with status: preliminary. Limitations statements are " +
+                        "included in all AI-generated resource narratives. Export is blocked for " +
+                        "content that has not been clinician-reviewed."
+                    )
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                }
+                .padding(.vertical, 4)
+            }
+        }
+        .navigationTitle("FHIR Export Settings")
+        .navigationBarTitleDisplayMode(.inline)
     }
 }
 
