@@ -94,6 +94,7 @@ DerivedData/
 
 # MediScribe specific
 CLAUDE.md
+docs/
 MediScribe.xcodeproj/project.pbxproj.backup
 MediScribe.xcodeproj/project.pbxproj.backup2
 IMPLEMENTATION_SUMMARY.md
