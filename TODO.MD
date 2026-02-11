@@ -26,7 +26,7 @@
 
 ## General
 
--   **Expand Test Coverage:** Add unit tests for validators, model managers, and new features.
+-   **✅ Expand Test Coverage:** Unit tests added for validators (SOAPNoteValidator, FindingsValidator, LabResultsValidator), FHIR export (25 tests in FHIRExportTests.swift), SOAPNote Core Data, and view model error handling.
 
 ---
 
@@ -37,7 +37,7 @@
     *   **Workflow**: `.github/workflows/ci.yml`
     *   **Triggers**: Push and PR to `main` branch
     *   **Steps**: Build (Debug) → Unit Tests (MediScribeTests)
-    *   **Runner**: macOS 14 with Xcode 15.4, iPhone 15 Simulator
+    *   **Runner**: macOS 15 with Xcode 16.x, iPhone 16 Simulator
     *   **Features**: DerivedData caching, test result artifacts, concurrency control
 
 -   **✅ Deprecated ClinicalNote Entity:**
