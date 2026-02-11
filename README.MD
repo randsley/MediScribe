@@ -181,7 +181,7 @@ xcodebuild test -project MediScribe.xcodeproj -scheme MediScribe \
 
 MediScribe uses **MedGemma 4b** (MLX format). The model is **not included** in this repository.
 
-1. Obtain the model from its official source (subject to [Health AI Developer Foundations Terms of Use](https://ai.google.dev/terms))
+1. Obtain the model from its official source (subject to [Health AI Developer Foundations Terms of Use](https://developers.google.com/health-ai-developer-foundations/terms))
 2. Place the model files at `MediScribe/Models/medgemma-4b-it/`
 
 The `MediScribe/Models/` directory is gitignored to prevent accidental inclusion of large binary files.
@@ -225,4 +225,4 @@ MediScribe is **not a medical device** and does not provide medical advice, diag
 
 The source code is licensed under the **Apache 2.0 License**. See [LICENSE](LICENSE) for details.
 
-The **MedGemma** model is governed separately by the [Health AI Developer Foundations Terms of Use](https://ai.google.dev/terms) and is not included in this repository.
+The **MedGemma** model is governed separately by the [Health AI Developer Foundations Terms of Use](https://developers.google.com/health-ai-developer-foundations/terms) and is not included in this repository.
