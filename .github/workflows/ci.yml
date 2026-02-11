@@ -28,6 +28,12 @@ jobs:
       - name: Install xcpretty
         run: gem install xcpretty --no-document
 
+      - name: Create model directory stub
+        # The MedGemma model is gitignored (2.8 GB). Xcode references the folder
+        # in Copy Bundle Resources; an empty stub lets the build phase succeed.
+        # Tests do not load the model at runtime.
+        run: mkdir -p MediScribe/Models/medgemma-4b-it
+
       - name: Cache DerivedData
         uses: actions/cache@v4
         with:
