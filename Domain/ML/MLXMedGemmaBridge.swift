@@ -149,9 +149,11 @@ class MLXMedGemmaBridge {
             guard let uiImage = UIImage(data: imageData) else {
                 throw MLXModelError.invocationFailed("Failed to decode image data")
             }
-            // 224×224: (224/14)² = 256 patches → matches image_seq_length:256 exactly.
-            // SigLIP attention at 256 patches is trivial (~2MB/layer vs ~537MB at 896).
-            let maxDim: CGFloat = 224
+            // 448×448: (448/14)² = 1024 patches → pooled to 256 LM tokens (2×2 pool).
+            // Sufficient visual resolution to distinguish image modalities and read
+            // coarse text. SigLIP attention at 1024 patches: ~33MB/layer vs ~537MB
+            // at 896×896 — safe with the shortened prompt (~190 tokens, 446 total).
+            let maxDim: CGFloat = 448
             let longest = max(uiImage.size.width, uiImage.size.height)
             let inferenceImage: UIImage
             if longest > maxDim {
@@ -280,7 +282,7 @@ class MLXMedGemmaBridge {
                         guard let uiImage = UIImage(data: imageData) else {
                             throw MLXModelError.invocationFailed("Failed to decode image data")
                         }
-                        let maxDim: CGFloat = 224
+                        let maxDim: CGFloat = 448
                         let longest = max(uiImage.size.width, uiImage.size.height)
                         let inferenceImage: UIImage
                         if longest > maxDim {
