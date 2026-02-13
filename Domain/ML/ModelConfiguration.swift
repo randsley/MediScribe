@@ -52,11 +52,11 @@ struct ModelConfiguration {
     // MARK: - Inference Configuration
 
     /// Default maximum tokens for imaging findings.
-    /// 256 tokens: the required JSON schema is ~150-200 tokens; 256 gives
-    /// enough headroom for the JSON body. Keeping this low reduces the number
-    /// of LM decode steps and the associated MLX GPU buffer accumulation that
-    /// can cause jetsam OOM kills on long generation runs.
-    static let defaultImagingMaxTokens = 256
+    /// 384 tokens: JSON schema is ~150-200 tokens; headroom absorbs model preamble.
+    /// Crash was caused by O(n²) prefill attention (596 prompt+image tokens), not
+    /// by the decode length. Prefill is now safe at ~450 tokens total; decode
+    /// memory is stable and grows very slowly (~0.1MB/token observed on device).
+    static let defaultImagingMaxTokens = 384
 
     /// Default maximum tokens for lab results
     static let defaultLabMaxTokens = 1536
