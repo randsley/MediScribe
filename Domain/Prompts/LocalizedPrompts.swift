@@ -42,13 +42,16 @@ struct LocalizedPrompts {
     // MARK: - English Prompts
 
     private func englishImagingPrompt(_ imageContext: String) -> String {
-        // Keep this prompt short — prefill processes (image tokens + prompt tokens)
-        // together through all LM layers; O(n²) attention means every extra token
-        // costs quadratically in memory. Target ≤ 120 prompt tokens.
+        // Budget: prefill runs (256 image tokens + N prompt tokens) through all LM
+        // layers; O(n²) attention. At 596 tokens total this crashed; safe limit is
+        // ~450 tokens total. Keep this prompt under ~190 tokens.
         return """
-        Look at this medical image. Output ONLY the JSON below — no text before or after, no markdown.
-        Neutral descriptive language only: no diagnosis, no disease names, no probabilities.
-        {"image_type":"","image_quality":"","anatomical_observations":{"<key>":["<observation>"]},"comparison_with_prior":"No prior image available for comparison.","areas_highlighted":"No highlighted areas provided.","limitations":"This summary describes visible image features only and does not assess clinical significance or provide a diagnosis."}
+        Look at this medical image. Output ONLY the JSON object below — no text before or after, no markdown.
+        Be specific: describe actual visible features of THIS image. Do NOT use generic placeholders like "Medical Image" or "Unknown".
+        Neutral language only — no diagnosis, no disease names, no probabilities.
+        For "image_type" give the actual modality and view (e.g. "PA chest radiograph", "Fetal ultrasound", "Echocardiogram apical 4-chamber").
+        Values in "anatomical_observations" must be arrays of strings. Keep all fields inside one JSON object.
+        {"image_type":"","image_quality":"","anatomical_observations":{"<key>":["<specific finding>"]},"comparison_with_prior":"No prior image available for comparison.","areas_highlighted":"No highlighted areas provided.","limitations":"This summary describes visible image features only and does not assess clinical significance or provide a diagnosis."}
         """
     }
 
@@ -87,8 +90,11 @@ struct LocalizedPrompts {
     private func spanishImagingPrompt(_ imageContext: String) -> String {
         return """
         Observa esta imagen médica. Genera SOLO el JSON siguiente — sin texto antes o después, sin markdown.
-        Solo lenguaje descriptivo neutral: sin diagnóstico, sin nombres de enfermedades, sin probabilidades.
-        {"image_type":"","image_quality":"","anatomical_observations":{"<clave>":["<observación>"]},"comparison_with_prior":"No prior image available for comparison.","areas_highlighted":"No highlighted areas provided.","limitations":"This summary describes visible image features only and does not assess clinical significance or provide a diagnosis."}
+        Sé específico: describe características visibles reales. No uses términos genéricos como "Imagen médica" o "Desconocido".
+        Solo lenguaje neutral — sin diagnóstico, sin nombres de enfermedades, sin probabilidades.
+        En "image_type" indica la modalidad real (ej. "Radiografía PA de tórax", "Ecografía fetal").
+        Los valores en "anatomical_observations" deben ser arrays. Todos los campos en un solo objeto JSON.
+        {"image_type":"","image_quality":"","anatomical_observations":{"<clave>":["<hallazgo específico>"]},"comparison_with_prior":"No prior image available for comparison.","areas_highlighted":"No highlighted areas provided.","limitations":"This summary describes visible image features only and does not assess clinical significance or provide a diagnosis."}
         """
     }
 
@@ -127,8 +133,11 @@ struct LocalizedPrompts {
     private func frenchImagingPrompt(_ imageContext: String) -> String {
         return """
         Examinez cette image médicale. Générez UNIQUEMENT le JSON ci-dessous — aucun texte avant ou après, aucun markdown.
-        Langage descriptif neutre uniquement : pas de diagnostic, pas de noms de maladies, pas de probabilités.
-        {"image_type":"","image_quality":"","anatomical_observations":{"<clé>":["<observation>"]},"comparison_with_prior":"No prior image available for comparison.","areas_highlighted":"No highlighted areas provided.","limitations":"This summary describes visible image features only and does not assess clinical significance or provide a diagnosis."}
+        Soyez précis : décrivez les caractéristiques visibles réelles. N'utilisez pas de termes génériques comme "Image médicale" ou "Inconnu".
+        Langage neutre uniquement — pas de diagnostic, pas de noms de maladies, pas de probabilités.
+        Dans "image_type" indiquez la modalité réelle (ex. "Radiographie thoracique PA", "Échographie fœtale").
+        Les valeurs dans "anatomical_observations" doivent être des tableaux. Tous les champs dans un seul objet JSON.
+        {"image_type":"","image_quality":"","anatomical_observations":{"<clé>":["<observation spécifique>"]},"comparison_with_prior":"No prior image available for comparison.","areas_highlighted":"No highlighted areas provided.","limitations":"This summary describes visible image features only and does not assess clinical significance or provide a diagnosis."}
         """
     }
 
@@ -167,8 +176,11 @@ struct LocalizedPrompts {
     private func portugueseImagingPrompt(_ imageContext: String) -> String {
         return """
         Examine esta imagem médica. Gere APENAS o JSON abaixo — sem texto antes ou depois, sem markdown.
-        Linguagem descritiva neutra apenas: sem diagnóstico, sem nomes de doenças, sem probabilidades.
-        {"image_type":"","image_quality":"","anatomical_observations":{"<chave>":["<observação>"]},"comparison_with_prior":"No prior image available for comparison.","areas_highlighted":"No highlighted areas provided.","limitations":"This summary describes visible image features only and does not assess clinical significance or provide a diagnosis."}
+        Seja específico: descreva características visíveis reais. Não use termos genéricos como "Imagem médica" ou "Desconhecido".
+        Linguagem neutra apenas — sem diagnóstico, sem nomes de doenças, sem probabilidades.
+        Em "image_type" indique a modalidade real (ex. "Radiografia PA de tórax", "Ultrassom fetal").
+        Os valores em "anatomical_observations" devem ser arrays. Todos os campos em um único objeto JSON.
+        {"image_type":"","image_quality":"","anatomical_observations":{"<chave>":["<achado específico>"]},"comparison_with_prior":"No prior image available for comparison.","areas_highlighted":"No highlighted areas provided.","limitations":"This summary describes visible image features only and does not assess clinical significance or provide a diagnosis."}
         """
     }
 
