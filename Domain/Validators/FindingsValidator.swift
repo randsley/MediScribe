@@ -18,10 +18,6 @@ final class FindingsValidator {
         "comparison_with_prior", "areas_highlighted", "limitations"
     ]
 
-    private static let allowedAnatomyKeys: Set<String> = [
-        "lungs", "pleural_regions", "cardiomediastinal_silhouette", "bones_and_soft_tissues"
-    ]
-
     /// Validates imaging findings JSON against all safety rules
     /// Throws FindingsValidationError if any rule is violated
     static func decodeAndValidate(_ data: Data, language: Language = .english) throws -> ImagingFindingsSummary {
@@ -30,19 +26,15 @@ final class FindingsValidator {
             throw FindingsValidationError.invalidJSON
         }
 
-        // Validate top-level keys
+        // Validate top-level keys — no extra keys allowed
         let rawKeys = Set(raw.keys)
         if !rawKeys.isSubset(of: allowedTopLevelKeys) {
             throw FindingsValidationError.extraTopLevelKeys(found: rawKeys, allowed: allowedTopLevelKeys)
         }
 
-        // Validate anatomy keys
-        if let anatomy = raw["anatomical_observations"] as? [String: Any] {
-            let anatomyKeys = Set(anatomy.keys)
-            if !anatomyKeys.isSubset(of: allowedAnatomyKeys) {
-                throw FindingsValidationError.extraAnatomyKeys(found: anatomyKeys, allowed: allowedAnatomyKeys)
-            }
-        }
+        // Anatomy keys are intentionally NOT validated against a fixed list.
+        // The model uses keys appropriate to the actual image modality
+        // (e.g. chest X-ray vs ultrasound vs echocardiogram).
 
         // Decode to typed model
         let decoded = try JSONDecoder().decode(ImagingFindingsSummary.self, from: data)
@@ -67,10 +59,8 @@ final class FindingsValidator {
         var parts: [String] = []
         parts.append(s.imageType)
         parts.append(s.imageQuality)
-        parts.append(contentsOf: s.anatomicalObservations.lungs)
-        parts.append(contentsOf: s.anatomicalObservations.pleuralRegions)
-        parts.append(contentsOf: s.anatomicalObservations.cardiomediastinalSilhouette)
-        parts.append(contentsOf: s.anatomicalObservations.bonesAndSoftTissues)
+        // Scan all observation values regardless of which keys the model used
+        parts.append(contentsOf: s.anatomicalObservations.structures.values.flatMap { $0 })
         parts.append(s.comparisonWithPrior)
         parts.append(s.areasHighlighted)
         // NOTE: intentionally exclude s.limitations

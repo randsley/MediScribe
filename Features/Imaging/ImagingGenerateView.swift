@@ -162,8 +162,8 @@ struct ImagingGenerateView: View {
             // Create inference options with language and localized prompt
             let options = InferenceOptions(
                 timeout: 60.0,
-                temperature: 0.2,
-                maxTokens: 1024,
+                temperature: 0.35,
+                maxTokens: ModelConfiguration.defaultImagingMaxTokens,
                 systemPrompt: prompt,
                 language: language
             )

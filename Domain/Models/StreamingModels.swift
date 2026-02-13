@@ -22,47 +22,6 @@ struct StreamingTokenUpdate {
     }
 }
 
-/// Streaming state for real-time generation progress
-enum StreamingState: Equatable {
-    case idle
-    case generating
-    case validating
-    case complete
-    case failed(String)
-
-    var isGenerating: Bool {
-        if case .generating = self {
-            return true
-        }
-        return false
-    }
-
-    var isValidating: Bool {
-        if case .validating = self {
-            return true
-        }
-        return false
-    }
-
-    var isComplete: Bool {
-        if case .complete = self {
-            return true
-        }
-        return false
-    }
-
-    static func == (lhs: StreamingState, rhs: StreamingState) -> Bool {
-        switch (lhs, rhs) {
-        case (.idle, .idle), (.generating, .generating), (.validating, .validating), (.complete, .complete):
-            return true
-        case let (.failed(lMsg), .failed(rMsg)):
-            return lMsg == rMsg
-        default:
-            return false
-        }
-    }
-}
-
 /// Progress information for streaming generation
 struct StreamingProgress {
     let tokensGenerated: Int

@@ -85,6 +85,10 @@ DerivedData/
 *.sqlite3
 # Models
 /Models/
+MediScribe/Models/
+# Python
+__pycache__/
+*.pyc
 # Backups
 *.backup
 *.backup2

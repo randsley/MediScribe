@@ -148,7 +148,7 @@ class MLXModelInferenceTests: XCTestCase {
 
     /// Test 9: InferenceOptions structure
     func testInferenceOptions() {
-        let options = InferenceOptions(
+        let options = MLXInferenceOptions(
             maxTokens: 1024,
             temperature: 0.3,
             topP: 0.9,

@@ -21,11 +21,14 @@
 		094F5F6315EF71BDCE3EAA49 /* KeychainManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = SEC002REF2024010100000002 /* KeychainManager.swift */; };
 		0A1B2FFA22091CDB007867A7 /* Finding+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46D5BFD5D672CBF9647F85C4 /* Finding+CoreDataProperties.swift */; };
 		0A28E2F122E2F2AE49F9238E /* LabsHistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = N4M3L2K1J0I9H8G7F6E5D4C3 /* LabsHistoryView.swift */; };
+		0A7A0724C8191597F9BA9F50 /* ModelConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 98B4ED3A2D1A550A91C766B2 /* ModelConfiguration.swift */; };
 		0B83E3949E470CE410968AFD /* FHIRClinicalImpression.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9435714996AE2FC0D7902D06 /* FHIRClinicalImpression.swift */; };
 		0F53EB3A86762721A51D2422 /* AnatomicalObservations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0152C577A8AF7025A06A6BEF /* AnatomicalObservations.swift */; };
 		10FB25A71BC379511CB889D7 /* NoteTriage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 026FA99E2F2034AC001228BC /* NoteTriage.swift */; };
 		12B1D5A57BB92901CCE25DD4 /* FHIRLabMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 382548D994BE27C3780955C4 /* FHIRLabMapper.swift */; };
 		15538BCD0F4DF383D73BB1DD /* EUBaseProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = E841F5F37F37276DA4D4355C /* EUBaseProfile.swift */; };
+		17EC4944AB35CE57F6AF3AE1 /* SOAPNoteParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE812813B95F5781F9173DB0 /* SOAPNoteParser.swift */; };
+		18E8770C83C6E91CC9A608A8 /* InferenceOptions.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE9ACFDC64DF8699CB6E9CEF /* InferenceOptions.swift */; };
 		1B1AF727EAE538B1830D4ACB /* DocumentType.swift in Sources */ = {isa = PBXBuildFile; fileRef = S9R8Q7P6O5N4M3L2K1J0I9H8 /* DocumentType.swift */; };
 		1DA74D7FF5A3D9CD2EA3DC7F /* FHIRPractitioner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 67CF4851585FFF5CC7148D93 /* FHIRPractitioner.swift */; };
 		2183E46DEE0AA1E5E70F38E9 /* Referral+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 439664C5284D158F9A21A0D7 /* Referral+CoreDataClass.swift */; };
@@ -35,30 +38,35 @@
 		28C3DDF587A9A502F85087EF /* LabValidationError.swift in Sources */ = {isa = PBXBuildFile; fileRef = Q7P6O5N4M3L2K1J0I9H8G7F6 /* LabValidationError.swift */; };
 		29CEA4E6C3D270035761EE36 /* PlaceholderImagingModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27D2058574E80D2A27786BC7 /* PlaceholderImagingModel.swift */; };
 		2A4AAE7D667CCA2A1F10F34E /* OrganSystemExamInput.swift in Sources */ = {isa = PBXBuildFile; fileRef = NOTES005REF00000000005 /* OrganSystemExamInput.swift */; };
-		2B2E7B7FAD7ECF142B6F63D4 /* ReferralDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = REFRL001DET0000000002 /* ReferralDetailView.swift */; };
+		2B2E7B7FAD7ECF142B6F63D4 /* Features/Referrals/ReferralDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = REFRL001DET0000000002 /* Features/Referrals/ReferralDetailView.swift */; };
+		30A93877075AFB47EA7A3E2B /* Patient+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = E19E0475FD42C2BCB68F0805 /* Patient+CoreDataProperties.swift */; };
 		33496EC919449C014F7A7C42 /* NoteDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = NOTES002REF00000000002 /* NoteDetailView.swift */; };
 		339F14B5121B6E58D1339F22 /* Note+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 026FA9B12F203943001228BC /* Note+CoreDataClass.swift */; };
+		37B7A6121E1EF0F79AFD2F6D /* PatientContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81B4C9FEB3C76F7F49505EAC /* PatientContext.swift */; };
 		3E840674E268E57F4EF49F66 /* NoteAddendum+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = B926090DA2B90CDEC028343C /* NoteAddendum+CoreDataProperties.swift */; };
 		3EB8072A4E731D018793AB3E /* NoteHandoff.swift in Sources */ = {isa = PBXBuildFile; fileRef = 026FA9972F2034AC001228BC /* NoteHandoff.swift */; };
-		4D273F3C6A12FF8779F6BA7D /* AppSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = APPSET001REF0000000001 /* AppSettings.swift */; };
+		4D273F3C6A12FF8779F6BA7D /* Domain/Models/AppSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = APPSET001REF0000000001 /* Domain/Models/AppSettings.swift */; };
 		50C4C02C90E820BED54352BB /* ImagingHistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 022AD76D2F1ED92A004D771E /* ImagingHistoryView.swift */; };
 		519F4E286825AC79374B6363 /* NoteSubjective.swift in Sources */ = {isa = PBXBuildFile; fileRef = 026FA99D2F2034AC001228BC /* NoteSubjective.swift */; };
 		57224BE5A52164C144FC278D /* LabsHomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = L2K1J0I9H8G7F6E5D4C3B2A1 /* LabsHomeView.swift */; };
 		5C8DE622D9C63DCB55B4BB09 /* FHIRReferralMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A3320BE325053AE02195F1D /* FHIRReferralMapper.swift */; };
 		5F8B1E1734C464C8663B69D3 /* FHIRImagingMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14041BF6DE003B3DAFD7D51B /* FHIRImagingMapper.swift */; };
 		5FAD818BE3AAE53FD5A18CE3 /* FieldOptimizedComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = UI001REF000000000001 /* FieldOptimizedComponents.swift */; };
+		5FD4D190946BF89088202341 /* SOAPNoteGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = F06B815613E3E0BA0FD88F9A /* SOAPNoteGenerator.swift */; };
 		612BE3E7F938E6AEFEFD9945 /* FHIRBundlePreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF3F1FFC591F0A441786D117 /* FHIRBundlePreviewView.swift */; };
 		619AEBBAE84927B90C3A7AB1 /* FHIRDiagnosticReport.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6D8A1BB0B3E2A800665C781 /* FHIRDiagnosticReport.swift */; };
 		6237D2B4C51E05A8A79B2F24 /* NoteProblem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 026FA99C2F2034AC001228BC /* NoteProblem.swift */; };
 		633125159C6A46A2D117196B /* ReferralsHomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 022AD76F2F1ED970004D771E /* ReferralsHomeView.swift */; };
 		662F4E5A6E5585ED10ABC90E /* FHIRMedicationStatement.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39CAA7C6BB08FACDCC207B38 /* FHIRMedicationStatement.swift */; };
 		690B93D73BE915DA5A1689D2 /* FHIRBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0DFBD13E7928B6FCB891629 /* FHIRBundle.swift */; };
+		6AA7E08DFA2F14C0FC93A207 /* SOAPNoteRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BD1487E50C03DC3E6EA6270 /* SOAPNoteRepository.swift */; };
 		6B4DFE1E52D82BB2B6F75EF7 /* Referral+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD98E5A450FEA2880A43D12E /* Referral+CoreDataProperties.swift */; };
 		6D5110DAB4BA9623ECACBEA7 /* Language.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E650E42CA8D3A6381B74263 /* Language.swift */; };
 		6FD815B23962B72CC0831CA4 /* NoteEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = NOTES001REF00000000001 /* NoteEditorView.swift */; };
 		7215E2E5C8F77069EDB8B8B2 /* FHIRVitalsMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0960045A720B3DED301EE9DC /* FHIRVitalsMapper.swift */; };
 		795B6AE154151AC9E7E1CDEA /* NoteIntervention.swift in Sources */ = {isa = PBXBuildFile; fileRef = 026FA9982F2034AC001228BC /* NoteIntervention.swift */; };
 		7ABFB6442ADD42042A88CD57 /* FindingsValidationError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41927F759BFD5E6FE051A08D /* FindingsValidationError.swift */; };
+		7B83276C2142F99785C5FBE4 /* Patient+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 812A03C16A8D8458ED85D366 /* Patient+CoreDataClass.swift */; };
 		7C9423CC8EB0A03230FC1FFA /* NoteAssessment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 026FA9962F2034AC001228BC /* NoteAssessment.swift */; };
 		7E956065DF1F1D67F8229167 /* FHIROrganization.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C2165C74C3AFAFAA281A19F /* FHIROrganization.swift */; };
 		7F356FD398957E81D093622D /* FHIRImagingStudy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31A83F91A43DD962DC6BA63F /* FHIRImagingStudy.swift */; };
@@ -73,12 +81,17 @@
 		88156639A5424108C6CF9E2A /* FieldOptimizedVitalsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = NOTES004REF00000000004 /* FieldOptimizedVitalsView.swift */; };
 		8DC490C1B34C9983E850C0EF /* MLXModelLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14C68110D115AD7F21AFECFB /* MLXModelLoader.swift */; };
 		8E3E8A10CA9CA4C47F6B1A13 /* ImagingFindingsSummary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A8EE4D08CD515CCA250F3F7 /* ImagingFindingsSummary.swift */; };
+		9763AAE9391E7F3F4E6C9C7A /* SOAPNoteViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD7CDFCB4BB9045A04141E34 /* SOAPNoteViewModel.swift */; };
 		9935E074C38B4C946E0F09F9 /* NotePlan.swift in Sources */ = {isa = PBXBuildFile; fileRef = 026FA99B2F2034AC001228BC /* NotePlan.swift */; };
 		9C5EE961A4D9B4CE0A9250A3 /* SBARView.swift in Sources */ = {isa = PBXBuildFile; fileRef = NOTES003REF00000000003 /* SBARView.swift */; };
+		9CB6B635B06794156BCB78A3 /* SOAPNote+CoreData.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6C5B7C4EDE2AFB41F6C440E /* SOAPNote+CoreData.swift */; };
+		9D3F728931C17817DAD0C5CC /* ModelDownloader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10A16B777444A288F17D0018 /* ModelDownloader.swift */; };
 		9DBC48256FCECFC4165B828C /* FHIREncounter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28FD834D17F7BF27511919C2 /* FHIREncounter.swift */; };
+		A102F0AD45F575E0B301E897 /* SOAPNoteInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0338D2AE35F5A88792AFC86D /* SOAPNoteInputView.swift */; };
 		A56091C66E71E034AD641B4F /* EHDSProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3A08DCADF564971BBF898EA /* EHDSProfile.swift */; };
+		A669B3D1D84FCA408D68F740 /* SOAPNoteValidator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30A2DF833A12E54887D0DD4A /* SOAPNoteValidator.swift */; };
 		A998EAFEA94DDD75E24A51BD /* FHIRExportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F91C1F0D1AA0A6B1530C8838 /* FHIRExportView.swift */; };
-		AA89F9902CFF46D828232723 /* ReferralCreationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = REFRL001CRE0000000001 /* ReferralCreationView.swift */; };
+		AA89F9902CFF46D828232723 /* Features/Referrals/ReferralCreationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = REFRL001CRE0000000001 /* Features/Referrals/ReferralCreationView.swift */; };
 		AB7E0E337447E22F516A1B98 /* FHIRMedia.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA6CB7CD9D3AB25D1A7526BD /* FHIRMedia.swift */; };
 		AC8C59760BD61DC9842A5CB7 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 022AD7652F1ED791004D771E /* RootView.swift */; };
 		B43F5C11537C7ED613955FE3 /* ImagingModelProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5068F406A5B495B7F39BCECE /* ImagingModelProtocol.swift */; };
@@ -95,16 +108,18 @@
 		E208B157CDA0599275A390C8 /* ImagingHomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 022AD7692F1ED857004D771E /* ImagingHomeView.swift */; };
 		E22ECBD1FE0B6E8511E78E18 /* FHIRPatientMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = A283EB10B8047E7271B606AA /* FHIRPatientMapper.swift */; };
 		E46E59781ED7F80D52E83369 /* FHIRObservation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9ECAF8DF05D59F19364EEB79 /* FHIRObservation.swift */; };
+		E792293D4AA83CFD81909B77 /* StreamingModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBD7BB98D62C8D07A49685CB /* StreamingModels.swift */; };
 		E7FCE535458321EA14C360C8 /* FHIRBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6AE436CBABF29EB4CD24C2E1 /* FHIRBase.swift */; };
+		E82865E0340DEA5C26835D87 /* SOAPNoteGeneratorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CA0E11B45071AA9BA72C431 /* SOAPNoteGeneratorView.swift */; };
 		EA17511AB8F88B6A4733C2EA /* FHIRExportTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D749CEE71CCEC64B1A873E5A /* FHIRExportTests.swift */; };
 		EA8D326BF3DAC575DB0654DB /* ImagingGenerateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 022AD76B2F1ED8A2004D771E /* ImagingGenerateView.swift */; };
 		ECD331B3E4F2EDEB2EEB1D0F /* Finding+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55A12A1E29C0EA1A7D5BDA65 /* Finding+CoreDataClass.swift */; };
 		EDD0BEA7DB256E8971B9EC86 /* NoteAddendum+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B06EE87C4BC35D52B6DFE82 /* NoteAddendum+CoreDataClass.swift */; };
+		F10F0CB7F3626360232A5D55 /* SOAPNoteReviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08140FC64BA2D5BD2463EBA8 /* SOAPNoteReviewView.swift */; };
 		F17DC368FB41AF175134C7F1 /* LabsProcessView.swift in Sources */ = {isa = PBXBuildFile; fileRef = O5N4M3L2K1J0I9H8G7F6E5D4 /* LabsProcessView.swift */; };
 		F536C1AEE13FFCD215F4052F /* FHIRPatient.swift in Sources */ = {isa = PBXBuildFile; fileRef = B954BD8241A67B6A69973341 /* FHIRPatient.swift */; };
 		F598E34E78F889BC1BDC14B5 /* ImagingModelManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C71C7FD89938FA7D333F195 /* ImagingModelManager.swift */; };
 		LOCPROMPTS001BLD00000001 /* LocalizedPrompts.swift in Sources */ = {isa = PBXBuildFile; fileRef = LOCPROMPTS001REF00000001 /* LocalizedPrompts.swift */; };
-		MODELS_BUILD_5A950CA3FB230ECF /* medgemma-4b-it in Resources */ = {isa = PBXBuildFile; fileRef = MODELS_REF_EA35DA1F06BFA20D /* medgemma-4b-it */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -151,12 +166,15 @@
 		026FA99E2F2034AC001228BC /* NoteTriage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteTriage.swift; sourceTree = "<group>"; };
 		026FA9B12F203943001228BC /* Note+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "Note+CoreDataClass.swift"; path = "Domain/Models/CoreData/Note+CoreDataClass.swift"; sourceTree = "<group>"; };
 		026FA9B22F203943001228BC /* Note+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "Note+CoreDataProperties.swift"; path = "Domain/Models/CoreData/Note+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		0338D2AE35F5A88792AFC86D /* SOAPNoteInputView.swift */ = {isa = PBXFileReference; explicitFileType = sourcecode.swift; includeInIndex = 1; name = SOAPNoteInputView.swift; path = ./Features/Notes/SOAPNoteInputView.swift; sourceTree = "<group>"; };
 		050375340703414581755062 /* MediScribe.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = MediScribe.xcconfig; sourceTree = "<group>"; };
 		06806BDBE1AF1FEF790CDE6D /* FHIRComposition.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = FHIRComposition.swift; path = Domain/Export/FHIR/Resources/FHIRComposition.swift; sourceTree = "<group>"; };
+		08140FC64BA2D5BD2463EBA8 /* SOAPNoteReviewView.swift */ = {isa = PBXFileReference; explicitFileType = sourcecode.swift; includeInIndex = 1; name = SOAPNoteReviewView.swift; path = ./Features/Notes/SOAPNoteReviewView.swift; sourceTree = "<group>"; };
 		0960045A720B3DED301EE9DC /* FHIRVitalsMapper.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = FHIRVitalsMapper.swift; path = Domain/Export/FHIR/Mappers/FHIRVitalsMapper.swift; sourceTree = "<group>"; };
 		0A4FD5959A160A596A5F390A /* FindingsValidator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FindingsValidator.swift; sourceTree = "<group>"; };
 		0C71C7FD89938FA7D333F195 /* ImagingModelManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagingModelManager.swift; sourceTree = "<group>"; };
 		0DDE81485BAEFF6C7F8020DF /* TextSanitizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextSanitizer.swift; sourceTree = "<group>"; };
+		10A16B777444A288F17D0018 /* ModelDownloader.swift */ = {isa = PBXFileReference; explicitFileType = sourcecode.swift; includeInIndex = 1; name = ModelDownloader.swift; path = ./Domain/ML/ModelDownloader.swift; sourceTree = "<group>"; };
 		14041BF6DE003B3DAFD7D51B /* FHIRImagingMapper.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = FHIRImagingMapper.swift; path = Domain/Export/FHIR/Mappers/FHIRImagingMapper.swift; sourceTree = "<group>"; };
 		14C68110D115AD7F21AFECFB /* MLXModelLoader.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MLXModelLoader.swift; path = Domain/ML/MLXModelLoader.swift; sourceTree = "<group>"; };
 		23EC53F6AD5BE193F7BC3407 /* ImagingFindingsSummary.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ImagingFindingsSummary.swift; path = Domain/Models/ImagingFindingsSummary.swift; sourceTree = "<group>"; };
@@ -164,6 +182,7 @@
 		28FD834D17F7BF27511919C2 /* FHIREncounter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = FHIREncounter.swift; path = Domain/Export/FHIR/Resources/FHIREncounter.swift; sourceTree = "<group>"; };
 		2B06EE87C4BC35D52B6DFE82 /* NoteAddendum+CoreDataClass.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "NoteAddendum+CoreDataClass.swift"; sourceTree = "<group>"; };
 		2CCF8E1379A621337B9599C7 /* IPSProfile.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = IPSProfile.swift; path = Domain/Export/FHIR/Profiles/IPSProfile.swift; sourceTree = "<group>"; };
+		30A2DF833A12E54887D0DD4A /* SOAPNoteValidator.swift */ = {isa = PBXFileReference; explicitFileType = sourcecode.swift; includeInIndex = 1; name = SOAPNoteValidator.swift; path = ./Domain/Validators/SOAPNoteValidator.swift; sourceTree = "<group>"; };
 		31A83F91A43DD962DC6BA63F /* FHIRImagingStudy.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = FHIRImagingStudy.swift; path = Domain/Export/FHIR/Resources/FHIRImagingStudy.swift; sourceTree = "<group>"; };
 		382548D994BE27C3780955C4 /* FHIRLabMapper.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = FHIRLabMapper.swift; path = Domain/Export/FHIR/Mappers/FHIRLabMapper.swift; sourceTree = "<group>"; };
 		39CAA7C6BB08FACDCC207B38 /* FHIRMedicationStatement.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = FHIRMedicationStatement.swift; path = Domain/Export/FHIR/Resources/FHIRMedicationStatement.swift; sourceTree = "<group>"; };
@@ -178,9 +197,14 @@
 		6AE436CBABF29EB4CD24C2E1 /* FHIRBase.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = FHIRBase.swift; path = Domain/Export/FHIR/Resources/FHIRBase.swift; sourceTree = "<group>"; };
 		72DAF5FBCA4D83ACA48B726C /* FindingsValidator.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = FindingsValidator.swift; path = Domain/Validators/FindingsValidator.swift; sourceTree = "<group>"; };
 		7A3320BE325053AE02195F1D /* FHIRReferralMapper.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = FHIRReferralMapper.swift; path = Domain/Export/FHIR/Mappers/FHIRReferralMapper.swift; sourceTree = "<group>"; };
+		7BD1487E50C03DC3E6EA6270 /* SOAPNoteRepository.swift */ = {isa = PBXFileReference; explicitFileType = sourcecode.swift; includeInIndex = 1; name = SOAPNoteRepository.swift; path = ./Domain/Services/SOAPNoteRepository.swift; sourceTree = "<group>"; };
 		7C2165C74C3AFAFAA281A19F /* FHIROrganization.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = FHIROrganization.swift; path = Domain/Export/FHIR/Resources/FHIROrganization.swift; sourceTree = "<group>"; };
+		812A03C16A8D8458ED85D366 /* Patient+CoreDataClass.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "Patient+CoreDataClass.swift"; path = "Domain/Models/CoreData/Patient+CoreDataClass.swift"; sourceTree = SOURCE_ROOT; };
+		81B4C9FEB3C76F7F49505EAC /* PatientContext.swift */ = {isa = PBXFileReference; explicitFileType = sourcecode.swift; includeInIndex = 1; name = PatientContext.swift; path = ./Domain/Models/PatientContext.swift; sourceTree = "<group>"; };
 		87146FF9005D37461C384DC6 /* FHIRSOAPNoteMapper.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = FHIRSOAPNoteMapper.swift; path = Domain/Export/FHIR/Mappers/FHIRSOAPNoteMapper.swift; sourceTree = "<group>"; };
+		8CA0E11B45071AA9BA72C431 /* SOAPNoteGeneratorView.swift */ = {isa = PBXFileReference; explicitFileType = sourcecode.swift; includeInIndex = 1; name = SOAPNoteGeneratorView.swift; path = ./Features/Notes/SOAPNoteGeneratorView.swift; sourceTree = "<group>"; };
 		9435714996AE2FC0D7902D06 /* FHIRClinicalImpression.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = FHIRClinicalImpression.swift; path = Domain/Export/FHIR/Resources/FHIRClinicalImpression.swift; sourceTree = "<group>"; };
+		98B4ED3A2D1A550A91C766B2 /* ModelConfiguration.swift */ = {isa = PBXFileReference; explicitFileType = sourcecode.swift; includeInIndex = 1; name = ModelConfiguration.swift; path = ./Domain/ML/ModelConfiguration.swift; sourceTree = "<group>"; };
 		9A6402CCA2A05EF5C06450EF /* LabResultsValidator.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = LabResultsValidator.swift; path = Domain/Validators/LabResultsValidator.swift; sourceTree = "<group>"; };
 		9A8EE4D08CD515CCA250F3F7 /* ImagingFindingsSummary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagingFindingsSummary.swift; sourceTree = "<group>"; };
 		9E650E42CA8D3A6381B74263 /* Language.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = Language.swift; path = Domain/Models/Language.swift; sourceTree = "<group>"; };
@@ -188,28 +212,35 @@
 		A0016F0CB0402489E68F72D2 /* FHIRAllergyIntolerance.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = FHIRAllergyIntolerance.swift; path = Domain/Export/FHIR/Resources/FHIRAllergyIntolerance.swift; sourceTree = "<group>"; };
 		A283EB10B8047E7271B606AA /* FHIRPatientMapper.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = FHIRPatientMapper.swift; path = Domain/Export/FHIR/Mappers/FHIRPatientMapper.swift; sourceTree = "<group>"; };
 		A44E1EF1B3232EAC0255ABD9 /* MLXImagingModel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MLXImagingModel.swift; path = Domain/ML/MLXImagingModel.swift; sourceTree = "<group>"; };
-		APPSET001REF0000000001 /* AppSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Domain/Models/AppSettings.swift; sourceTree = "<group>"; };
+		APPSET001REF0000000001 /* Domain/Models/AppSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Domain/Models/AppSettings.swift; sourceTree = "<group>"; };
+		B6C5B7C4EDE2AFB41F6C440E /* SOAPNote+CoreData.swift */ = {isa = PBXFileReference; explicitFileType = sourcecode.swift; includeInIndex = 1; name = "SOAPNote+CoreData.swift"; path = "./Domain/Models/SOAPNote+CoreData.swift"; sourceTree = "<group>"; };
 		B926090DA2B90CDEC028343C /* NoteAddendum+CoreDataProperties.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "NoteAddendum+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		B954BD8241A67B6A69973341 /* FHIRPatient.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = FHIRPatient.swift; path = Domain/Export/FHIR/Resources/FHIRPatient.swift; sourceTree = "<group>"; };
 		B986D9D9833D355755B59098 /* FHIRCondition.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = FHIRCondition.swift; path = Domain/Export/FHIR/Resources/FHIRCondition.swift; sourceTree = "<group>"; };
+		BBD7BB98D62C8D07A49685CB /* StreamingModels.swift */ = {isa = PBXFileReference; explicitFileType = sourcecode.swift; includeInIndex = 1; name = StreamingModels.swift; path = ./Domain/Models/StreamingModels.swift; sourceTree = "<group>"; };
 		BD98E5A450FEA2880A43D12E /* Referral+CoreDataProperties.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "Referral+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		BE9ACFDC64DF8699CB6E9CEF /* InferenceOptions.swift */ = {isa = PBXFileReference; explicitFileType = sourcecode.swift; includeInIndex = 1; name = InferenceOptions.swift; path = ./Domain/ML/InferenceOptions.swift; sourceTree = "<group>"; };
 		C6D8A1BB0B3E2A800665C781 /* FHIRDiagnosticReport.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = FHIRDiagnosticReport.swift; path = Domain/Export/FHIR/Resources/FHIRDiagnosticReport.swift; sourceTree = "<group>"; };
 		CF3F1FFC591F0A441786D117 /* FHIRBundlePreviewView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = FHIRBundlePreviewView.swift; path = Features/Export/FHIRBundlePreviewView.swift; sourceTree = "<group>"; };
 		D0DFBD13E7928B6FCB891629 /* FHIRBundle.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = FHIRBundle.swift; path = Domain/Export/FHIR/Resources/FHIRBundle.swift; sourceTree = "<group>"; };
 		D42DD2E2AE8FFE1E3AFE98AE /* TextSanitizer.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = TextSanitizer.swift; path = Domain/Security/TextSanitizer.swift; sourceTree = "<group>"; };
 		D749CEE71CCEC64B1A873E5A /* FHIRExportTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = FHIRExportTests.swift; path = MediScribeTests/FHIRExportTests.swift; sourceTree = "<group>"; };
 		DCA06B0D3E86FB9E7811D227 /* FHIRExportService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = FHIRExportService.swift; path = Domain/Export/FHIRExportService.swift; sourceTree = "<group>"; };
+		DE812813B95F5781F9173DB0 /* SOAPNoteParser.swift */ = {isa = PBXFileReference; explicitFileType = sourcecode.swift; includeInIndex = 1; name = SOAPNoteParser.swift; path = ./Domain/Services/SOAPNoteParser.swift; sourceTree = "<group>"; };
+		E19E0475FD42C2BCB68F0805 /* Patient+CoreDataProperties.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "Patient+CoreDataProperties.swift"; path = "Domain/Models/CoreData/Patient+CoreDataProperties.swift"; sourceTree = SOURCE_ROOT; };
 		E841F5F37F37276DA4D4355C /* EUBaseProfile.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = EUBaseProfile.swift; path = Domain/Export/FHIR/Profiles/EUBaseProfile.swift; sourceTree = "<group>"; };
+		F06B815613E3E0BA0FD88F9A /* SOAPNoteGenerator.swift */ = {isa = PBXFileReference; explicitFileType = sourcecode.swift; includeInIndex = 1; name = SOAPNoteGenerator.swift; path = ./Domain/Services/SOAPNoteGenerator.swift; sourceTree = "<group>"; };
 		F19D78C7103C647D0E2436EF /* AnatomicalObservations.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = AnatomicalObservations.swift; path = Domain/Models/AnatomicalObservations.swift; sourceTree = "<group>"; };
 		F1BF78D4A2F15EF4E7F5954C /* FHIRProvenance.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = FHIRProvenance.swift; path = Domain/Export/FHIR/Resources/FHIRProvenance.swift; sourceTree = "<group>"; };
 		F3A08DCADF564971BBF898EA /* EHDSProfile.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = EHDSProfile.swift; path = Domain/Export/FHIR/Profiles/EHDSProfile.swift; sourceTree = "<group>"; };
 		F91C1F0D1AA0A6B1530C8838 /* FHIRExportView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = FHIRExportView.swift; path = Features/Export/FHIRExportView.swift; sourceTree = "<group>"; };
 		FA6CB7CD9D3AB25D1A7526BD /* FHIRMedia.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = FHIRMedia.swift; path = Domain/Export/FHIR/Resources/FHIRMedia.swift; sourceTree = "<group>"; };
+		FD7CDFCB4BB9045A04141E34 /* SOAPNoteViewModel.swift */ = {isa = PBXFileReference; explicitFileType = sourcecode.swift; includeInIndex = 1; name = SOAPNoteViewModel.swift; path = ./Features/Notes/SOAPNoteViewModel.swift; sourceTree = "<group>"; };
 		FEF269629A266B1D8D53B71A /* FHIRMedicationRequest.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = FHIRMedicationRequest.swift; path = Domain/Export/FHIR/Resources/FHIRMedicationRequest.swift; sourceTree = "<group>"; };
 		L2K1J0I9H8G7F6E5D4C3B2A1 /* LabsHomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LabsHomeView.swift; sourceTree = "<group>"; };
 		LOCPROMPTS001REF00000001 /* LocalizedPrompts.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = LocalizedPrompts.swift; path = Prompts/LocalizedPrompts.swift; sourceTree = "<group>"; };
 		M3L2K1J0I9H8G7F6E5D4C3B2 /* LabsCameraView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LabsCameraView.swift; sourceTree = "<group>"; };
-		MODELS_REF_EA35DA1F06BFA20D /* medgemma-4b-it */ = {isa = PBXFileReference; lastKnownFileType = folder; path = "MediScribe/Models/medgemma-4b-it"; sourceTree = SOURCE_ROOT; };
+		MODELS_REF_EA35DA1F06BFA20D /* MediScribe/Models/medgemma-4b-it */ = {isa = PBXFileReference; lastKnownFileType = folder; path = "MediScribe/Models/medgemma-4b-it"; sourceTree = SOURCE_ROOT; };
 		N4M3L2K1J0I9H8G7F6E5D4C3 /* LabsHistoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LabsHistoryView.swift; sourceTree = "<group>"; };
 		NOTES001REF00000000001 /* NoteEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteEditorView.swift; sourceTree = "<group>"; };
 		NOTES002REF00000000002 /* NoteDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteDetailView.swift; sourceTree = "<group>"; };
@@ -220,8 +251,8 @@
 		P6O5N4M3L2K1J0I9H8G7F6E5 /* LabResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LabResult.swift; sourceTree = "<group>"; };
 		Q7P6O5N4M3L2K1J0I9H8G7F6 /* LabValidationError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LabValidationError.swift; sourceTree = "<group>"; };
 		R8Q7P6O5N4M3L2K1J0I9H8G7 /* LabResultsValidator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LabResultsValidator.swift; sourceTree = "<group>"; };
-		REFRL001CRE0000000001 /* ReferralCreationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Features/Referrals/ReferralCreationView.swift; sourceTree = "<group>"; };
-		REFRL001DET0000000002 /* ReferralDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Features/Referrals/ReferralDetailView.swift; sourceTree = "<group>"; };
+		REFRL001CRE0000000001 /* Features/Referrals/ReferralCreationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Features/Referrals/ReferralCreationView.swift; sourceTree = "<group>"; };
+		REFRL001DET0000000002 /* Features/Referrals/ReferralDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Features/Referrals/ReferralDetailView.swift; sourceTree = "<group>"; };
 		S9R8Q7P6O5N4M3L2K1J0I9H8 /* DocumentType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentType.swift; sourceTree = "<group>"; };
 		SEC001REF2024010100000001 /* EncryptionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EncryptionService.swift; sourceTree = "<group>"; };
 		SEC002REF2024010100000002 /* KeychainManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainManager.swift; sourceTree = "<group>"; };
@@ -232,22 +263,16 @@
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		024D8CD12F1B0FB700004385 /* MediScribe */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-			);
 			path = MediScribe;
 			sourceTree = "<group>";
 		};
 		024D8CE42F1B0FB800004385 /* MediScribeTests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-			);
 			path = MediScribeTests;
 			sourceTree = "<group>";
 		};
 		024D8CEE2F1B0FB800004385 /* MediScribeUITests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-			);
 			path = MediScribeUITests;
 			sourceTree = "<group>";
 		};
@@ -392,9 +417,10 @@
 			children = (
 				050375340703414581755062 /* MediScribe.xcconfig */,
 				9E650E42CA8D3A6381B74263 /* Language.swift */,
-				REFRL001CRE0000000001 /* ReferralCreationView.swift */,
-				APPSET001REF0000000001 /* AppSettings.swift */,
-				REFRL001DET0000000002 /* ReferralDetailView.swift */,
+				REFRL001CRE0000000001 /* Features/Referrals/ReferralCreationView.swift */,
+				APPSET001REF0000000001 /* Domain/Models/AppSettings.swift */,
+				REFRL001DET0000000002 /* Features/Referrals/ReferralDetailView.swift */,
+				MODELS_REF_EA35DA1F06BFA20D /* MediScribe/Models/medgemma-4b-it */,
 			);
 			name = "Recovered References";
 			sourceTree = "<group>";
@@ -407,6 +433,25 @@
 				F3A08DCADF564971BBF898EA /* EHDSProfile.swift */,
 			);
 			name = Profiles;
+			sourceTree = "<group>";
+		};
+		2EFCDA3F1BE2F1AC4CF8C151 /* Notes */ = {
+			isa = PBXGroup;
+			children = (
+				8CA0E11B45071AA9BA72C431 /* SOAPNoteGeneratorView.swift */,
+				0338D2AE35F5A88792AFC86D /* SOAPNoteInputView.swift */,
+				08140FC64BA2D5BD2463EBA8 /* SOAPNoteReviewView.swift */,
+				FD7CDFCB4BB9045A04141E34 /* SOAPNoteViewModel.swift */,
+			);
+			name = Notes;
+			sourceTree = "<group>";
+		};
+		326149F6AA8F1D30E068683A /* Validators */ = {
+			isa = PBXGroup;
+			children = (
+				30A2DF833A12E54887D0DD4A /* SOAPNoteValidator.swift */,
+			);
+			name = Validators;
 			sourceTree = "<group>";
 		};
 		407241450FACDDCED832AECB /* Export */ = {
@@ -422,6 +467,9 @@
 			isa = PBXGroup;
 			children = (
 				5BDFB6B045EB382F0A64EF7B /* SOAPNoteData.swift */,
+				81B4C9FEB3C76F7F49505EAC /* PatientContext.swift */,
+				B6C5B7C4EDE2AFB41F6C440E /* SOAPNote+CoreData.swift */,
+				BBD7BB98D62C8D07A49685CB /* StreamingModels.swift */,
 			);
 			name = Models;
 			sourceTree = "<group>";
@@ -435,6 +483,8 @@
 				B926090DA2B90CDEC028343C /* NoteAddendum+CoreDataProperties.swift */,
 				439664C5284D158F9A21A0D7 /* Referral+CoreDataClass.swift */,
 				BD98E5A450FEA2880A43D12E /* Referral+CoreDataProperties.swift */,
+				812A03C16A8D8458ED85D366 /* Patient+CoreDataClass.swift */,
+				E19E0475FD42C2BCB68F0805 /* Patient+CoreDataProperties.swift */,
 			);
 			path = CoreData;
 			sourceTree = "<group>";
@@ -445,6 +495,16 @@
 				D749CEE71CCEC64B1A873E5A /* FHIRExportTests.swift */,
 			);
 			name = MediScribeTests;
+			sourceTree = "<group>";
+		};
+		51119D1CBEC949ACD57703BC /* ML */ = {
+			isa = PBXGroup;
+			children = (
+				BE9ACFDC64DF8699CB6E9CEF /* InferenceOptions.swift */,
+				98B4ED3A2D1A550A91C766B2 /* ModelConfiguration.swift */,
+				10A16B777444A288F17D0018 /* ModelDownloader.swift */,
+			);
+			name = ML;
 			sourceTree = "<group>";
 		};
 		52AF5826D4C61FAD3061F0D0 /* Mappers */ = {
@@ -460,11 +520,24 @@
 			name = Mappers;
 			sourceTree = "<group>";
 		};
+		55304E1D6B7C2EBBC5775BCF /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				F06B815613E3E0BA0FD88F9A /* SOAPNoteGenerator.swift */,
+				DE812813B95F5781F9173DB0 /* SOAPNoteParser.swift */,
+				7BD1487E50C03DC3E6EA6270 /* SOAPNoteRepository.swift */,
+			);
+			name = Services;
+			sourceTree = "<group>";
+		};
 		6D7494B754189BF885562743 /* Domain */ = {
 			isa = PBXGroup;
 			children = (
 				7AA9B0DEBE4278AA636A8344 /* Export */,
 				42C410477785624E49E4B57E /* Models */,
+				51119D1CBEC949ACD57703BC /* ML */,
+				55304E1D6B7C2EBBC5775BCF /* Services */,
+				326149F6AA8F1D30E068683A /* Validators */,
 			);
 			name = Domain;
 			sourceTree = "<group>";
@@ -500,6 +573,7 @@
 			isa = PBXGroup;
 			children = (
 				407241450FACDDCED832AECB /* Export */,
+				2EFCDA3F1BE2F1AC4CF8C151 /* Notes */,
 			);
 			name = Features;
 			sourceTree = "<group>";
@@ -729,7 +803,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				022AD77A2F1EE954004D771E /* README.MD in Resources */,
-				MODELS_BUILD_5A950CA3FB230ECF /* medgemma-4b-it in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -806,9 +879,9 @@
 				3E840674E268E57F4EF49F66 /* NoteAddendum+CoreDataProperties.swift in Sources */,
 				2183E46DEE0AA1E5E70F38E9 /* Referral+CoreDataClass.swift in Sources */,
 				6B4DFE1E52D82BB2B6F75EF7 /* Referral+CoreDataProperties.swift in Sources */,
-				AA89F9902CFF46D828232723 /* ReferralCreationView.swift in Sources */,
-				4D273F3C6A12FF8779F6BA7D /* AppSettings.swift in Sources */,
-				2B2E7B7FAD7ECF142B6F63D4 /* ReferralDetailView.swift in Sources */,
+				AA89F9902CFF46D828232723 /* Features/Referrals/ReferralCreationView.swift in Sources */,
+				4D273F3C6A12FF8779F6BA7D /* Domain/Models/AppSettings.swift in Sources */,
+				2B2E7B7FAD7ECF142B6F63D4 /* Features/Referrals/ReferralDetailView.swift in Sources */,
 				LOCPROMPTS001BLD00000001 /* LocalizedPrompts.swift in Sources */,
 				BD056C89421DE6C0F0049C5D /* MLXImagingModel.swift in Sources */,
 				8DC490C1B34C9983E850C0EF /* MLXModelLoader.swift in Sources */,
@@ -843,6 +916,22 @@
 				A998EAFEA94DDD75E24A51BD /* FHIRExportView.swift in Sources */,
 				612BE3E7F938E6AEFEFD9945 /* FHIRBundlePreviewView.swift in Sources */,
 				042A33A82C1FA7DEA0149301 /* SOAPNoteData.swift in Sources */,
+				18E8770C83C6E91CC9A608A8 /* InferenceOptions.swift in Sources */,
+				0A7A0724C8191597F9BA9F50 /* ModelConfiguration.swift in Sources */,
+				9D3F728931C17817DAD0C5CC /* ModelDownloader.swift in Sources */,
+				37B7A6121E1EF0F79AFD2F6D /* PatientContext.swift in Sources */,
+				9CB6B635B06794156BCB78A3 /* SOAPNote+CoreData.swift in Sources */,
+				E792293D4AA83CFD81909B77 /* StreamingModels.swift in Sources */,
+				5FD4D190946BF89088202341 /* SOAPNoteGenerator.swift in Sources */,
+				17EC4944AB35CE57F6AF3AE1 /* SOAPNoteParser.swift in Sources */,
+				6AA7E08DFA2F14C0FC93A207 /* SOAPNoteRepository.swift in Sources */,
+				A669B3D1D84FCA408D68F740 /* SOAPNoteValidator.swift in Sources */,
+				E82865E0340DEA5C26835D87 /* SOAPNoteGeneratorView.swift in Sources */,
+				A102F0AD45F575E0B301E897 /* SOAPNoteInputView.swift in Sources */,
+				F10F0CB7F3626360232A5D55 /* SOAPNoteReviewView.swift in Sources */,
+				9763AAE9391E7F3F4E6C9C7A /* SOAPNoteViewModel.swift in Sources */,
+				7B83276C2142F99785C5FBE4 /* Patient+CoreDataClass.swift in Sources */,
+				30A93877075AFB47EA7A3E2B /* Patient+CoreDataProperties.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

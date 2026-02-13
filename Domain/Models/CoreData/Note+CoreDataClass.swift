@@ -21,7 +21,7 @@ public class Note: NSManagedObject {
     /// Sets the field note with automatic encryption
     /// - Parameter fieldNote: The FieldNote to encrypt and store
     /// - Throws: EncryptionError if encryption fails
-    func setFieldNote(_ fieldNote: FieldNote) throws {
+    @MainActor func setFieldNote(_ fieldNote: FieldNote) throws {
         // Encrypt the FieldNote
         let encryptedData = try encryptionService.encrypt(fieldNote)
 
@@ -35,7 +35,7 @@ public class Note: NSManagedObject {
     /// Retrieves and decrypts the field note
     /// - Returns: Decrypted FieldNote
     /// - Throws: EncryptionError if decryption fails, or if noteData is nil
-    func getFieldNote() throws -> FieldNote {
+    @MainActor func getFieldNote() throws -> FieldNote {
         guard let encryptedData = self.noteData else {
             throw EncryptionError.invalidData
         }
@@ -49,7 +49,7 @@ public class Note: NSManagedObject {
     /// This supports migration from unencrypted to encrypted storage
     /// - Returns: Decrypted FieldNote
     /// - Throws: Error if both decryption and legacy decode fail
-    func getFieldNoteWithMigration() throws -> FieldNote {
+    @MainActor func getFieldNoteWithMigration() throws -> FieldNote {
         guard let data = self.noteData else {
             throw EncryptionError.invalidData
         }

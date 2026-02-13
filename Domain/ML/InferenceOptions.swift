@@ -7,8 +7,9 @@
 
 import Foundation
 
-/// Options for model inference
-struct InferenceOptions: Codable {
+/// Detailed Codable inference options for MLX pipeline configuration
+/// (Protocol-level InferenceOptions with language support is in ImagingModelProtocol.swift)
+struct MLXInferenceOptions: Codable {
     /// Maximum number of tokens to generate
     let maxTokens: Int
 
@@ -47,8 +48,8 @@ struct InferenceOptions: Codable {
     }
 
     /// Default options for SOAP note generation (deterministic)
-    static var soapGeneration: InferenceOptions {
-        InferenceOptions(
+    static var soapGeneration: MLXInferenceOptions {
+        MLXInferenceOptions(
             maxTokens: 2048,
             temperature: 0.3,
             topP: 0.95,
@@ -58,8 +59,8 @@ struct InferenceOptions: Codable {
     }
 
     /// Default options for imaging findings (deterministic)
-    static var imagingFindings: InferenceOptions {
-        InferenceOptions(
+    static var imagingFindings: MLXInferenceOptions {
+        MLXInferenceOptions(
             maxTokens: 1024,
             temperature: 0.2,
             topP: 0.9,
@@ -69,8 +70,8 @@ struct InferenceOptions: Codable {
     }
 
     /// Default options for lab results extraction (deterministic)
-    static var labResults: InferenceOptions {
-        InferenceOptions(
+    static var labResults: MLXInferenceOptions {
+        MLXInferenceOptions(
             maxTokens: 1536,
             temperature: 0.1,
             topP: 0.85,
@@ -80,8 +81,8 @@ struct InferenceOptions: Codable {
     }
 
     /// Strict/safe options (minimal variation)
-    static var strict: InferenceOptions {
-        InferenceOptions(
+    static var strict: MLXInferenceOptions {
+        MLXInferenceOptions(
             maxTokens: 512,
             temperature: 0.0,
             topP: 0.8,
@@ -91,30 +92,5 @@ struct InferenceOptions: Codable {
     }
 }
 
-/// Result of a document processing operation
-struct DocumentProcessingResult: Codable {
-    let jsonOutput: String
-    let processingTime: TimeInterval
-    let modelVersion: String
-    let documentType: String
-
-    enum CodingKeys: String, CodingKey {
-        case jsonOutput = "json_output"
-        case processingTime = "processing_time"
-        case modelVersion = "model_version"
-        case documentType = "document_type"
-    }
-}
-
-/// Result of imaging inference
-struct ImagingInferenceResult: Codable {
-    let findingsJSON: String
-    let processingTime: TimeInterval
-    let modelVersion: String
-
-    enum CodingKeys: String, CodingKey {
-        case findingsJSON = "findings_json"
-        case processingTime = "processing_time"
-        case modelVersion = "model_version"
-    }
-}
+// DocumentProcessingResult is defined in Domain/ML/DocumentType.swift
+// ImagingInferenceResult is defined in Domain/ML/ImagingModelProtocol.swift

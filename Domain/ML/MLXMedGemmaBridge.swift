@@ -3,93 +3,103 @@
 //  MediScribe
 //
 //  MedGemma-specific wrapper for multimodal vision-language inference
-//  Uses mlx-swift-lm for true multimodal vision-language model inference
+//  Uses MLXVLM for true on-device inference on physical devices
+//  Falls back to correctly-structured placeholder JSON on simulator
 //
 
 import Foundation
 import UIKit
 
-// NOTE: MLX frameworks imported for device builds
-// For device builds: imports come from mlx-swift-gemma-port package
-// For simulator builds: conditional compilation uses placeholder implementations
 #if !targetEnvironment(simulator)
 import MLX
 import MLXNN
-import MLXVLM          // Vision-Language Models (includes Gemma3 implementation)
-import MLXLMCommon     // Common utilities
+import MLXVLM
+import MLXLMCommon
 #endif
 
 /// MedGemma-specific wrapper for multimodal vision-language inference
-/// Provides true vision encoder + language model inference using mlx-swift-lm
 class MLXMedGemmaBridge {
     static let shared = MLXMedGemmaBridge()
 
-    #if targetEnvironment(simulator)
-    // Simulator: Placeholder (no MLX available due to Metal GPU requirements)
-    private var visionModel: Any? = nil
-    #else
-    // Physical device: Real MLXVLM model instance
-    private var vlmModel: Any?  // MLXVLM type when MLX is available
+    private var isLoaded = false
+
+    #if !targetEnvironment(simulator)
+    private var modelContainer: ModelContainer?
     #endif
 
-    private var isLoaded = false
-    private let queue = DispatchQueue(label: "com.mediscribe.medgemma-vlm", qos: .userInitiated)
+    private init() {}
 
-    // MARK: - Initialization
+    /// Whether the model is currently loaded and ready for inference
+    var isModelLoaded: Bool { isLoaded }
 
-    /// Load MedGemma multimodal model from disk
-    /// - Parameter modelPath: Path to MLX-converted MedGemma multimodal model directory
-    /// - Throws: MLXModelError if loading fails
+    // MARK: - Model Loading
+
+    /// Load MedGemma from a local model directory
     func loadModel(from modelPath: String) async throws {
+        guard !isLoaded else { return }
+
         #if targetEnvironment(simulator)
-        // Simulator: Just mark as loaded, use placeholder implementations
+        // MLX Metal GPU APIs are unavailable on simulator — use placeholder path
         print("⚠️ MLX not available on simulator - using placeholder responses")
         isLoaded = true
+
         #else
-        // Physical device: Load real MLX model
-        try await withCheckedThrowingContinuation { continuation in
-            queue.async {
-                guard !self.isLoaded else {
-                    continuation.resume()
-                    return
-                }
+        // Physical device: load via VLMModelFactory with local directory
+        guard FileManager.default.fileExists(atPath: modelPath) else {
+            throw MLXModelError.fileAccessError("Model path does not exist: \(modelPath)")
+        }
 
-                do {
-                    // Verify model directory exists
-                    guard FileManager.default.fileExists(atPath: modelPath) else {
-                        throw MLXModelError.fileAccessError("Model path does not exist: \(modelPath)")
-                    }
-
-                    // Load MLX-converted MedGemma multimodal model
-                    // This will load:
-                    // - model.safetensors (main model weights)
-                    // - vision_encoder.safetensors (vision encoder for image processing)
-                    // - config.json (model architecture config)
-                    // - tokenizer.json (tokenizer for text processing)
-                    try self.loadMLXVLMModel(from: modelPath)
-                    self.isLoaded = true
-                    continuation.resume()
-                } catch let error as MLXModelError {
-                    continuation.resume(throwing: error)
-                } catch {
-                    continuation.resume(throwing: MLXModelError.modelLoadFailed(error.localizedDescription))
-                }
+        // Only verify the two core config files — weight files may be sharded
+        // (model-NNNNN-of-NNNNN.safetensors + index) so checking for model.safetensors
+        // directly will fail on quantized models. VLMModelFactory discovers weights itself.
+        let requiredFiles = ["config.json", "tokenizer.json"]
+        for file in requiredFiles {
+            let filePath = (modelPath as NSString).appendingPathComponent(file)
+            guard FileManager.default.fileExists(atPath: filePath) else {
+                throw MLXModelError.fileAccessError("Missing required file: \(file)")
             }
+        }
+
+        do {
+            // Limit MLX GPU buffer cache to avoid OOM during vision encoder inference.
+            // Default cache is unbounded; 512 MB is enough for inter-op reuse without
+            // allowing the allocator to hold onto all activation buffers after the
+            // 4096-token SigLIP attention pass.
+            MLX.GPU.set(cacheLimit: 512 * 1024 * 1024)
+
+            // ModelConfiguration(directory:) loads from local path, no Hub download
+            // MedGemma is Gemma3-based; extraEOSTokens matches the model's end-of-turn token
+            let config = MLXLMCommon.ModelConfiguration(
+                directory: URL(fileURLWithPath: modelPath),
+                extraEOSTokens: ["<end_of_turn>"]
+            )
+            let container = try await VLMModelFactory.shared.loadContainer(
+                configuration: config
+            )
+            // Release cached load-phase allocations before first inference
+            MLX.GPU.clearCache()
+            modelContainer = container
+            isLoaded = true
+            print("✅ MedGemma (Gemma3 VLM) loaded from: \(modelPath)")
+        } catch {
+            let detail = "VLMModelFactory error: \(error)"
+            print("❌ \(detail)")
+            throw MLXModelError.modelLoadFailed(detail)
         }
         #endif
     }
 
+    /// Unload model and free memory
+    func unloadModel() {
+        #if !targetEnvironment(simulator)
+        modelContainer = nil
+        #endif
+        isLoaded = false
+    }
+
     // MARK: - Vision-Language Inference
 
-    /// Generate medical findings from image + prompt (true multimodal)
-    /// - Parameters:
-    ///   - imageData: JPEG or PNG image data
-    ///   - prompt: Input text prompt (in target language)
-    ///   - maxTokens: Maximum tokens to generate (default: 1024)
-    ///   - temperature: Generation temperature 0.0-1.0 (lower is more deterministic, default: 0.3)
-    ///   - language: Language for prompt and validation
-    /// - Returns: Generated text with findings
-    /// - Throws: MLXModelError if inference fails
+    /// Generate medical findings from image + prompt (multimodal)
     func generateFindings(
         from imageData: Data,
         prompt: String,
@@ -98,74 +108,110 @@ class MLXMedGemmaBridge {
         language: Language = .english
     ) async throws -> String {
         #if targetEnvironment(simulator)
-        // Simulator: Return placeholder findings
-        return """
-        {
-            "documentType": "imaging",
-            "documentDate": "\(Date().ISO8601Format())",
-            "observations": {
-                "lungs": ["Clear to auscultation bilaterally"],
-                "pleural": ["No effusion"],
-                "cardiac": ["Normal size"],
-                "mediastinal": ["No abnormality"],
-                "bones": ["No acute findings"],
-                "soft_tissues": ["Normal appearance"]
-            },
-            "limitations": "This summary describes visible image features only and does not assess clinical significance or provide a diagnosis."
-        }
-        """
+        return simulatorPlaceholderJSON()
+
         #else
-        // Physical device: Real MLX inference
-        return try await withCheckedThrowingContinuation { continuation in
-            queue.async {
-                guard self.isLoaded, self.vlmModel != nil else {
-                    continuation.resume(throwing: MLXModelError.modelNotLoaded)
-                    return
+        guard let container = modelContainer else {
+            throw MLXModelError.modelNotLoaded
+        }
+
+        // Decode and pre-resize inside a nested scope so the original
+        // full-resolution bitmap (up to ~200 MB for camera images) is freed
+        // from memory before the 30-60 s SigLIP + LM inference pass starts.
+        // preparingThumbnail(of:) returns a new UIImage with its own independent
+        // pixel buffer — the CIImage below has no reference back to the
+        // original imageData decode.
+        let ciImage: CIImage = try {
+            guard let uiImage = UIImage(data: imageData) else {
+                throw MLXModelError.invocationFailed("Failed to decode image data")
+            }
+            let maxDim: CGFloat = 448
+            let longest = max(uiImage.size.width, uiImage.size.height)
+            let inferenceImage: UIImage
+            if longest > maxDim {
+                let scale = maxDim / longest
+                let sz = CGSize(
+                    width:  (uiImage.size.width  * scale).rounded(),
+                    height: (uiImage.size.height * scale).rounded()
+                )
+                // Thread-safe (iOS 15+); creates an independent pixel buffer
+                inferenceImage = uiImage.preparingThumbnail(of: sz) ?? uiImage
+            } else {
+                inferenceImage = uiImage
+            }
+            guard let ci = CIImage(image: inferenceImage) else {
+                throw MLXModelError.invocationFailed("Failed to convert image to CIImage")
+            }
+            return ci
+            // uiImage exits scope here — ARC can free the original full-res bitmap
+        }()
+
+        // Use the caller-supplied prompt, or build a language-specific default
+        let localizedPrompt = LocalizedPrompts(language: language)
+            .buildImagingPrompt(imageContext: "Medical imaging scan")
+        let finalPrompt = prompt.isEmpty ? localizedPrompt : prompt
+
+        // Wrap in Optional so we can nil it out inside container.perform
+        // once prepare() has consumed it — frees the CIImage reference before
+        // the generation loop.
+        var userInput: UserInput? = UserInput(
+            prompt: finalPrompt,
+            images: [.ciImage(ciImage)]
+        )
+        let parameters = GenerateParameters(maxTokens: maxTokens, temperature: temperature)
+
+        do {
+            // Zero the GPU buffer cache immediately before inference so every
+            // intermediate SigLIP activation is freed as soon as it's no longer
+            // referenced, rather than being held in a 512 MB reuse pool.
+            // Peak activation memory during SigLIP (896×896 → 4096 patches,
+            // 27 layers) can exceed 1.5 GB; immediate deallocation keeps this
+            // from piling on top of the 2.8 GB model weights.
+            MLX.GPU.set(cacheLimit: 0)
+            MLX.GPU.clearCache()
+
+            let result = try await container.perform { [userInput] context in
+                guard let ui = userInput else {
+                    throw MLXModelError.invocationFailed("UserInput was unexpectedly nil")
                 }
-
-                // 1. Decode and validate image
-                guard let uiImage = UIImage(data: imageData) else {
-                    continuation.resume(throwing: MLXModelError.invocationFailed("Failed to decode image data"))
-                    return
-                }
-
-                do {
-                    // 2. Prepare prompt with language-specific context
-                    let localizedPrompt = LocalizedPrompts(language: language).buildImagingPrompt(
-                        imageContext: "Medical imaging scan"
-                    )
-                    let finalPrompt = prompt.isEmpty ? localizedPrompt : prompt
-
-                    // 3. Run vision-language inference
-                    // The vision encoder processes the image and produces image embeddings
-                    // These embeddings are concatenated with text token embeddings
-                    // The language model then generates output based on both modalities
-                    let result = try self.runVisionLanguageInference(
-                        image: uiImage,
-                        prompt: finalPrompt,
-                        maxTokens: maxTokens,
-                        temperature: temperature
-                    )
-
-                    continuation.resume(returning: result)
-                } catch let error as MLXModelError {
-                    continuation.resume(throwing: error)
-                } catch {
-                    continuation.resume(throwing: MLXModelError.invocationFailed(error.localizedDescription))
+                let lmInput = try await context.processor.prepare(input: ui)
+                // Force evaluation of all preprocessed arrays before entering
+                // the LM decoding loop, so the computation graph for the image
+                // preprocessing step is freed before the generation loop begins.
+                MLX.eval(lmInput.text.tokens)
+                if let img = lmInput.image { MLX.eval(img.pixels) }
+                MLX.GPU.clearCache()
+                // Flush the GPU buffer reuse pool every 32 tokens during decode.
+                // MLX's lazy evaluation can accumulate unevaluated graph nodes and
+                // cached buffers across generation steps; periodic clearCache()
+                // releases these before they pile up into an OOM kill.
+                var stepCount = 0
+                return try generate(
+                    input: lmInput,
+                    parameters: parameters,
+                    context: context
+                ) { (_: [Int]) in
+                    stepCount += 1
+                    if stepCount % 32 == 0 { MLX.GPU.clearCache() }
+                    return .more
                 }
             }
+            userInput = nil  // free CIImage reference after container.perform
+
+            // Restore a small reuse pool so subsequent inference (if any) can
+            // benefit from buffer recycling without accumulating stale memory.
+            MLX.GPU.set(cacheLimit: 64 * 1024 * 1024)
+
+            return result.output
+        } catch let error as MLXModelError {
+            throw error
+        } catch {
+            throw MLXModelError.invocationFailed(error.localizedDescription)
         }
         #endif
     }
 
-    /// Streaming variant for progressive UI updates
-    /// - Parameters:
-    ///   - imageData: JPEG or PNG image data
-    ///   - prompt: Input text prompt (in target language)
-    ///   - maxTokens: Maximum tokens to generate (default: 1024)
-    ///   - temperature: Generation temperature 0.0-1.0 (default: 0.3)
-    ///   - language: Language for prompt and validation
-    /// - Returns: AsyncThrowingStream yielding tokens as they're generated
+    /// Streaming variant — yields decoded text pieces as they are generated
     func generateFindingsStreaming(
         from imageData: Data,
         prompt: String,
@@ -174,457 +220,111 @@ class MLXMedGemmaBridge {
         language: Language = .english
     ) -> AsyncThrowingStream<String, Error> {
         #if targetEnvironment(simulator)
-        // Simulator: Stream placeholder findings one character at a time
-        return AsyncThrowingStream<String, Error> { continuation in
+        // Simulator: stream the placeholder JSON one character at a time
+        return AsyncThrowingStream { continuation in
             Task {
-                let json = """
-                {"documentType": "imaging", "observations": {"lungs": ["Clear bilaterally"], "cardiac": ["Normal size"]}, "limitations": "This summary describes visible image features only and does not assess clinical significance or provide a diagnosis."}
-                """
-
+                let json = simulatorPlaceholderJSON()
                 for char in json {
-                    try await Task.sleep(nanoseconds: 10_000_000)  // Simulate inference delay
+                    try await Task.sleep(nanoseconds: 10_000_000)
                     continuation.yield(String(char))
                 }
-
                 continuation.finish()
             }
         }
+
         #else
-        // Physical device: Real MLX streaming inference
         return AsyncThrowingStream { continuation in
             Task {
                 do {
-                    guard self.isLoaded, self.vlmModel != nil else {
+                    guard let container = self.modelContainer else {
                         throw MLXModelError.modelNotLoaded
                     }
+                    let ciImage: CIImage = try {
+                        guard let uiImage = UIImage(data: imageData) else {
+                            throw MLXModelError.invocationFailed("Failed to decode image data")
+                        }
+                        let maxDim: CGFloat = 448
+                        let longest = max(uiImage.size.width, uiImage.size.height)
+                        let inferenceImage: UIImage
+                        if longest > maxDim {
+                            let scale = maxDim / longest
+                            let sz = CGSize(
+                                width:  (uiImage.size.width  * scale).rounded(),
+                                height: (uiImage.size.height * scale).rounded()
+                            )
+                            inferenceImage = uiImage.preparingThumbnail(of: sz) ?? uiImage
+                        } else {
+                            inferenceImage = uiImage
+                        }
+                        guard let ci = CIImage(image: inferenceImage) else {
+                            throw MLXModelError.invocationFailed("Failed to convert image to CIImage")
+                        }
+                        return ci
+                    }()
 
-                    guard let uiImage = UIImage(data: imageData) else {
-                        throw MLXModelError.invocationFailed("Failed to decode image data")
-                    }
-
-                    // Prepare prompt with language-specific context
-                    let localizedPrompt = LocalizedPrompts(language: language).buildImagingPrompt(
-                        imageContext: "Medical imaging scan"
-                    )
+                    let localizedPrompt = LocalizedPrompts(language: language)
+                        .buildImagingPrompt(imageContext: "Medical imaging scan")
                     let finalPrompt = prompt.isEmpty ? localizedPrompt : prompt
 
-                    // Run streaming vision-language inference
-                    try await self.runVisionLanguageInferenceStreaming(
-                        image: uiImage,
+                    var userInput: UserInput? = UserInput(
                         prompt: finalPrompt,
-                        maxTokens: maxTokens,
-                        temperature: temperature,
-                        onToken: { token in
-                            continuation.yield(token)
-                        }
+                        images: [.ciImage(ciImage)]
                     )
+                    let parameters = GenerateParameters(maxTokens: maxTokens, temperature: temperature)
+
+                    try await container.perform { [userInput] context in
+                        guard let ui = userInput else {
+                            throw MLXModelError.invocationFailed("UserInput was unexpectedly nil")
+                        }
+                        let lmInput = try await context.processor.prepare(input: ui)
+                        MLX.eval(lmInput.text.tokens)
+                        if let img = lmInput.image { MLX.eval(img.pixels) }
+                        MLX.GPU.clearCache()
+                        var detokenizer = NaiveStreamingDetokenizer(tokenizer: context.tokenizer)
+                        var stepCount = 0
+                        _ = try generate(
+                            input: lmInput,
+                            parameters: parameters,
+                            context: context
+                        ) { (tokens: [Int]) in
+                            stepCount += 1
+                            if stepCount % 32 == 0 { MLX.GPU.clearCache() }
+                            if let last = tokens.last {
+                                detokenizer.append(token: last)
+                                if let piece = detokenizer.next() {
+                                    continuation.yield(piece)
+                                }
+                            }
+                            return .more
+                        }
+                    }
+                    userInput = nil  // free CIImage reference after inference
 
                     continuation.finish()
-
-                } catch let error as MLXModelError {
-                    continuation.finish(throwing: error)
                 } catch {
-                    continuation.finish(throwing: MLXModelError.invocationFailed(error.localizedDescription))
+                    continuation.finish(throwing: error)
                 }
             }
         }
         #endif
     }
 
-    // MARK: - Private Methods
+    // MARK: - Private
 
-    /// Load MLX-format VLM model
-    private func loadMLXVLMModel(from modelPath: String) throws {
-        // NOTE: This uses mlx-swift-gemma-port package which provides Gemma3/MedGemma support
-        // MedGemma is Gemma3-based (verified in config.json: "model_type": "gemma3")
-        // Vision encoder is embedded in the sharded model files, not separate
-
-        let fm = FileManager.default
-
-        // Verify required model files
-        // Note: MedGemma uses sharded model format
-        let requiredFiles = [
-            "config.json",                    // Model config
-            "tokenizer.json",                 // Tokenizer
-            "model.safetensors.index.json"    // Index file for sharded models
-        ]
-
-        for file in requiredFiles {
-            let filePath = (modelPath as NSString).appendingPathComponent(file)
-            if !fm.fileExists(atPath: filePath) {
-                throw MLXModelError.fileAccessError("Missing required file: \(file)")
-            }
+    /// Correctly-structured placeholder JSON for simulator builds.
+    /// Uses the exact schema expected by FindingsValidator / ImagingFindingsSummary.
+    private func simulatorPlaceholderJSON() -> String {
+        """
+        {
+          "image_type": "Simulator placeholder — MLX inference unavailable",
+          "image_quality": "N/A (simulator build; no real image was processed)",
+          "anatomical_observations": {
+            "note": ["Real inference requires a physical device. This is a fixed placeholder."]
+          },
+          "comparison_with_prior": "No prior image available for comparison.",
+          "areas_highlighted": "No highlighted areas provided.",
+          "limitations": "\(FindingsValidator.limitationsConst)"
         }
-
-        #if targetEnvironment(simulator)
-        // Simulator: Create placeholder model info
-        var modelInfo: [String: Any] = [
-            "type": "medgemma-mm",
-            "path": modelPath,
-            "loaded": true,
-            "hasVisionEncoder": true
-        ]
-
-        let tokenizerPath = (modelPath as NSString).appendingPathComponent("tokenizer.json")
-        if let tokenizer = try self.loadTokenizer(from: tokenizerPath) {
-            modelInfo["tokenizer"] = tokenizer
-        }
-
-        self.visionModel = modelInfo as Any
-        #else
-        // Physical device: Load real MLX-format VLM model using Gemma3 implementation
-        // MedGemma is Gemma3-based (confirmed in config.json: "model_type": "gemma3")
-        // The mlx-swift-gemma-port package includes full Gemma3 multimodal support
-
-        // Load model configuration
-        let configURL = URL(fileURLWithPath: modelPath).appendingPathComponent("config.json")
-        let configData = try Data(contentsOf: configURL)
-
-        // Parse config to verify this is Gemma3
-        guard let configJson = try JSONSerialization.jsonObject(with: configData) as? [String: Any],
-              let modelType = configJson["model_type"] as? String,
-              modelType == "gemma3" else {
-            throw MLXModelError.modelLoadFailed("Model must be Gemma3 type (MedGemma is Gemma3-based)")
-        }
-
-        // Load model using VLMModelFactory from mlx-swift-gemma-port
-        // VLMModelFactory automatically handles:
-        // - Loading sharded model files via index.json
-        // - Vision encoder (SigLIP) initialization
-        // - Tensor format conversion (NCHW -> NHWC if needed)
-        // - Quantization support
-        do {
-            // Use 4-bit quantization to fit in memory (9.3GB -> ~3-4GB with q4_0)
-            let modelURL = URL(fileURLWithPath: modelPath)
-
-            // VLMModelFactory.load signature (from mlx-swift-gemma-port):
-            // func load(modelDirectory: URL, quantization: QuantizationType) throws -> VLMModel
-            // For Gemma3, it automatically detects and uses Gemma3.swift implementation
-
-            // NOTE: This API call uses mlx-swift-gemma-port's VLMModelFactory
-            // If the API signature differs, update accordingly
-            // The factory pattern automatically selects Gemma3 based on config.json
-
-            // Create a minimal wrapper to store the loaded model
-            var modelInfo: [String: Any] = [
-                "type": "gemma3-vlm",
-                "path": modelPath,
-                "loaded": true,
-                "modelType": modelType,
-                "hasVisionEncoder": true,
-                "architecture": "Gemma3ForConditionalGeneration"
-            ]
-
-            // Load tokenizer for text encoding
-            let tokenizerPath = (modelPath as NSString).appendingPathComponent("tokenizer.json")
-            if let tokenizer = try self.loadTokenizer(from: tokenizerPath) {
-                modelInfo["tokenizer"] = tokenizer
-            }
-
-            self.vlmModel = modelInfo as Any
-            print("✅ MedGemma (Gemma3) loaded from: \(modelPath)")
-            print("   Architecture: Gemma3ForConditionalGeneration")
-            print("   Vision: SigLIP encoder (27 layers, 1152 hidden size)")
-            print("   Text: Gemma3 (34 layers, 2560 hidden size)")
-
-        } catch {
-            throw MLXModelError.modelLoadFailed("Failed to load MedGemma model: \(error)")
-        }
-        #endif
-    }
-
-    /// Load tokenizer from JSON file
-    private func loadTokenizer(from path: String) throws -> [String: Any]? {
-        guard FileManager.default.fileExists(atPath: path) else {
-            throw MLXModelError.fileAccessError("Tokenizer not found at \(path)")
-        }
-
-        do {
-            let data = try Data(contentsOf: URL(fileURLWithPath: path))
-            if let json = try JSONSerialization.jsonObject(with: data) as? [String: Any] {
-                return json
-            }
-            return nil
-        } catch {
-            throw MLXModelError.modelLoadFailed("Failed to load tokenizer: \(error)")
-        }
-    }
-
-    /// Run vision-language inference with image and text prompt
-    private func runVisionLanguageInference(
-        image: UIImage,
-        prompt: String,
-        maxTokens: Int,
-        temperature: Float
-    ) throws -> String {
-        #if !targetEnvironment(simulator)
-        guard vlmModel != nil else {
-            throw MLXModelError.modelNotLoaded
-        }
-        #endif
-
-        // Process image through vision encoder
-        let imageEmbeddings = try encodeImage(image)
-
-        // Tokenize text prompt
-        let promptTokens = try tokenizePrompt(prompt)
-
-        // Run language model inference with vision embeddings + text tokens
-        // The vision encoder produces embeddings of shape [num_patches, vision_hidden_dim]
-        // These are projected and concatenated with text token embeddings
-        // The language model then generates output autoregressively
-
-        let generatedText = try runGenerativeInference(
-            visionEmbeddings: imageEmbeddings,
-            promptTokens: promptTokens,
-            maxTokens: maxTokens,
-            temperature: temperature
-        )
-
-        return generatedText
-    }
-
-    /// Run streaming vision-language inference
-    private func runVisionLanguageInferenceStreaming(
-        image: UIImage,
-        prompt: String,
-        maxTokens: Int,
-        temperature: Float,
-        onToken: @escaping (String) -> Void
-    ) async throws {
-        #if !targetEnvironment(simulator)
-        guard vlmModel != nil else {
-            throw MLXModelError.modelNotLoaded
-        }
-        #endif
-
-        // Process image through vision encoder
-        let imageEmbeddings = try encodeImage(image)
-
-        // Tokenize text prompt
-        let promptTokens = try tokenizePrompt(prompt)
-
-        // Run streaming inference
-        try await runGenerativeInferenceStreaming(
-            visionEmbeddings: imageEmbeddings,
-            promptTokens: promptTokens,
-            maxTokens: maxTokens,
-            temperature: temperature,
-            onToken: onToken
-        )
-    }
-
-    /// Encode image through vision encoder
-    private func encodeImage(_ image: UIImage) throws -> [[Float]] {
-        #if !targetEnvironment(simulator)
-        guard vlmModel != nil else {
-            throw MLXModelError.modelNotLoaded
-        }
-        #endif
-
-        // Vision encoder workflow:
-        // 1. Resize image to model's expected size (typically 224x224 or 384x384)
-        // 2. Normalize pixel values (subtract mean, divide by std)
-        // 3. Extract patches (typically 16x16 with stride 16, giving 14x14 patches)
-        // 4. Run through vision encoder transformer
-        // 5. Apply pooling/projection to get embeddings
-
-        let resizedImage = resizeImage(image, to: CGSize(width: 384, height: 384))
-        let pixelData = try extractPixelData(from: resizedImage)
-        _ = normalizePixels(pixelData)
-
-        // Extract image patches (384x384 with 16x16 patches = 24x24 = 576 patches)
-        // After vision encoder transformer, output shape: [576, vision_hidden_dim]
-        // For MedGemma: vision_hidden_dim = 768
-
-        var embeddings: [[Float]] = []
-        let patchSize = 16
-        let numPatches = (384 / patchSize) * (384 / patchSize)
-
-        for _ in 0..<numPatches {
-            // In production, would extract patch and run through vision encoder
-            // For now, simulate with random embeddings (same shape as real output)
-            var embedding: [Float] = []
-            for _ in 0..<768 {  // vision_hidden_dim = 768 for MedGemma
-                embedding.append(Float.random(in: -1.0...1.0))
-            }
-            embeddings.append(embedding)
-        }
-
-        return embeddings
-    }
-
-    /// Tokenize text prompt
-    private func tokenizePrompt(_ prompt: String) throws -> [Int32] {
-        #if targetEnvironment(simulator)
-        // Simulator: Return empty tokens (placeholder)
-        return []
-        #else
-        guard let modelInfo = vlmModel as? [String: Any],
-              let tokenizerData = modelInfo["tokenizer"] as? [String: Any] else {
-            throw MLXModelError.tokenizerNotLoaded
-        }
-
-        // Use tokenizer vocab if available
-        if let vocab = tokenizerData["vocab"] as? [String: Int] {
-            var tokens: [Int32] = []
-
-            // Add prompt tokens
-            let words = prompt.lowercased().split(separator: " ").map { String($0) }
-            for word in words {
-                if let tokenId = vocab[word] {
-                    tokens.append(Int32(tokenId))
-                } else {
-                    // Use unknown token
-                    if let unkId = vocab["<unk>"] {
-                        tokens.append(Int32(unkId))
-                    }
-                }
-            }
-
-            return tokens
-        }
-
-        // Fallback: character-level tokenization
-        let chars = Array(prompt.lowercased())
-        return chars.map { Int32(String($0).utf8.first ?? 0) }
-        #endif
-    }
-
-    /// Run generative inference with vision embeddings and text
-    private func runGenerativeInference(
-        visionEmbeddings: [[Float]],
-        promptTokens: [Int32],
-        maxTokens: Int,
-        temperature: Float
-    ) throws -> String {
-        // Combine vision embeddings with text tokens:
-        // 1. Project vision embeddings to language model embedding space
-        // 2. Prepend vision embeddings to text token embeddings
-        // 3. Run transformer language model autoregressively
-        // 4. Sample tokens based on temperature and top-k
-
-        var generatedText = ""
-        var generatedTokens: [Int32] = promptTokens
-
-        // Simulate generation (in production, would use MLX ops)
-        for _ in 0..<maxTokens {
-            // In real implementation:
-            // let logits = try model.forward(
-            //     input: generatedTokens,
-            //     visionEmbeddings: visionEmbeddings
-            // )
-
-            // Sample next token
-            let nextToken = Int32.random(in: 0..<256000)  // MedGemma vocab size
-            generatedTokens.append(nextToken)
-
-            // Decode and accumulate
-            if let scalar = UnicodeScalar(Int(nextToken)), let decodedChar = String(scalar) as String? {
-                generatedText += decodedChar
-            }
-
-            // Check for end-of-sequence
-            if nextToken == 2 {  // EOS token
-                break
-            }
-        }
-
-        return generatedText.trimmingCharacters(in: .whitespaces)
-    }
-
-    /// Run streaming generative inference
-    private func runGenerativeInferenceStreaming(
-        visionEmbeddings: [[Float]],
-        promptTokens: [Int32],
-        maxTokens: Int,
-        temperature: Float,
-        onToken: @escaping (String) -> Void
-    ) async throws {
-        // Similar to non-streaming, but yield tokens as they're generated
-        var generatedTokens: [Int32] = promptTokens
-
-        for _ in 0..<maxTokens {
-            let nextToken = Int32.random(in: 0..<256000)
-            generatedTokens.append(nextToken)
-
-            // Decode and yield token
-            if let scalar = UnicodeScalar(Int(nextToken)), let decodedChar = String(scalar) as String? {
-                onToken(decodedChar)
-            }
-
-            // Check for end-of-sequence
-            if nextToken == 2 {  // EOS token
-                break
-            }
-
-            // Yield to event loop to keep UI responsive
-            try await Task.sleep(nanoseconds: 0)
-        }
-    }
-
-    // MARK: - Image Processing Helpers
-
-    private func resizeImage(_ image: UIImage, to size: CGSize) -> UIImage {
-        let renderer = UIGraphicsImageRenderer(size: size)
-        return renderer.image { _ in
-            image.draw(in: CGRect(origin: .zero, size: size))
-        }
-    }
-
-    private func extractPixelData(from image: UIImage) throws -> [Float] {
-        guard let cgImage = image.cgImage else {
-            throw MLXModelError.invocationFailed("Failed to get CGImage")
-        }
-
-        let width = cgImage.width
-        let height = cgImage.height
-        let colorSpace = CGColorSpaceCreateDeviceRGB()
-        let bytesPerPixel = 4
-        let bytesPerRow = bytesPerPixel * width
-        let bitsPerComponent = 8
-        var pixelData = [UInt8](repeating: 0, count: width * height * bytesPerPixel)
-
-        let context = CGContext(
-            data: &pixelData,
-            width: width,
-            height: height,
-            bitsPerComponent: bitsPerComponent,
-            bytesPerRow: bytesPerRow,
-            space: colorSpace,
-            bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue | CGBitmapInfo.byteOrder32Big.rawValue
-        )
-
-        guard let context = context else {
-            throw MLXModelError.invocationFailed("Failed to create CGContext")
-        }
-
-        context.draw(cgImage, in: CGRect(x: 0, y: 0, width: width, height: height))
-
-        // Convert bytes to floats (0.0 - 1.0 range)
-        return pixelData.map { Float($0) / 255.0 }
-    }
-
-    private func normalizePixels(_ pixels: [Float]) -> [Float] {
-        // ImageNet normalization constants
-        let meanR: Float = 0.485
-        let meanG: Float = 0.456
-        let meanB: Float = 0.406
-        let stdR: Float = 0.229
-        let stdG: Float = 0.224
-        let stdB: Float = 0.225
-
-        var normalized: [Float] = []
-
-        for i in stride(from: 0, to: pixels.count, by: 4) {
-            let r = (pixels[i] - meanR) / stdR
-            let g = (pixels[i + 1] - meanG) / stdG
-            let b = (pixels[i + 2] - meanB) / stdB
-            let a = pixels[i + 3]
-
-            normalized.append(contentsOf: [r, g, b, a])
-        }
-
-        return normalized
+        """
     }
 }

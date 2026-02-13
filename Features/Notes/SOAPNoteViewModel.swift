@@ -6,6 +6,7 @@
 //
 
 import Combine
+import CoreData
 import Foundation
 
 /// ViewModel managing SOAP note generation workflow
@@ -50,13 +51,21 @@ class SOAPNoteViewModel: ObservableObject {
 
     // MARK: - Initialization
 
-    init(
-        soapGenerator: SOAPNoteGenerator = SOAPNoteGenerator(),
-        parser: SOAPNoteParser = SOAPNoteParser(),
-        repository: SOAPNoteRepository = SOAPNoteRepository(
+    // Production init — all dependencies created on main actor
+    init() {
+        self.soapGenerator = SOAPNoteGenerator()
+        self.parser = SOAPNoteParser()
+        self.repository = SOAPNoteRepository(
             managedObjectContext: PersistenceController.shared.container.viewContext,
             encryptionService: EncryptionService.shared
         )
+    }
+
+    // Dependency-injection init for testing
+    init(
+        soapGenerator: SOAPNoteGenerator,
+        parser: SOAPNoteParser,
+        repository: SOAPNoteRepository
     ) {
         self.soapGenerator = soapGenerator
         self.parser = parser
@@ -94,7 +103,7 @@ class SOAPNoteViewModel: ObservableObject {
                 )
 
                 // Store in repository (validates before persisting)
-                let noteID = try repository.save(note)
+                _ = try repository.save(note)
 
                 // Update UI
                 self.currentNote = note

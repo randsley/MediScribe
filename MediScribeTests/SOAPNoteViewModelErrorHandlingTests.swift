@@ -12,8 +12,8 @@ class SOAPNoteViewModelErrorHandlingTests: XCTestCase {
     // MARK: - Properties
 
     var viewModel: SOAPNoteViewModel!
-    var mockRepository: MockSOAPNoteRepository!
-    var mockGenerator: MockSOAPNoteGenerator!
+    var mockRepository: EHMockSOAPNoteRepository!
+    var mockGenerator: EHMockSOAPNoteGenerator!
 
     // MARK: - Setup & Teardown
 
@@ -21,8 +21,8 @@ class SOAPNoteViewModelErrorHandlingTests: XCTestCase {
         super.setUp()
 
         // Create mock repository that can throw validation errors
-        mockRepository = MockSOAPNoteRepository()
-        mockGenerator = MockSOAPNoteGenerator()
+        mockRepository = EHMockSOAPNoteRepository()
+        mockGenerator = EHMockSOAPNoteGenerator()
 
         // Initialize ViewModel with mocks
         viewModel = SOAPNoteViewModel(
@@ -229,7 +229,7 @@ class SOAPNoteViewModelErrorHandlingTests: XCTestCase {
 
 // MARK: - Mock Classes
 
-class MockSOAPNoteRepository: SOAPNoteRepository {
+class EHMockSOAPNoteRepository: SOAPNoteRepository {
     var shouldSucceed = false
     var nextError: SOAPNoteValidationError?
     var nextGenericError: NSError?
@@ -248,19 +248,56 @@ class MockSOAPNoteRepository: SOAPNoteRepository {
     }
 }
 
-class MockSOAPNoteGenerator: SOAPNoteGenerator {
+class EHMockSOAPNoteGenerator: SOAPNoteGenerator {
     // Mock generator that returns placeholder data
     override func generateSOAPNote(
         from context: PatientContext,
         language: Language = .english,
         options: SOAPGenerationOptions = .default
-    ) async throws -> SOAPNote {
-        return SOAPNote(
-            subjective: "Patient reports \(context.chiefComplaint)",
-            objective: "Vital signs stable",
-            assessment: "Assessment pending",
-            plan: "Follow-up as needed",
-            generatedAt: Date()
+    ) async throws -> SOAPNoteData {
+        return SOAPNoteData(
+            patientIdentifier: nil,
+            generatedAt: Date(),
+            subjective: SOAPSubjective(
+                chiefComplaint: context.chiefComplaint,
+                historyOfPresentIllness: "Patient reports \(context.chiefComplaint)",
+                pastMedicalHistory: context.medicalHistory,
+                medications: context.currentMedications,
+                allergies: context.allergies
+            ),
+            objective: SOAPObjective(
+                vitalSigns: VitalSignsData(
+                    temperature: nil,
+                    heartRate: nil,
+                    respiratoryRate: nil,
+                    systolicBP: nil,
+                    diastolicBP: nil,
+                    oxygenSaturation: nil,
+                    recordedAt: nil
+                ),
+                physicalExamFindings: nil,
+                diagnosticResults: nil
+            ),
+            assessment: SOAPAssessment(
+                clinicalImpression: "Vital signs stable",
+                differentialConsiderations: nil,
+                problemList: nil
+            ),
+            plan: SOAPPlan(
+                interventions: nil,
+                followUp: nil,
+                patientEducation: nil,
+                referrals: nil
+            ),
+            metadata: SOAPMetadata(
+                modelVersion: "test-1.0",
+                generationTime: 0.1,
+                promptTemplate: "test",
+                clinicianReviewedBy: nil,
+                reviewedAt: nil,
+                encryptionVersion: "1.0"
+            ),
+            validationStatus: .validated
         )
     }
 }

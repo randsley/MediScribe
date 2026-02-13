@@ -219,9 +219,6 @@ class ModelDownloader: NSObject, URLSessionDownloadDelegate {
         progressCallback: @escaping (DownloadProgress) -> Void,
         completion: @escaping (Result<Void, Error>) -> Void
     ) {
-        var downloadedCount = 0
-        var downloadErrors: [Error] = []
-
         // Determine which files to download
         // For mlx-community 4-bit: just model.safetensors
         // For sharded models: model.safetensors.index.json + shards
@@ -385,7 +382,7 @@ class ModelDownloader: NSObject, URLSessionDownloadDelegate {
             return
         }
 
-        guard let destinationPath = (downloadTask.currentRequest?.url?.absoluteString.split(separator: "/").last.map(String.init)) else {
+        guard downloadTask.currentRequest?.url != nil else {
             let error = ModelDownloadError.fileDownloadFailed(fileName)
             completionCallbacks[fileName]?(.failure(error))
             return

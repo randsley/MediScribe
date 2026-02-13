@@ -44,11 +44,6 @@ struct FHIRReferralMapper {
             ))
         }
 
-        // Destination as performer type text
-        let performerType: FHIRCodeableConcept? = referral.destination.flatMap {
-            $0.isEmpty ? nil : FHIRCodeableConcept.text($0)
-        }
-
         let serviceRequest = FHIRServiceRequest(
             id: id,
             status: srStatus,

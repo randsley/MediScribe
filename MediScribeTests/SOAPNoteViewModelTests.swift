@@ -200,6 +200,7 @@ class MockSOAPNoteGenerator: SOAPNoteGenerator {
 
     override func generateSOAPNote(
         from context: PatientContext,
+        language: Language = .english,
         options: SOAPGenerationOptions = .default
     ) async throws -> SOAPNoteData {
         if shouldFail {

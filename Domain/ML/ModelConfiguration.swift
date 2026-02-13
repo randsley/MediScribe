@@ -26,7 +26,7 @@ struct ModelConfiguration {
 
     /// Model directory name within the app documents
     /// This is just the local folder name - actual model repo ID is in huggingFaceRepositoryId
-    static let modelDirectoryName = "medgemma-4b-it-4bit"
+    static let modelDirectoryName = "medgemma-4b-it"
 
     // MARK: - Download Configuration
 
@@ -42,21 +42,21 @@ struct ModelConfiguration {
     // MARK: - Model Information
 
     /// Required model files (in download order)
+    /// Single-file format (medgemma-4b-it uses model.safetensors, not sharded)
     static let requiredModelFiles = [
         "config.json",
         "tokenizer.json",
-        "model.safetensors.index.json",
-        "model-00001-of-00002.safetensors",
-        "model-00002-of-00002.safetensors"
+        "model.safetensors"
     ]
-
-    /// Expected minimum size for model shards
-    static let minimumShardSizeBytes: Int64 = 4_000_000_000  // 4GB
 
     // MARK: - Inference Configuration
 
-    /// Default maximum tokens for imaging findings
-    static let defaultImagingMaxTokens = 1024
+    /// Default maximum tokens for imaging findings.
+    /// 256 tokens: the required JSON schema is ~150-200 tokens; 256 gives
+    /// enough headroom for the JSON body. Keeping this low reduces the number
+    /// of LM decode steps and the associated MLX GPU buffer accumulation that
+    /// can cause jetsam OOM kills on long generation runs.
+    static let defaultImagingMaxTokens = 256
 
     /// Default maximum tokens for lab results
     static let defaultLabMaxTokens = 1536
@@ -72,11 +72,13 @@ struct ModelConfiguration {
 
     // MARK: - Helper Methods
 
-    /// Get the full path to the model directory
-    /// - Returns: Path to ~/MediScribe/models/medgemma-1.5-4b-it-mlx/
+    /// Get the full path to the model directory.
+    /// Uses Library/Application Support so files persist across backups and
+    /// are not exposed via iTunes/Finder file sharing (Documents would be).
+    /// - Returns: Path to <Library/Application Support>/models/
     static func modelDirectoryPath() -> String {
-        let baseDir = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).first ?? ""
-        return (baseDir as NSString).appendingPathComponent("../MediScribe/models/\(modelDirectoryName)")
+        let baseDir = NSSearchPathForDirectoriesInDomains(.applicationSupportDirectory, .userDomainMask, true).first ?? ""
+        return (baseDir as NSString).appendingPathComponent("medgemma-4b-it")
     }
 
     /// Create HFModelConfig with current settings

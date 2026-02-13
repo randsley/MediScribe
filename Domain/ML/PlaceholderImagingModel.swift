@@ -40,13 +40,10 @@ class PlaceholderImagingModel: ImagingModelProtocol {
         // Generate placeholder JSON
         let json = """
         {
-          "image_type": "Clinical Image (view not specified)",
-          "image_quality": "Image quality not specified.",
+          "image_type": "Placeholder (no real inference — for UI testing only)",
+          "image_quality": "N/A",
           "anatomical_observations": {
-            "lungs": ["Lung fields appear symmetric."],
-            "pleural_regions": ["No clearly visible pleural fluid is observed."],
-            "cardiomediastinal_silhouette": ["Cardiomediastinal contours appear within expected visual limits."],
-            "bones_and_soft_tissues": ["No obvious displacement is visible in the ribs."]
+            "note": ["This is a placeholder response. Real on-device inference produces image-specific output."]
           },
           "comparison_with_prior": "No prior image available for comparison.",
           "areas_highlighted": "No highlighted areas provided.",

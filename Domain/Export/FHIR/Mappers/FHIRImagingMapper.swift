@@ -88,7 +88,7 @@ struct FHIRImagingMapper {
             display: "Diagnostic imaging study"
         )
 
-        var imagingStudyRefs: [FHIRReference] = [FHIRReference.urn(studyID)]
+        let imagingStudyRefs: [FHIRReference] = [FHIRReference.urn(studyID)]
 
         let report = FHIRDiagnosticReport(
             id: reportID,
@@ -131,18 +131,9 @@ struct FHIRImagingMapper {
         html += "<p><strong>Image Type:</strong> \(summary.imageType)</p>"
         html += "<p><strong>Image Quality:</strong> \(summary.imageQuality)</p>"
 
-        let obs = summary.anatomicalObservations
-        if !obs.lungs.isEmpty {
-            html += "<p><strong>Lungs:</strong> \(obs.lungs.joined(separator: "; "))</p>"
-        }
-        if !obs.pleuralRegions.isEmpty {
-            html += "<p><strong>Pleural Regions:</strong> \(obs.pleuralRegions.joined(separator: "; "))</p>"
-        }
-        if !obs.cardiomediastinalSilhouette.isEmpty {
-            html += "<p><strong>Cardiomediastinal Silhouette:</strong> \(obs.cardiomediastinalSilhouette.joined(separator: "; "))</p>"
-        }
-        if !obs.bonesAndSoftTissues.isEmpty {
-            html += "<p><strong>Bones/Soft Tissues:</strong> \(obs.bonesAndSoftTissues.joined(separator: "; "))</p>"
+        for (key, values) in summary.anatomicalObservations.structures.sorted(by: { $0.key < $1.key }) where !values.isEmpty {
+            let label = key.replacingOccurrences(of: "_", with: " ").capitalized
+            html += "<p><strong>\(label):</strong> \(values.joined(separator: "; "))</p>"
         }
         if !summary.comparisonWithPrior.isEmpty {
             html += "<p><strong>Comparison with Prior:</strong> \(summary.comparisonWithPrior)</p>"

@@ -166,11 +166,7 @@ struct FHIRExportView: View {
         exportError = nil
 
         do {
-            let exportService = self.exportService
-            let source = self.source
-            let data = try await Task.detached(priority: .userInitiated) {
-                try FHIRExportView.runExport(exportService: exportService, source: source)
-            }.value
+            let data = try FHIRExportView.runExport(exportService: exportService, source: source)
 
             exportedData = data
             exportState = .ready

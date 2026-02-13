@@ -1,7 +1,7 @@
 import Foundation
 
 /// Represents the top-level structure for a field medical note, based on the Unified Field Note Schema.
-struct FieldNote: Codable, Identifiable {
+struct FieldNote: Codable, Identifiable, Sendable {
     var id: UUID = UUID()
     var meta: NoteMeta
     var triage: NoteTriage?

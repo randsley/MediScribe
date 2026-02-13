@@ -42,13 +42,12 @@ class ImagingModelManager: ObservableObject {
                 try await loadCurrentModel()
                 print("✓ MLX model loaded - ready for inference")
             } catch {
-                // If MLX loading fails, fall back to placeholder
-                print("⚠️ Failed to load MLX model: \(error.localizedDescription)")
-                print("⚠️ Falling back to PlaceholderImagingModel for demonstration")
+                // Surface the error — do NOT fall back to PlaceholderImagingModel on
+                // a real device, as that would silently produce image-independent output.
+                print("❌ Failed to load MLX model: \(error.localizedDescription)")
                 await MainActor.run {
-                    self.currentModel = PlaceholderImagingModel()
+                    self.lastError = error
                 }
-                try? await loadCurrentModel()
             }
         }
     }

@@ -35,7 +35,7 @@ class SOAPNoteRepository {
         // Validate before persisting
         _ = try SOAPNoteValidator.validate(noteData)
 
-        let note = try SOAPNote.create(
+        _ = try SOAPNote.create(
             from: noteData,
             in: managedObjectContext,
             encryptedBy: encryptionService

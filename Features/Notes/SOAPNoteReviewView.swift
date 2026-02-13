@@ -69,20 +69,20 @@ struct SOAPNoteReviewView: View {
                             SectionHeader(title: "SUBJECTIVE", icon: "person.fill")
 
                             VStack(alignment: .leading, spacing: 8) {
-                                DetailRow(label: "Chief Complaint", value: note.subjective.chiefComplaint)
+                                SOAPDetailRow(label: "Chief Complaint", value: note.subjective.chiefComplaint)
 
-                                DetailRow(label: "HPI", value: note.subjective.historyOfPresentIllness)
+                                SOAPDetailRow(label: "HPI", value: note.subjective.historyOfPresentIllness)
 
                                 if let pmh = note.subjective.pastMedicalHistory, !pmh.isEmpty {
-                                    DetailRow(label: "PMHx", value: pmh.joined(separator: ", "))
+                                    SOAPDetailRow(label: "PMHx", value: pmh.joined(separator: ", "))
                                 }
 
                                 if let meds = note.subjective.medications, !meds.isEmpty {
-                                    DetailRow(label: "Medications", value: meds.joined(separator: ", "))
+                                    SOAPDetailRow(label: "Medications", value: meds.joined(separator: ", "))
                                 }
 
                                 if let allergies = note.subjective.allergies, !allergies.isEmpty {
-                                    DetailRow(label: "Allergies", value: allergies.joined(separator: ", "))
+                                    SOAPDetailRow(label: "Allergies", value: allergies.joined(separator: ", "))
                                 }
                             }
                         }
@@ -128,7 +128,7 @@ struct SOAPNoteReviewView: View {
                                 .cornerRadius(4)
 
                                 if let findings = note.objective.physicalExamFindings, !findings.isEmpty {
-                                    DetailRow(label: "Exam", value: findings.joined(separator: ", "))
+                                    SOAPDetailRow(label: "Exam", value: findings.joined(separator: ", "))
                                 }
                             }
                         }
@@ -139,10 +139,10 @@ struct SOAPNoteReviewView: View {
                         VStack(alignment: .leading, spacing: 8) {
                             SectionHeader(title: "ASSESSMENT", icon: "doc.text")
 
-                            DetailRow(label: "Impression", value: note.assessment.clinicalImpression)
+                            SOAPDetailRow(label: "Impression", value: note.assessment.clinicalImpression)
 
                             if let diffs = note.assessment.differentialConsiderations, !diffs.isEmpty {
-                                DetailRow(label: "Differentials", value: diffs.joined(separator: ", "))
+                                SOAPDetailRow(label: "Differentials", value: diffs.joined(separator: ", "))
                             }
                         }
 
@@ -153,15 +153,15 @@ struct SOAPNoteReviewView: View {
                             SectionHeader(title: "PLAN", icon: "list.bullet")
 
                             if let interventions = note.plan.interventions, !interventions.isEmpty {
-                                DetailRow(label: "Interventions", value: interventions.joined(separator: ", "))
+                                SOAPDetailRow(label: "Interventions", value: interventions.joined(separator: ", "))
                             }
 
                             if let followUp = note.plan.followUp, !followUp.isEmpty {
-                                DetailRow(label: "Follow-up", value: followUp.joined(separator: ", "))
+                                SOAPDetailRow(label: "Follow-up", value: followUp.joined(separator: ", "))
                             }
 
                             if let education = note.plan.patientEducation, !education.isEmpty {
-                                DetailRow(label: "Education", value: education.joined(separator: ", "))
+                                SOAPDetailRow(label: "Education", value: education.joined(separator: ", "))
                             }
                         }
 
@@ -294,7 +294,7 @@ struct SectionHeader: View {
     }
 }
 
-struct DetailRow: View {
+struct SOAPDetailRow: View {
     let label: String
     let value: String
 

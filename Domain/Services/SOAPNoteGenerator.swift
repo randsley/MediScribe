@@ -12,70 +12,21 @@ import Foundation
 
 // MARK: - Data Models
 
-/// Vital signs for SOAP note context
-struct VitalSigns: Codable {
-    let temperature: Double? // Celsius
-    let heartRate: Int? // bpm
-    let respiratoryRate: Int? // breaths/min
-    let systolicBP: Int? // mmHg
-    let diastolicBP: Int? // mmHg
-    let oxygenSaturation: Int? // % on room air
-
-    enum CodingKeys: String, CodingKey {
-        case temperature
-        case heartRate = "heart_rate"
-        case respiratoryRate = "respiratory_rate"
-        case systolicBP = "systolic_bp"
-        case diastolicBP = "diastolic_bp"
-        case oxygenSaturation = "oxygen_saturation"
-    }
-}
-
-/// Patient context for SOAP note generation
-struct PatientContext: Codable {
-    let age: Int
-    let sex: String // M, F, Other
-    let chiefComplaint: String
-    let vitalSigns: VitalSigns
-    let medicalHistory: [String]?
-    let currentMedications: [String]?
-    let allergies: [String]?
-
-    enum CodingKeys: String, CodingKey {
-        case age
-        case sex
-        case chiefComplaint = "chief_complaint"
-        case vitalSigns = "vital_signs"
-        case medicalHistory = "medical_history"
-        case currentMedications = "current_medications"
-        case allergies
-    }
-}
-
-/// SOAP note sections
-struct SOAPNote: Codable {
-    let subjective: String
-    let objective: String
-    let assessment: String
-    let plan: String
-    let generatedAt: Date
-
-    enum CodingKeys: String, CodingKey {
-        case subjective
-        case objective
-        case assessment
-        case plan
-        case generatedAt = "generated_at"
-    }
-}
-
 /// Generation options
 struct SOAPGenerationOptions {
     let maxTokens: Int
     let temperature: Float
     let includeVoiceInput: Bool
 
-    static var `default`: SOAPGenerationOptions {
+    nonisolated static var `default`: SOAPGenerationOptions {
+        SOAPGenerationOptions(
+            maxTokens: 2048,
+            temperature: 0.3,
+            includeVoiceInput: false
+        )
+    }
+
+    nonisolated static var soapGeneration: SOAPGenerationOptions {
         SOAPGenerationOptions(
             maxTokens: 2048,
             temperature: 0.3,
@@ -92,18 +43,18 @@ class SOAPNoteGenerator {
 
     private let modelLoader: MLXModelLoader
     private let promptBuilder: SOAPPromptBuilder
-    private let responseParser: SOAPResponseParser
+    private let noteParser: SOAPNoteParser
 
     // MARK: - Initialization
 
     init(
         modelLoader: MLXModelLoader = .shared,
         promptBuilder: SOAPPromptBuilder = SOAPPromptBuilder(),
-        responseParser: SOAPResponseParser = SOAPResponseParser()
+        noteParser: SOAPNoteParser = SOAPNoteParser()
     ) {
         self.modelLoader = modelLoader
         self.promptBuilder = promptBuilder
-        self.responseParser = responseParser
+        self.noteParser = noteParser
     }
 
     // MARK: - Public Methods
@@ -118,7 +69,7 @@ class SOAPNoteGenerator {
         from context: PatientContext,
         language: Language = .english,
         options: SOAPGenerationOptions = .default
-    ) async throws -> SOAPNote {
+    ) async throws -> SOAPNoteData {
         // 1. Ensure model is loaded
         if !modelLoader.isModelLoaded {
             try modelLoader.loadModel()
@@ -128,12 +79,16 @@ class SOAPNoteGenerator {
         let prompt = promptBuilder.buildSOAPPrompt(from: context, language: language)
 
         // 3. Generate response using MLX model
+        let startTime = Date()
         let response = try await generateResponse(prompt: prompt, options: options)
+        let elapsed = Date().timeIntervalSince(startTime)
 
-        // 4. Parse response into SOAP sections
-        let soapNote = try responseParser.parseSOAPNote(from: response)
-
-        return soapNote
+        // 4. Parse and validate response into SOAPNoteData
+        return try noteParser.parseSOAPNote(
+            from: response,
+            modelVersion: ModelConfiguration.huggingFaceRepositoryId,
+            generationTime: elapsed
+        )
     }
 
     /// Generate streaming SOAP note updates
@@ -215,14 +170,14 @@ class SOAPNoteGenerator {
         prompt: String,
         options: SOAPGenerationOptions
     ) async throws -> String {
-        // Delegate to MLX model
-        return try await Task.detached(priority: .userInitiated) {
+        // Delegate to MLX model (placeholder: runs on main actor)
+        return try await MainActor.run {
             try MLXModelBridge.generate(
                 prompt: prompt,
                 maxTokens: options.maxTokens,
                 temperature: options.temperature
             )
-        }.value
+        }
     }
 
     private func streamResponse(
@@ -243,11 +198,15 @@ class SOAPNoteGenerator {
         }
     }
 
-    /// Parse raw response text into SOAP note
+    /// Parse raw response text into SOAP note data (used for accumulated streaming tokens)
     /// - Parameter responseText: Raw text output from model
-    /// - Returns: Parsed SOAP note
-    func parseResponse(_ responseText: String) throws -> SOAPNote {
-        return try responseParser.parseSOAPNote(from: responseText)
+    /// - Returns: Parsed SOAP note data
+    func parseResponse(_ responseText: String) throws -> SOAPNoteData {
+        return try noteParser.parseSOAPNote(
+            from: responseText,
+            modelVersion: ModelConfiguration.huggingFaceRepositoryId,
+            generationTime: 0
+        )
     }
 }
 
@@ -257,53 +216,67 @@ class SOAPNoteGenerator {
 class SOAPPromptBuilder {
 
     func buildSOAPPrompt(from context: PatientContext, language: Language = .english) -> String {
-        let localizedPrompts = LocalizedPrompts(language: language)
-        return localizedPrompts.buildSOAPPrompt(from: context)
-    }
-}
+        var vitalsText = "Not recorded"
+        let v = context.vitalSigns
+        var parts: [String] = []
+        if let t = v.temperature { parts.append("Temp \(t)°C") }
+        if let hr = v.heartRate { parts.append("HR \(hr) bpm") }
+        if let rr = v.respiratoryRate { parts.append("RR \(rr)/min") }
+        if let sys = v.systolicBP, let dia = v.diastolicBP { parts.append("BP \(sys)/\(dia) mmHg") }
+        if let o2 = v.oxygenSaturation { parts.append("SpO₂ \(o2)%") }
+        if !parts.isEmpty { vitalsText = parts.joined(separator: ", ") }
 
-// MARK: - Response Parser
+        let historyText = context.medicalHistory?.joined(separator: "; ") ?? "None documented"
+        let medsText = context.currentMedications?.joined(separator: "; ") ?? "None"
+        let allergiesText = context.allergies?.joined(separator: "; ") ?? "NKDA"
 
-/// Parses model output into SOAP note structure
-class SOAPResponseParser {
+        return """
+        Generate a structured SOAP note in JSON format for the following patient. \
+        Output ONLY valid JSON, no other text. The output must be observational and descriptive only — \
+        do NOT include diagnoses, disease names, probabilistic statements, or treatment recommendations.
 
-    func parseSOAPNote(from output: String) throws -> SOAPNote {
-        // Extract JSON from output
-        guard let jsonString = extractJSON(from: output) else {
-            throw MLXModelError.invocationFailed("No valid JSON found in model output")
+        Patient: \(context.age)y \(context.sex)
+        Chief complaint: \(context.chiefComplaint)
+        Vitals: \(vitalsText)
+        Medical history: \(historyText)
+        Current medications: \(medsText)
+        Allergies: \(allergiesText)
+
+        Required JSON schema:
+        {
+          "subjective": {
+            "chief_complaint": "string",
+            "history_of_present_illness": "string",
+            "past_medical_history": ["string"] or null,
+            "medications": ["string"] or null,
+            "allergies": ["string"] or null
+          },
+          "objective": {
+            "vital_signs": {
+              "temperature": number or null,
+              "heart_rate": number or null,
+              "respiratory_rate": number or null,
+              "systolic_bp": number or null,
+              "diastolic_bp": number or null,
+              "oxygen_saturation": number or null,
+              "recorded_at": null
+            },
+            "physical_exam_findings": ["string"] or null,
+            "diagnostic_results": ["string"] or null
+          },
+          "assessment": {
+            "clinical_impression": "string (observations only, no diagnoses)",
+            "differential_considerations": null,
+            "problem_list": ["string"] or null
+          },
+          "plan": {
+            "interventions": ["string"] or null,
+            "follow_up": ["string"] or null,
+            "patient_education": null,
+            "referrals": null
+          }
         }
-
-        // Decode JSON
-        guard let jsonData = jsonString.data(using: .utf8) else {
-            throw MLXModelError.invocationFailed("Failed to encode JSON string")
-        }
-
-        let decoder = JSONDecoder()
-        decoder.dateDecodingStrategy = .iso8601
-
-        do {
-            return try decoder.decode(SOAPNote.self, from: jsonData)
-        } catch {
-            throw MLXModelError.invocationFailed("Failed to decode SOAP note: \(error)")
-        }
-    }
-
-    private func extractJSON(from output: String) -> String? {
-        // Find first { and last }
-        guard let startIndex = output.firstIndex(of: "{"),
-              let endIndex = output.lastIndex(of: "}") else {
-            return nil
-        }
-
-        let jsonString = String(output[startIndex ... endIndex])
-
-        // Validate JSON
-        if let jsonData = jsonString.data(using: .utf8),
-           let _ = try? JSONSerialization.jsonObject(with: jsonData) {
-            return jsonString
-        }
-
-        return nil
+        """
     }
 }
 

@@ -88,7 +88,6 @@ class FHIRExportService {
         )
 
         var entries: [FHIRBundleEntry] = []
-        var compositionSections: [FHIRCompositionSection] = []
         var allProvenances: [FHIRProvenance] = []
 
         // ── SOAP Notes ──

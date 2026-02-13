@@ -103,18 +103,30 @@ class MLXModelLoader {
     // MARK: - Private Methods
 
     private func setupModelPath() {
-        // Model is bundled with the app at: MediScribe/Models/medgemma-4b-it/
-        // Use Bundle.main to access app-bundled resources
+        // 1. Check the user-downloaded model location first (ModelDownloader puts it here).
+        //    Only require the three core files that MLXMedGemmaBridge needs — the weight
+        //    file name (single vs. sharded) is determined at load time from the index.
+        let downloadedPath = ModelConfiguration.modelDirectoryPath()
+        let coreFiles = ["config.json", "tokenizer.json"]
+        let fm = FileManager.default
+        let corePresent = coreFiles.allSatisfy {
+            fm.fileExists(atPath: (downloadedPath as NSString).appendingPathComponent($0))
+        }
+        if corePresent {
+            modelPath = downloadedPath
+            return
+        }
+
+        // 2. Check app bundle (development: model copied into bundle for testing)
         if let bundlePath = Bundle.main.path(forResource: "medgemma-4b-it", ofType: nil) {
             modelPath = bundlePath
-        } else {
-            // Fallback: try constructing path relative to app bundle
-            if let bundlePath = Bundle.main.bundlePath as String? {
-                let modelDir = (bundlePath as NSString).appendingPathComponent("Models/medgemma-4b-it")
-                if FileManager.default.fileExists(atPath: modelDir) {
-                    modelPath = modelDir
-                }
-            }
+            return
+        }
+
+        // 3. Fallback: bundle-relative path
+        let bundleModelDir = (Bundle.main.bundlePath as NSString).appendingPathComponent("Models/medgemma-4b-it")
+        if FileManager.default.fileExists(atPath: bundleModelDir) {
+            modelPath = bundleModelDir
         }
     }
 
@@ -173,14 +185,14 @@ class MLXModelBridge: NSObject {
 
     // MARK: - Static Properties
 
-    /// Singleton instance of loaded model
-    private static var loadedModel: Any?
+    /// Singleton instance of loaded model (NSLock-protected)
+    private nonisolated(unsafe) static var loadedModel: Any?
 
-    /// Tokenizer instance
-    private static var tokenizer: Any?
+    /// Tokenizer instance (NSLock-protected)
+    private nonisolated(unsafe) static var tokenizer: Any?
 
-    /// Model configuration
-    private static var modelConfig: [String: Any]?
+    /// Model configuration (NSLock-protected)
+    private nonisolated(unsafe) static var modelConfig: [String: Any]?
 
     /// Lock for thread-safe access
     private static let lock = NSLock()

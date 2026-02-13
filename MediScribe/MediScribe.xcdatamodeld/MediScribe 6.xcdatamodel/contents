@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="24512" systemVersion="25C56" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="6">
+    <entity name="Finding" representedClassName="Finding" syncable="YES">
+        <attribute name="createdAt" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="documentType" optional="YES" attributeType="String" defaultValueString="imaging"/>
+        <attribute name="encryptedFindingsData" optional="YES" attributeType="Binary"/>
+        <attribute name="encryptedImageData" optional="YES" attributeType="Binary" allowsExternalBinaryDataStorage="YES"/>
+        <attribute name="findingsJSON" optional="YES" attributeType="String"/>
+        <attribute name="id" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="imageData" optional="YES" attributeType="Binary" allowsExternalBinaryDataStorage="YES"/>
+        <attribute name="imageType" optional="YES" attributeType="String"/>
+        <attribute name="isEncrypted" optional="YES" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
+        <attribute name="reviewedAt" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="reviewedBy" optional="YES" attributeType="String"/>
+        <relationship name="patient" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Patient" inverseName="findings" inverseEntity="Patient"/>
+        <relationship name="referrals" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Referral" inverseName="attachedFindings" inverseEntity="Referral"/>
+    </entity>
+    <entity name="Note" representedClassName="Note" syncable="YES">
+        <attribute name="createdAt" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="isLocked" optional="YES" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
+        <attribute name="noteData" optional="YES" attributeType="Binary"/>
+        <attribute name="patientID" optional="YES" attributeType="String"/>
+        <attribute name="signedAt" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="signedBy" optional="YES" attributeType="String"/>
+        <relationship name="addenda" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="NoteAddendum" inverseName="note" inverseEntity="NoteAddendum"/>
+    </entity>
+    <entity name="NoteAddendum" representedClassName="NoteAddendum" syncable="YES">
+        <attribute name="addendumText" optional="YES" attributeType="String"/>
+        <attribute name="authorID" attributeType="String"/>
+        <attribute name="authorName" attributeType="String"/>
+        <attribute name="correctionOf" optional="YES" attributeType="String"/>
+        <attribute name="createdAt" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="encryptedAddendumText" optional="YES" attributeType="Binary"/>
+        <attribute name="id" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="isEncrypted" optional="YES" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
+        <relationship name="note" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Note" inverseName="addenda" inverseEntity="Note"/>
+    </entity>
+    <entity name="Patient" representedClassName="Patient" syncable="YES">
+        <attribute name="createdAt" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="dateOfBirth" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="dateOfBirthEncrypted" optional="YES" attributeType="Binary"/>
+        <attribute name="id" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="isEncrypted" optional="YES" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
+        <attribute name="medicalRecordNumber" optional="YES" attributeType="String"/>
+        <attribute name="medicalRecordNumberEncrypted" optional="YES" attributeType="Binary"/>
+        <attribute name="name" optional="YES" attributeType="String"/>
+        <attribute name="nameEncrypted" optional="YES" attributeType="Binary"/>
+        <attribute name="notes" optional="YES" attributeType="String"/>
+        <relationship name="findings" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="Finding" inverseName="patient" inverseEntity="Finding"/>
+        <relationship name="referrals" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="Referral" inverseName="patient" inverseEntity="Referral"/>
+    </entity>
+    <entity name="Referral" representedClassName="Referral" syncable="YES">
+        <attribute name="clinicalSummary" optional="YES" attributeType="String"/>
+        <attribute name="createdAt" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="destination" attributeType="String"/>
+        <attribute name="encryptedClinicalSummary" optional="YES" attributeType="Binary"/>
+        <attribute name="encryptedReason" optional="YES" attributeType="Binary"/>
+        <attribute name="id" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="isEncrypted" optional="YES" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
+        <attribute name="reason" optional="YES" attributeType="String"/>
+        <attribute name="sentAt" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="status" attributeType="String" defaultValueString="draft"/>
+        <relationship name="attachedFindings" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Finding" inverseName="referrals" inverseEntity="Finding"/>
+        <relationship name="patient" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Patient" inverseName="referrals" inverseEntity="Patient"/>
+    </entity>
+    <entity name="SOAPNote" representedClassName="SOAPNote" syncable="YES">
+        <attribute name="assessmentEncrypted" optional="YES" attributeType="Binary"/>
+        <attribute name="clinicianReviewedBy" optional="YES" attributeType="String"/>
+        <attribute name="completedAt" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="createdAtIndex" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="encryptionVersion" optional="YES" attributeType="String" defaultValueString="v1"/>
+        <attribute name="generatedAt" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="metadataEncrypted" optional="YES" attributeType="Binary"/>
+        <attribute name="modelVersion" optional="YES" attributeType="String"/>
+        <attribute name="noteID" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="objectiveEncrypted" optional="YES" attributeType="Binary"/>
+        <attribute name="patientIdentifier" optional="YES" attributeType="String"/>
+        <attribute name="planEncrypted" optional="YES" attributeType="Binary"/>
+        <attribute name="reviewedAt" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="statusIndex" optional="YES" attributeType="String"/>
+        <attribute name="subjectiveEncrypted" optional="YES" attributeType="Binary"/>
+        <attribute name="validationStatus" optional="YES" attributeType="String" defaultValueString="unvalidated"/>
+    </entity>
+</model>

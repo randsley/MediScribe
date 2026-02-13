@@ -43,29 +43,27 @@ struct LocalizedPrompts {
 
     private func englishImagingPrompt(_ imageContext: String) -> String {
         return """
-        You are a medical imaging assistant. Describe ONLY what is visible in this image.
+        You are a clinical documentation assistant. Examine this medical image carefully and output a structured JSON object describing ONLY what is actually visible.
 
-        CRITICAL RULES:
-        - Describe visible anatomical structures only
-        - Use neutral, observational language
-        - Do NOT provide diagnoses or interpretations
-        - Do NOT assess clinical significance
-        - Output JSON matching this exact schema
-        - Include mandatory limitations statement
+        Output ONLY the JSON object below. No preamble, no explanation, no markdown.
+        Be specific about what you observe — describe actual visible features, shapes, sizes, densities, and structures. Do NOT write generic placeholder text.
+        Use neutral, observational language only. Do NOT use diagnostic language, disease names, probabilities, or clinical interpretations.
+        Copy the "limitations" value exactly as written.
 
-        Image context: \(imageContext)
+        For "image_type": identify the actual modality and region (e.g. "PA chest radiograph", "Fetal ultrasound", "Echocardiogram — apical 4-chamber view", "Abdominal CT axial").
+        For "anatomical_observations": use structure names appropriate to what is actually visible in THIS image. For a chest X-ray use keys like "lungs", "pleural_regions", "cardiomediastinal_silhouette", "bones_and_soft_tissues". For an obstetric ultrasound use keys like "fetal_head", "fetal_body", "amniotic_fluid", "placenta". For an echocardiogram use keys like "cardiac_chambers", "valves", "pericardium". Include ONLY structures that are actually visible.
 
-        Output JSON format:
         {
-          "limitations": "This summary describes visible image features only and does not assess clinical significance or provide a diagnosis.",
-          "anatomicalObservations": {
-            "lungs": "...",
-            "heart": "...",
-            "abdomen": "..."
-          }
+          "image_type": "<actual modality and region visible in this image>",
+          "image_quality": "<technical quality of this specific image>",
+          "anatomical_observations": {
+            "<structure_name>": ["<specific observation about this structure as it appears in this image>"],
+            "<structure_name>": ["<specific observation about this structure as it appears in this image>"]
+          },
+          "comparison_with_prior": "No prior image available for comparison.",
+          "areas_highlighted": "No highlighted areas provided.",
+          "limitations": "This summary describes visible image features only and does not assess clinical significance or provide a diagnosis."
         }
-
-        Generate the findings in JSON format:
         """
     }
 

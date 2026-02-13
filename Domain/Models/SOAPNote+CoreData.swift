@@ -154,11 +154,11 @@ extension SOAPNote {
         statusIndex = ValidationStatus.reviewed.rawValue
 
         // Update metadata with review information
-        guard let metadataEncrypted = metadataEncrypted else {
+        guard let existingMetadataEncrypted = metadataEncrypted else {
             throw CoreDataError.missingEncryptedData
         }
 
-        let metadataData = try encryptionService.decrypt(metadataEncrypted)
+        let metadataData = try encryptionService.decrypt(existingMetadataEncrypted)
         var metadata = try JSONDecoder().decode(SOAPMetadata.self, from: metadataData)
 
         metadata = SOAPMetadata(
@@ -171,7 +171,7 @@ extension SOAPNote {
         )
 
         let updatedMetadataData = try JSONEncoder().encode(metadata)
-        metadataEncrypted = try encryptionService.encrypt(updatedMetadataData)
+        self.metadataEncrypted = try encryptionService.encrypt(updatedMetadataData)
     }
 
     /// Mark note as signed/finalized

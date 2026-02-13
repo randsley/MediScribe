@@ -87,12 +87,12 @@ final class FHIRExportTests: XCTestCase {
         ImagingFindingsSummary(
             imageType: "Chest X-ray",
             imageQuality: "Adequate",
-            anatomicalObservations: AnatomicalObservations(
-                lungs: ["Lung fields visible bilaterally"],
-                pleuralRegions: ["No obvious pleural effusion noted"],
-                cardiomediastinalSilhouette: ["Cardiac silhouette within normal limits for this projection"],
-                bonesAndSoftTissues: ["Visible bony structures appear intact"]
-            ),
+            anatomicalObservations: AnatomicalObservations([
+                "lungs": ["Lung fields visible bilaterally"],
+                "pleural_regions": ["No obvious pleural effusion noted"],
+                "cardiomediastinal_silhouette": ["Cardiac silhouette within normal limits for this projection"],
+                "bones_and_soft_tissues": ["Visible bony structures appear intact"]
+            ]),
             comparisonWithPrior: "No prior imaging available for comparison",
             areasHighlighted: "Right lower zone — increased density noted",
             limitations: "This summary describes visible image features only and does not assess clinical significance or provide a diagnosis."

@@ -24,6 +24,31 @@ struct SOAPNoteGeneratorView: View {
             case .complete, .signed:
                 SOAPNoteReviewView(viewModel: viewModel)
 
+            case .validationFailed(let validationError):
+                VStack(spacing: 16) {
+                    Image(systemName: "shield.slash")
+                        .font(.system(size: 48))
+                        .foregroundColor(.orange)
+
+                    Text("Safety Validation Failed")
+                        .font(.headline)
+
+                    Text(validationError.displayMessage)
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                        .multilineTextAlignment(.center)
+
+                    Button(action: { viewModel.resetForm() }) {
+                        Text("Start Over")
+                            .frame(maxWidth: .infinity)
+                            .padding()
+                            .background(Color.blue)
+                            .foregroundColor(.white)
+                            .cornerRadius(8)
+                    }
+                }
+                .padding()
+
             case .error(let error):
                 VStack(spacing: 16) {
                     Image(systemName: "exclamationmark.circle")
@@ -194,67 +219,67 @@ struct SOAPNoteListView: View {
     @State private var showNewNoteSheet: Bool = false
 
     var body: some View {
-        NavigationStack {
+        Group {
             if notes.isEmpty {
-                VStack(spacing: 16) {
-                    Image(systemName: "doc.text")
-                        .font(.system(size: 48))
-                        .foregroundColor(.gray)
+                    VStack(spacing: 16) {
+                        Image(systemName: "doc.text")
+                            .font(.system(size: 48))
+                            .foregroundColor(.gray)
 
-                    Text("No SOAP Notes Yet")
-                        .font(.headline)
+                        Text("No SOAP Notes Yet")
+                            .font(.headline)
 
-                    Text("Create your first SOAP note to get started")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
+                        Text("Create your first SOAP note to get started")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
 
-                    Button(action: { showNewNoteSheet = true }) {
-                        HStack {
-                            Image(systemName: "plus.circle.fill")
-                            Text("New SOAP Note")
+                        Button(action: { showNewNoteSheet = true }) {
+                            HStack {
+                                Image(systemName: "plus.circle.fill")
+                                Text("New SOAP Note")
+                            }
+                            .frame(maxWidth: .infinity)
+                            .padding()
+                            .background(Color.blue)
+                            .foregroundColor(.white)
+                            .cornerRadius(8)
                         }
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                        .background(Color.blue)
-                        .foregroundColor(.white)
-                        .cornerRadius(8)
                     }
-                }
-                .padding()
-            } else {
-                List {
-                    ForEach(notes, id: \.id) { note in
-                        NavigationLink(destination: SOAPNoteDetailView(noteID: note.id, viewModel: viewModel)) {
-                            VStack(alignment: .leading, spacing: 4) {
-                                HStack {
-                                    Text(note.subjective.chiefComplaint)
-                                        .font(.headline)
-                                        .lineLimit(1)
+                    .padding()
+                } else {
+                    List {
+                        ForEach(notes, id: \.id) { note in
+                            NavigationLink(destination: SOAPNoteDetailView(noteID: note.id, viewModel: viewModel)) {
+                                VStack(alignment: .leading, spacing: 4) {
+                                    HStack {
+                                        Text(note.subjective.chiefComplaint)
+                                            .font(.headline)
+                                            .lineLimit(1)
 
-                                    Spacer()
+                                        Spacer()
 
-                                    StatusBadge(status: note.validationStatus)
-                                }
+                                        StatusBadge(status: note.validationStatus)
+                                    }
 
-                                HStack {
-                                    Text("Generated: \(note.generatedAt.formatted(date: .abbreviated, time: .shortened))")
-                                        .font(.caption)
-                                        .foregroundColor(.secondary)
-
-                                    if let reviewedBy = note.metadata.clinicianReviewedBy {
-                                        Text("• Reviewed by \(reviewedBy)")
+                                    HStack {
+                                        Text("Generated: \(note.generatedAt.formatted(date: .abbreviated, time: .shortened))")
                                             .font(.caption)
-                                            .foregroundColor(.green)
+                                            .foregroundColor(.secondary)
+
+                                        if let reviewedBy = note.metadata.clinicianReviewedBy {
+                                            Text("• Reviewed by \(reviewedBy)")
+                                                .font(.caption)
+                                                .foregroundColor(.green)
+                                        }
                                     }
                                 }
+                                .padding(.vertical, 4)
                             }
-                            .padding(.vertical, 4)
                         }
+                        .onDelete(perform: deleteNotes)
                     }
-                    .onDelete(perform: deleteNotes)
                 }
             }
-
             .navigationTitle("SOAP Notes")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -267,7 +292,6 @@ struct SOAPNoteListView: View {
             .sheet(isPresented: $showNewNoteSheet) {
                 SOAPNoteGeneratorView()
             }
-        }
     }
 
     private func deleteNotes(at offsets: IndexSet) {

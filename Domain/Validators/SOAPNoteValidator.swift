@@ -64,9 +64,9 @@ final class SOAPNoteValidator {
         _ assessment: SOAPAssessment,
         language: Language
     ) throws {
-        let allText = (assessment.clinicalImpression + " " +
-                       (assessment.differentialConsiderations?.joined(separator: " ") ?? "") + " " +
-                       (assessment.problemList?.joined(separator: " ") ?? "")).lowercased()
+        let diffs = assessment.differentialConsiderations?.joined(separator: " ") ?? ""
+        let problems = assessment.problemList?.joined(separator: " ") ?? ""
+        let allText = (assessment.clinicalImpression + " " + diffs + " " + problems).lowercased()
 
         if let bad = TextSanitizer.findForbiddenInLanguage(in: allText, language: language) {
             throw SOAPNoteValidationError(
@@ -82,12 +82,11 @@ final class SOAPNoteValidator {
         _ plan: SOAPPlan,
         language: Language
     ) throws {
-        let allText = (
-            (plan.interventions?.joined(separator: " ") ?? "") + " " +
-            (plan.followUp?.joined(separator: " ") ?? "") + " " +
-            (plan.patientEducation?.joined(separator: " ") ?? "") + " " +
-            (plan.referrals?.joined(separator: " ") ?? "")
-        ).lowercased()
+        let interventions = plan.interventions?.joined(separator: " ") ?? ""
+        let followUp = plan.followUp?.joined(separator: " ") ?? ""
+        let education = plan.patientEducation?.joined(separator: " ") ?? ""
+        let referrals = plan.referrals?.joined(separator: " ") ?? ""
+        let allText = (interventions + " " + followUp + " " + education + " " + referrals).lowercased()
 
         if let bad = TextSanitizer.findForbiddenInLanguage(in: allText, language: language) {
             throw SOAPNoteValidationError(
@@ -103,15 +102,20 @@ final class SOAPNoteValidator {
         _ noteData: SOAPNoteData,
         language: Language
     ) throws {
-        let sections = [
+        let pmh = noteData.subjective.pastMedicalHistory?.joined(separator: " ") ?? ""
+        let meds = noteData.subjective.medications?.joined(separator: " ") ?? ""
+        let allergies = noteData.subjective.allergies?.joined(separator: " ") ?? ""
+        let examFindings = noteData.objective.physicalExamFindings?.joined(separator: " ") ?? ""
+        let diagnosticResults = noteData.objective.diagnosticResults?.joined(separator: " ") ?? ""
+        let sections: [(String, String)] = [
             ("subjective.chiefComplaint", noteData.subjective.chiefComplaint),
             ("subjective.historyOfPresentIllness", noteData.subjective.historyOfPresentIllness),
-            ("subjective.pastMedicalHistory", noteData.subjective.pastMedicalHistory?.joined(separator: " ") ?? ""),
-            ("subjective.medications", noteData.subjective.medications?.joined(separator: " ") ?? ""),
-            ("subjective.allergies", noteData.subjective.allergies?.joined(separator: " ") ?? ""),
+            ("subjective.pastMedicalHistory", pmh),
+            ("subjective.medications", meds),
+            ("subjective.allergies", allergies),
             ("objective.vitalSigns", formatVitalSigns(noteData.objective.vitalSigns)),
-            ("objective.physicalExamFindings", noteData.objective.physicalExamFindings?.joined(separator: " ") ?? ""),
-            ("objective.diagnosticResults", noteData.objective.diagnosticResults?.joined(separator: " ") ?? ""),
+            ("objective.physicalExamFindings", examFindings),
+            ("objective.diagnosticResults", diagnosticResults),
         ]
 
         for (field, text) in sections {
