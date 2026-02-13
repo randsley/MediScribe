@@ -83,7 +83,7 @@ class SOAPNoteParser {
             )
         }
 
-        if sections.subjective.historyOfPresentIllness.trimmingCharacters(in: .whitespaces).isEmpty {
+        if (sections.subjective.historyOfPresentIllness ?? "").trimmingCharacters(in: .whitespaces).isEmpty {
             errors.append(
                 SOAPValidationError(
                     field: "History of Present Illness",
@@ -94,8 +94,8 @@ class SOAPNoteParser {
         }
 
         // Validate Objective - Vital Signs
-        if sections.objective.vitalSigns.temperature == nil
-            && sections.objective.vitalSigns.heartRate == nil {
+        if sections.objective.vitalSigns?.temperature == nil
+            && sections.objective.vitalSigns?.heartRate == nil {
             errors.append(
                 SOAPValidationError(
                     field: "Vital Signs",
@@ -182,7 +182,7 @@ class SOAPNoteParser {
             )
         }
 
-        if let phrase = findBlockedPhrase(in: subjective.historyOfPresentIllness) {
+        if let hpi = subjective.historyOfPresentIllness, let phrase = findBlockedPhrase(in: hpi) {
             errors.append(
                 SOAPValidationError(
                     field: "HPI",

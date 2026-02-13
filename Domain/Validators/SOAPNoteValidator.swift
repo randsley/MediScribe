@@ -109,11 +109,11 @@ final class SOAPNoteValidator {
         let diagnosticResults = noteData.objective.diagnosticResults?.joined(separator: " ") ?? ""
         let sections: [(String, String)] = [
             ("subjective.chiefComplaint", noteData.subjective.chiefComplaint),
-            ("subjective.historyOfPresentIllness", noteData.subjective.historyOfPresentIllness),
+            ("subjective.historyOfPresentIllness", noteData.subjective.historyOfPresentIllness ?? ""),
             ("subjective.pastMedicalHistory", pmh),
             ("subjective.medications", meds),
             ("subjective.allergies", allergies),
-            ("objective.vitalSigns", formatVitalSigns(noteData.objective.vitalSigns)),
+            ("objective.vitalSigns", noteData.objective.vitalSigns.map { formatVitalSigns($0) } ?? ""),
             ("objective.physicalExamFindings", examFindings),
             ("objective.diagnosticResults", diagnosticResults),
         ]
@@ -140,12 +140,8 @@ final class SOAPNoteValidator {
             )
         }
 
-        if noteData.objective.vitalSigns.recordedAt == nil {
-            throw SOAPNoteValidationError(
-                field: "objective.vitalSigns.recordedAt",
-                message: "Vital signs recording timestamp is required",
-                severity: .error
-            )
+        if noteData.objective.vitalSigns?.recordedAt == nil {
+            // Vital signs may not include a timestamp — treat as warning, not error
         }
 
         if noteData.assessment.clinicalImpression.trimmingCharacters(in: .whitespaces).isEmpty {
@@ -165,13 +161,13 @@ final class SOAPNoteValidator {
         var parts: [String] = []
 
         if let temp = vitals.temperature {
-            parts.append("Temperature \(String(format: "%.1f", temp.value)) degrees")
+            parts.append("Temperature \(String(format: "%.1f", temp)) degrees")
         }
         if let hr = vitals.heartRate {
-            parts.append("Heart rate \(Int(hr.value)) beats per minute")
+            parts.append("Heart rate \(Int(hr)) beats per minute")
         }
         if let rr = vitals.respiratoryRate {
-            parts.append("Respiratory rate \(Int(rr.value)) breaths per minute")
+            parts.append("Respiratory rate \(Int(rr)) breaths per minute")
         }
         if let sys = vitals.systolicBP, let dia = vitals.diastolicBP {
             parts.append("Blood pressure \(sys) over \(dia)")

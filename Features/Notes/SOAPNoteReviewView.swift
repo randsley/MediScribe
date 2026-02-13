@@ -71,7 +71,7 @@ struct SOAPNoteReviewView: View {
                             VStack(alignment: .leading, spacing: 8) {
                                 SOAPDetailRow(label: "Chief Complaint", value: note.subjective.chiefComplaint)
 
-                                SOAPDetailRow(label: "HPI", value: note.subjective.historyOfPresentIllness)
+                                SOAPDetailRow(label: "HPI", value: note.subjective.historyOfPresentIllness ?? "Not documented")
 
                                 if let pmh = note.subjective.pastMedicalHistory, !pmh.isEmpty {
                                     SOAPDetailRow(label: "PMHx", value: pmh.joined(separator: ", "))
@@ -100,26 +100,29 @@ struct SOAPNoteReviewView: View {
                                     .foregroundColor(.secondary)
 
                                 VStack(alignment: .leading, spacing: 4) {
-                                    if let temp = note.objective.vitalSigns.temperature {
-                                        Text("Temperature: \(String(format: "%.1f", temp.value))°C")
-                                            .font(.caption)
-                                    }
-                                    if let hr = note.objective.vitalSigns.heartRate {
-                                        Text("Heart Rate: \(Int(hr.value)) bpm")
-                                            .font(.caption)
-                                    }
-                                    if let rr = note.objective.vitalSigns.respiratoryRate {
-                                        Text("RR: \(Int(rr.value)) breaths/min")
-                                            .font(.caption)
-                                    }
-                                    if let sys = note.objective.vitalSigns.systolicBP,
-                                       let dia = note.objective.vitalSigns.diastolicBP {
-                                        Text("BP: \(sys)/\(dia) mmHg")
-                                            .font(.caption)
-                                    }
-                                    if let o2 = note.objective.vitalSigns.oxygenSaturation {
-                                        Text("O₂: \(o2)%")
-                                            .font(.caption)
+                                    if let vitals = note.objective.vitalSigns {
+                                        if let temp = vitals.temperature {
+                                            Text("Temperature: \(String(format: "%.1f", temp))°C")
+                                                .font(.caption)
+                                        }
+                                        if let hr = vitals.heartRate {
+                                            Text("Heart Rate: \(Int(hr)) bpm")
+                                                .font(.caption)
+                                        }
+                                        if let rr = vitals.respiratoryRate {
+                                            Text("RR: \(Int(rr)) breaths/min")
+                                                .font(.caption)
+                                        }
+                                        if let sys = vitals.systolicBP, let dia = vitals.diastolicBP {
+                                            Text("BP: \(sys)/\(dia) mmHg")
+                                                .font(.caption)
+                                        }
+                                        if let o2 = vitals.oxygenSaturation {
+                                            Text("O₂: \(o2)%")
+                                                .font(.caption)
+                                        }
+                                    } else {
+                                        Text("Not recorded").font(.caption).foregroundColor(.secondary)
                                     }
                                 }
                                 .padding(.vertical, 4)

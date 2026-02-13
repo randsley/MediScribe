@@ -89,7 +89,7 @@ struct SOAPNoteData: Codable, Identifiable {
         \(subjective.chiefComplaint)
 
         History of Present Illness:
-        \(subjective.historyOfPresentIllness)
+        \(subjective.historyOfPresentIllness ?? "Not documented")
 
         Past Medical History:
         \(subjective.pastMedicalHistory?.joined(separator: "\n") ?? "Not documented")
@@ -104,7 +104,7 @@ struct SOAPNoteData: Codable, Identifiable {
 
         OBJECTIVE:
         Vital Signs:
-        \(objective.vitalSigns.formatted)
+        \(objective.vitalSigns?.formatted ?? "Not recorded")
 
         Physical Exam:
         \(objective.physicalExamFindings?.joined(separator: "\n") ?? "Not documented")
@@ -152,7 +152,7 @@ struct SOAPNoteData: Codable, Identifiable {
 /// Subjective section
 struct SOAPSubjective: Codable {
     let chiefComplaint: String
-    let historyOfPresentIllness: String
+    let historyOfPresentIllness: String?
     let pastMedicalHistory: [String]?
     let medications: [String]?
     let allergies: [String]?
@@ -168,7 +168,7 @@ struct SOAPSubjective: Codable {
 
 /// Objective section
 struct SOAPObjective: Codable {
-    let vitalSigns: VitalSignsData
+    let vitalSigns: VitalSignsData?
     let physicalExamFindings: [String]?
     let diagnosticResults: [String]?
 
@@ -211,12 +211,15 @@ struct SOAPPlan: Codable {
 
 /// Vital signs data
 struct VitalSignsData: Codable {
-    let temperature: Measurement<UnitTemperature>?
-    let heartRate: Measurement<UnitFrequency>?
-    let respiratoryRate: Measurement<UnitFrequency>?
+    // Plain Double so the model's numeric output decodes directly.
+    // (Measurement<UnitTemperature/UnitFrequency> requires a nested object
+    // {"value":…,"unit":{…}} that no LLM produces.)
+    let temperature: Double?       // °C
+    let heartRate: Double?         // bpm
+    let respiratoryRate: Double?   // breaths/min
     let systolicBP: Int?
     let diastolicBP: Int?
-    let oxygenSaturation: Int? // percentage
+    let oxygenSaturation: Int?     // percentage
     let recordedAt: Date?
 
     enum CodingKeys: String, CodingKey {
@@ -232,23 +235,11 @@ struct VitalSignsData: Codable {
     /// Formatted vital signs string
     var formatted: String {
         var parts: [String] = []
-
-        if let temp = temperature {
-            parts.append("Temperature: \(String(format: "%.1f", temp.value))°C")
-        }
-        if let hr = heartRate {
-            parts.append("Heart Rate: \(Int(hr.value)) bpm")
-        }
-        if let rr = respiratoryRate {
-            parts.append("Respiratory Rate: \(Int(rr.value)) breaths/min")
-        }
-        if let sys = systolicBP, let dia = diastolicBP {
-            parts.append("BP: \(sys)/\(dia) mmHg")
-        }
-        if let o2 = oxygenSaturation {
-            parts.append("O₂ Saturation: \(o2)% (RA)")
-        }
-
+        if let temp = temperature { parts.append("Temperature: \(String(format: "%.1f", temp))°C") }
+        if let hr   = heartRate   { parts.append("Heart Rate: \(Int(hr)) bpm") }
+        if let rr   = respiratoryRate { parts.append("Respiratory Rate: \(Int(rr)) breaths/min") }
+        if let sys  = systolicBP, let dia = diastolicBP { parts.append("BP: \(sys)/\(dia) mmHg") }
+        if let o2   = oxygenSaturation { parts.append("O₂ Saturation: \(o2)% (RA)") }
         return parts.isEmpty ? "Not recorded" : parts.joined(separator: "\n")
     }
 }

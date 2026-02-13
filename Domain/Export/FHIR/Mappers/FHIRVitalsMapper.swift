@@ -84,11 +84,10 @@ struct FHIRVitalsMapper {
     // MARK: - Private Builders
 
     private static func makeTemperature(
-        _ measurement: Measurement<UnitTemperature>,
+        _ celsius: Double,
         patientRef: FHIRReference,
         effective: String?
     ) -> FHIRObservation {
-        let celsius = measurement.converted(to: .celsius).value
         return FHIRObservation(
             status: "final",
             category: vitalCategory,
@@ -108,7 +107,7 @@ struct FHIRVitalsMapper {
     }
 
     private static func makeHeartRate(
-        _ measurement: Measurement<UnitFrequency>,
+        _ bpm: Double,
         patientRef: FHIRReference,
         effective: String?
     ) -> FHIRObservation {
@@ -123,7 +122,7 @@ struct FHIRVitalsMapper {
             subject: patientRef,
             effectiveDateTime: effective,
             valueQuantity: FHIRQuantity.ucum(
-                value: measurement.value,
+                value: bpm,
                 unit: "beats/min",
                 ucumCode: UCUM.beatsPerMinute
             )
@@ -131,7 +130,7 @@ struct FHIRVitalsMapper {
     }
 
     private static func makeRespiratoryRate(
-        _ measurement: Measurement<UnitFrequency>,
+        _ brpm: Double,
         patientRef: FHIRReference,
         effective: String?
     ) -> FHIRObservation {
@@ -146,7 +145,7 @@ struct FHIRVitalsMapper {
             subject: patientRef,
             effectiveDateTime: effective,
             valueQuantity: FHIRQuantity.ucum(
-                value: measurement.value,
+                value: brpm,
                 unit: "breaths/min",
                 ucumCode: UCUM.breathsPerMinute
             )
