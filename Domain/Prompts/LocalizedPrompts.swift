@@ -49,9 +49,9 @@ struct LocalizedPrompts {
         return """
         Look at this medical image. Output ONLY the JSON object below — no text before or after, no markdown.
         Be specific: describe what you actually see. No diagnosis, no disease names, no probabilities.
-        For "image_type" give the actual modality and view (e.g. "PA chest radiograph", "Fetal ultrasound", "Echocardiogram apical 4-chamber").
-        Limit "anatomical_observations" to 3–4 visible structures, maximum 2 short observations per key. Adapt the keys to match this specific image.
-        {"image_type":"PA chest radiograph","image_quality":"adequate","anatomical_observations":{"lungs":["bilateral fields appear clear"],"cardiomediastinal_silhouette":["outline visible"]},"comparison_with_prior":"No prior image available for comparison.","areas_highlighted":"No highlighted areas provided.","limitations":"This summary describes visible image features only and does not assess clinical significance or provide a diagnosis."}
+        For "image_type" identify the actual modality of THIS image (e.g. "PA chest radiograph", "Fetal ultrasound", "Echocardiogram apical 4-chamber", "Abdominal CT axial").
+        Limit "anatomical_observations" to 3–4 visible structures, max 2 observations per key. The example below shows a chest X-ray — adapt ALL keys and values to THIS specific image.
+        {"image_type":"","image_quality":"","anatomical_observations":{"lungs":["bilateral fields appear clear"],"cardiomediastinal_silhouette":["outline visible"]},"comparison_with_prior":"No prior image available for comparison.","areas_highlighted":"No highlighted areas provided.","limitations":"This summary describes visible image features only and does not assess clinical significance or provide a diagnosis."}
         """
     }
 
@@ -91,9 +91,9 @@ struct LocalizedPrompts {
         return """
         Observa esta imagen médica. Genera SOLO el JSON siguiente — sin texto antes o después, sin markdown.
         Sé específico: describe lo que realmente ves. Sin diagnóstico, sin nombres de enfermedades, sin probabilidades.
-        En "image_type" indica la modalidad real (ej. "Radiografía PA de tórax", "Ecografía fetal").
-        Limita "anatomical_observations" a 3–4 estructuras visibles, máximo 2 observaciones por clave. Adapta las claves a esta imagen.
-        {"image_type":"Radiografía PA de tórax","image_quality":"adecuada","anatomical_observations":{"pulmones":["campos bilaterales visibles"],"silueta_cardiaca":["contorno visible"]},"comparison_with_prior":"No prior image available for comparison.","areas_highlighted":"No highlighted areas provided.","limitations":"This summary describes visible image features only and does not assess clinical significance or provide a diagnosis."}
+        En "image_type" indica la modalidad de ESTA imagen (ej. "Radiografía PA de tórax", "Ecografía fetal", "Ecocardiograma apical 4 cámaras").
+        Limita "anatomical_observations" a 3–4 estructuras visibles, máximo 2 observaciones por clave. El ejemplo es una radiografía de tórax — adapta TODOS los campos a ESTA imagen.
+        {"image_type":"","image_quality":"","anatomical_observations":{"pulmones":["campos bilaterales visibles"],"silueta_cardiaca":["contorno visible"]},"comparison_with_prior":"No prior image available for comparison.","areas_highlighted":"No highlighted areas provided.","limitations":"This summary describes visible image features only and does not assess clinical significance or provide a diagnosis."}
         """
     }
 
@@ -133,9 +133,9 @@ struct LocalizedPrompts {
         return """
         Examinez cette image médicale. Générez UNIQUEMENT le JSON ci-dessous — aucun texte avant ou après, aucun markdown.
         Soyez précis : décrivez ce que vous voyez réellement. Pas de diagnostic, pas de noms de maladies, pas de probabilités.
-        Dans "image_type" indiquez la modalité réelle (ex. "Radiographie thoracique PA", "Échographie fœtale").
-        Limitez "anatomical_observations" à 3–4 structures visibles, maximum 2 observations courtes par clé. Adaptez les clés à cette image.
-        {"image_type":"Radiographie thoracique PA","image_quality":"correcte","anatomical_observations":{"poumons":["champs bilatéraux visibles"],"silhouette_cardiaque":["contour visible"]},"comparison_with_prior":"No prior image available for comparison.","areas_highlighted":"No highlighted areas provided.","limitations":"This summary describes visible image features only and does not assess clinical significance or provide a diagnosis."}
+        Dans "image_type" indiquez la modalité de CETTE image (ex. "Radiographie thoracique PA", "Échographie fœtale", "Échocardiogramme apical 4 cavités").
+        Limitez "anatomical_observations" à 3–4 structures visibles, max 2 observations par clé. L'exemple montre une radio thoracique — adaptez TOUS les champs à CETTE image.
+        {"image_type":"","image_quality":"","anatomical_observations":{"poumons":["champs bilatéraux visibles"],"silhouette_cardiaque":["contour visible"]},"comparison_with_prior":"No prior image available for comparison.","areas_highlighted":"No highlighted areas provided.","limitations":"This summary describes visible image features only and does not assess clinical significance or provide a diagnosis."}
         """
     }
 
@@ -175,9 +175,9 @@ struct LocalizedPrompts {
         return """
         Examine esta imagem médica. Gere APENAS o JSON abaixo — sem texto antes ou depois, sem markdown.
         Seja específico: descreva o que você realmente vê. Sem diagnóstico, sem nomes de doenças, sem probabilidades.
-        Em "image_type" indique a modalidade real (ex. "Radiografia PA de tórax", "Ultrassom fetal").
-        Limite "anatomical_observations" a 3–4 estruturas visíveis, máximo 2 observações por chave. Adapte as chaves a esta imagem.
-        {"image_type":"Radiografia PA de tórax","image_quality":"adequada","anatomical_observations":{"pulmões":["campos bilaterais visíveis"],"silhueta_cardíaca":["contorno visível"]},"comparison_with_prior":"No prior image available for comparison.","areas_highlighted":"No highlighted areas provided.","limitations":"This summary describes visible image features only and does not assess clinical significance or provide a diagnosis."}
+        Em "image_type" indique a modalidade DESTA imagem (ex. "Radiografia PA de tórax", "Ultrassom fetal", "Ecocardiograma apical 4 câmaras").
+        Limite "anatomical_observations" a 3–4 estruturas visíveis, máximo 2 observações por chave. O exemplo mostra uma radiografia — adapte TODOS os campos a ESTA imagem.
+        {"image_type":"","image_quality":"","anatomical_observations":{"pulmões":["campos bilaterais visíveis"],"silhueta_cardíaca":["contorno visível"]},"comparison_with_prior":"No prior image available for comparison.","areas_highlighted":"No highlighted areas provided.","limitations":"This summary describes visible image features only and does not assess clinical significance or provide a diagnosis."}
         """
     }
 
