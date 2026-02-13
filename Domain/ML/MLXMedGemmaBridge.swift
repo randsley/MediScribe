@@ -32,6 +32,26 @@ class MLXMedGemmaBridge {
     /// Whether the model is currently loaded and ready for inference
     var isModelLoaded: Bool { isLoaded }
 
+    // MARK: - Memory Diagnostics (DEBUG only)
+
+    #if DEBUG
+    /// Returns current process resident memory in MB.
+    /// Used to pinpoint which inference phase causes the memory spike.
+    private func memMB() -> String {
+        var info = mach_task_basic_info()
+        var count = mach_msg_type_number_t(
+            MemoryLayout<mach_task_basic_info>.size / MemoryLayout<natural_t>.size
+        )
+        let kr = withUnsafeMutablePointer(to: &info) {
+            $0.withMemoryRebound(to: integer_t.self, capacity: 1) {
+                task_info(mach_task_self_, task_flavor_t(MACH_TASK_BASIC_INFO), $0, &count)
+            }
+        }
+        guard kr == KERN_SUCCESS else { return "?MB" }
+        return String(format: "%.0fMB", Double(info.resident_size) / 1_048_576)
+    }
+    #endif
+
     // MARK: - Model Loading
 
     /// Load MedGemma from a local model directory
@@ -121,11 +141,17 @@ class MLXMedGemmaBridge {
         // preparingThumbnail(of:) returns a new UIImage with its own independent
         // pixel buffer — the CIImage below has no reference back to the
         // original imageData decode.
+        #if DEBUG
+        print("🧠 [inference start] app memory: \(memMB())")
+        #endif
+
         let ciImage: CIImage = try {
             guard let uiImage = UIImage(data: imageData) else {
                 throw MLXModelError.invocationFailed("Failed to decode image data")
             }
-            let maxDim: CGFloat = 448
+            // 224×224: (224/14)² = 256 patches → matches image_seq_length:256 exactly.
+            // SigLIP attention at 256 patches is trivial (~2MB/layer vs ~537MB at 896).
+            let maxDim: CGFloat = 224
             let longest = max(uiImage.size.width, uiImage.size.height)
             let inferenceImage: UIImage
             if longest > maxDim {
@@ -163,10 +189,10 @@ class MLXMedGemmaBridge {
         do {
             // Zero the GPU buffer cache immediately before inference so every
             // intermediate SigLIP activation is freed as soon as it's no longer
-            // referenced, rather than being held in a 512 MB reuse pool.
-            // Peak activation memory during SigLIP (896×896 → 4096 patches,
-            // 27 layers) can exceed 1.5 GB; immediate deallocation keeps this
-            // from piling on top of the 2.8 GB model weights.
+            // referenced, rather than being held in a reuse pool.
+            // At 224×224 (256 patches) SigLIP attention is ~2MB/layer (trivial).
+            // Keeping cacheLimit=0 ensures any unexpected accumulation is freed
+            // immediately rather than growing in a reuse pool.
             MLX.GPU.set(cacheLimit: 0)
             MLX.GPU.clearCache()
 
@@ -174,6 +200,9 @@ class MLXMedGemmaBridge {
                 guard let ui = userInput else {
                     throw MLXModelError.invocationFailed("UserInput was unexpectedly nil")
                 }
+                #if DEBUG
+                print("🧠 [before prepare] app memory: \(self.memMB())")
+                #endif
                 let lmInput = try await context.processor.prepare(input: ui)
                 // Force evaluation of all preprocessed arrays before entering
                 // the LM decoding loop, so the computation graph for the image
@@ -181,6 +210,9 @@ class MLXMedGemmaBridge {
                 MLX.eval(lmInput.text.tokens)
                 if let img = lmInput.image { MLX.eval(img.pixels) }
                 MLX.GPU.clearCache()
+                #if DEBUG
+                print("🧠 [after SigLIP eval+clearCache] app memory: \(self.memMB())")
+                #endif
                 // Flush the GPU buffer reuse pool every 32 tokens during decode.
                 // MLX's lazy evaluation can accumulate unevaluated graph nodes and
                 // cached buffers across generation steps; periodic clearCache()
@@ -192,6 +224,11 @@ class MLXMedGemmaBridge {
                     context: context
                 ) { (_: [Int]) in
                     stepCount += 1
+                    #if DEBUG
+                    if stepCount == 1 || stepCount % 32 == 0 {
+                        print("🧠 [token \(stepCount)] app memory: \(self.memMB())")
+                    }
+                    #endif
                     if stepCount % 32 == 0 { MLX.GPU.clearCache() }
                     return .more
                 }
@@ -243,7 +280,7 @@ class MLXMedGemmaBridge {
                         guard let uiImage = UIImage(data: imageData) else {
                             throw MLXModelError.invocationFailed("Failed to decode image data")
                         }
-                        let maxDim: CGFloat = 448
+                        let maxDim: CGFloat = 224
                         let longest = max(uiImage.size.width, uiImage.size.height)
                         let inferenceImage: UIImage
                         if longest > maxDim {
