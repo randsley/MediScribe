@@ -42,28 +42,13 @@ struct LocalizedPrompts {
     // MARK: - English Prompts
 
     private func englishImagingPrompt(_ imageContext: String) -> String {
+        // Keep this prompt short — prefill processes (image tokens + prompt tokens)
+        // together through all LM layers; O(n²) attention means every extra token
+        // costs quadratically in memory. Target ≤ 120 prompt tokens.
         return """
-        You are a clinical documentation assistant. Examine this medical image carefully and output a structured JSON object describing ONLY what is actually visible.
-
-        Output ONLY the JSON object below. No preamble, no explanation, no markdown.
-        Be specific about what you observe — describe actual visible features, shapes, sizes, densities, and structures. Do NOT write generic placeholder text.
-        Use neutral, observational language only. Do NOT use diagnostic language, disease names, probabilities, or clinical interpretations.
-        Copy the "limitations" value exactly as written.
-
-        For "image_type": identify the actual modality and region (e.g. "PA chest radiograph", "Fetal ultrasound", "Echocardiogram — apical 4-chamber view", "Abdominal CT axial").
-        For "anatomical_observations": use structure names appropriate to what is actually visible in THIS image. For a chest X-ray use keys like "lungs", "pleural_regions", "cardiomediastinal_silhouette", "bones_and_soft_tissues". For an obstetric ultrasound use keys like "fetal_head", "fetal_body", "amniotic_fluid", "placenta". For an echocardiogram use keys like "cardiac_chambers", "valves", "pericardium". Include ONLY structures that are actually visible.
-
-        {
-          "image_type": "<actual modality and region visible in this image>",
-          "image_quality": "<technical quality of this specific image>",
-          "anatomical_observations": {
-            "<structure_name>": ["<specific observation about this structure as it appears in this image>"],
-            "<structure_name>": ["<specific observation about this structure as it appears in this image>"]
-          },
-          "comparison_with_prior": "No prior image available for comparison.",
-          "areas_highlighted": "No highlighted areas provided.",
-          "limitations": "This summary describes visible image features only and does not assess clinical significance or provide a diagnosis."
-        }
+        Look at this medical image. Output ONLY the JSON below — no text before or after, no markdown.
+        Neutral descriptive language only: no diagnosis, no disease names, no probabilities.
+        {"image_type":"","image_quality":"","anatomical_observations":{"<key>":["<observation>"]},"comparison_with_prior":"No prior image available for comparison.","areas_highlighted":"No highlighted areas provided.","limitations":"This summary describes visible image features only and does not assess clinical significance or provide a diagnosis."}
         """
     }
 
@@ -101,29 +86,9 @@ struct LocalizedPrompts {
 
     private func spanishImagingPrompt(_ imageContext: String) -> String {
         return """
-        Eres un asistente de imágenes médicas. Describe SOLO lo que es visible en esta imagen.
-
-        REGLAS CRÍTICAS:
-        - Describe solo estructuras anatómicas visibles
-        - Usa lenguaje neutral y observacional
-        - NO proporciones diagnósticos ni interpretaciones
-        - NO evalúes significancia clínica
-        - Salida en JSON según el esquema exacto
-        - Incluye declaración de limitaciones obligatoria
-
-        Contexto de la imagen: \(imageContext)
-
-        Formato JSON de salida:
-        {
-          "limitations": "Este resumen describe solo características visibles de la imagen y no evalúa significancia clínica ni proporciona diagnóstico.",
-          "anatomicalObservations": {
-            "lungs": "...",
-            "heart": "...",
-            "abdomen": "..."
-          }
-        }
-
-        Genera los hallazgos en formato JSON:
+        Observa esta imagen médica. Genera SOLO el JSON siguiente — sin texto antes o después, sin markdown.
+        Solo lenguaje descriptivo neutral: sin diagnóstico, sin nombres de enfermedades, sin probabilidades.
+        {"image_type":"","image_quality":"","anatomical_observations":{"<clave>":["<observación>"]},"comparison_with_prior":"No prior image available for comparison.","areas_highlighted":"No highlighted areas provided.","limitations":"This summary describes visible image features only and does not assess clinical significance or provide a diagnosis."}
         """
     }
 
@@ -161,29 +126,9 @@ struct LocalizedPrompts {
 
     private func frenchImagingPrompt(_ imageContext: String) -> String {
         return """
-        Vous êtes un assistant d'imagerie médicale. Décrivez UNIQUEMENT ce qui est visible dans cette image.
-
-        RÈGLES CRITIQUES:
-        - Décrivez uniquement les structures anatomiques visibles
-        - Utilisez un langage neutre et observationnel
-        - NE PAS fournir de diagnostics ou d'interprétations
-        - NE PAS évaluer la signification clinique
-        - Sortie JSON selon le schéma exact
-        - Inclure la déclaration obligatoire des limitations
-
-        Contexte de l'image: \(imageContext)
-
-        Format JSON de sortie:
-        {
-          "limitations": "Ce résumé décrit uniquement les caractéristiques visibles de l'image et n'évalue pas la signification clinique ni ne fournit de diagnostic.",
-          "anatomicalObservations": {
-            "lungs": "...",
-            "heart": "...",
-            "abdomen": "..."
-          }
-        }
-
-        Générez les constatations au format JSON:
+        Examinez cette image médicale. Générez UNIQUEMENT le JSON ci-dessous — aucun texte avant ou après, aucun markdown.
+        Langage descriptif neutre uniquement : pas de diagnostic, pas de noms de maladies, pas de probabilités.
+        {"image_type":"","image_quality":"","anatomical_observations":{"<clé>":["<observation>"]},"comparison_with_prior":"No prior image available for comparison.","areas_highlighted":"No highlighted areas provided.","limitations":"This summary describes visible image features only and does not assess clinical significance or provide a diagnosis."}
         """
     }
 
@@ -221,29 +166,9 @@ struct LocalizedPrompts {
 
     private func portugueseImagingPrompt(_ imageContext: String) -> String {
         return """
-        Você é um assistente de imagem médica. Descreva APENAS o que é visível nesta imagem.
-
-        REGRAS CRÍTICAS:
-        - Descreva apenas estruturas anatômicas visíveis
-        - Use linguagem neutra e observacional
-        - NÃO forneça diagnósticos ou interpretações
-        - NÃO avalie significância clínica
-        - Saída JSON seguindo o esquema exato
-        - Incluir declaração obrigatória de limitações
-
-        Contexto da imagem: \(imageContext)
-
-        Formato JSON de saída:
-        {
-          "limitations": "Este resumo descreve apenas características visíveis da imagem e não avalia significância clínica nem fornece diagnóstico.",
-          "anatomicalObservations": {
-            "lungs": "...",
-            "heart": "...",
-            "abdomen": "..."
-          }
-        }
-
-        Gere os achados em formato JSON:
+        Examine esta imagem médica. Gere APENAS o JSON abaixo — sem texto antes ou depois, sem markdown.
+        Linguagem descritiva neutra apenas: sem diagnóstico, sem nomes de doenças, sem probabilidades.
+        {"image_type":"","image_quality":"","anatomical_observations":{"<chave>":["<observação>"]},"comparison_with_prior":"No prior image available for comparison.","areas_highlighted":"No highlighted areas provided.","limitations":"This summary describes visible image features only and does not assess clinical significance or provide a diagnosis."}
         """
     }
 
