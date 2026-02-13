@@ -353,7 +353,7 @@ class MLXMedGemmaBridge {
     /// Generate a text-only response — used for SOAP note generation where no image is involved.
     func generateText(
         prompt: String,
-        maxTokens: Int = 2048,
+        maxTokens: Int = 512,
         temperature: Float = 0.3
     ) async throws -> String {
         #if targetEnvironment(simulator)
@@ -368,6 +368,9 @@ class MLXMedGemmaBridge {
         let parameters = GenerateParameters(maxTokens: maxTokens, temperature: temperature)
 
         do {
+            #if DEBUG
+            print("🧠 [SOAP inference start] app memory: \(memMB())")
+            #endif
             MLX.GPU.set(cacheLimit: 0)
             MLX.GPU.clearCache()
 
@@ -375,6 +378,9 @@ class MLXMedGemmaBridge {
                 let lmInput = try await context.processor.prepare(input: userInput)
                 MLX.eval(lmInput.text.tokens)
                 MLX.GPU.clearCache()
+                #if DEBUG
+                print("🧠 [SOAP after prepare+clearCache] app memory: \(self.memMB())")
+                #endif
                 var stepCount = 0
                 return try generate(
                     input: lmInput,
@@ -382,12 +388,20 @@ class MLXMedGemmaBridge {
                     context: context
                 ) { (_: [Int]) in
                     stepCount += 1
-                    if stepCount % 32 == 0 { MLX.GPU.clearCache() }
+                    if stepCount % 32 == 0 {
+                        #if DEBUG
+                        print("🧠 [SOAP token \(stepCount)] app memory: \(self.memMB())")
+                        #endif
+                        MLX.GPU.clearCache()
+                    }
                     return .more
                 }
             }
 
             MLX.GPU.set(cacheLimit: 64 * 1024 * 1024)
+            #if DEBUG
+            print("🧠 [SOAP inference done] app memory: \(self.memMB())")
+            #endif
             return result.output
         } catch let error as MLXModelError {
             throw error
@@ -400,7 +414,7 @@ class MLXMedGemmaBridge {
     /// Streaming text-only response — used for streaming SOAP note generation.
     func generateTextStreaming(
         prompt: String,
-        maxTokens: Int = 2048,
+        maxTokens: Int = 512,
         temperature: Float = 0.3
     ) -> AsyncThrowingStream<String, Error> {
         #if targetEnvironment(simulator)

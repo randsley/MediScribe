@@ -20,7 +20,7 @@ struct SOAPGenerationOptions {
 
     nonisolated static var `default`: SOAPGenerationOptions {
         SOAPGenerationOptions(
-            maxTokens: 2048,
+            maxTokens: 512,
             temperature: 0.3,
             includeVoiceInput: false
         )
@@ -28,7 +28,7 @@ struct SOAPGenerationOptions {
 
     nonisolated static var soapGeneration: SOAPGenerationOptions {
         SOAPGenerationOptions(
-            maxTokens: 2048,
+            maxTokens: 512,
             temperature: 0.3,
             includeVoiceInput: false
         )
@@ -229,52 +229,12 @@ class SOAPPromptBuilder {
         let medsText = context.currentMedications?.joined(separator: "; ") ?? "None"
         let allergiesText = context.allergies?.joined(separator: "; ") ?? "NKDA"
 
+        // Token budget: no image so all tokens are prompt + output.
+        // Keep prompt under ~250 tokens so 512 max-output tokens stay well inside the LM context.
         return """
-        Generate a structured SOAP note in JSON format for the following patient. \
-        Output ONLY valid JSON, no other text. The output must be observational and descriptive only — \
-        do NOT include diagnoses, disease names, probabilistic statements, or treatment recommendations.
-
-        Patient: \(context.age)y \(context.sex)
-        Chief complaint: \(context.chiefComplaint)
-        Vitals: \(vitalsText)
-        Medical history: \(historyText)
-        Current medications: \(medsText)
-        Allergies: \(allergiesText)
-
-        Required JSON schema:
-        {
-          "subjective": {
-            "chief_complaint": "string",
-            "history_of_present_illness": "string",
-            "past_medical_history": ["string"] or null,
-            "medications": ["string"] or null,
-            "allergies": ["string"] or null
-          },
-          "objective": {
-            "vital_signs": {
-              "temperature": number or null,
-              "heart_rate": number or null,
-              "respiratory_rate": number or null,
-              "systolic_bp": number or null,
-              "diastolic_bp": number or null,
-              "oxygen_saturation": number or null,
-              "recorded_at": null
-            },
-            "physical_exam_findings": ["string"] or null,
-            "diagnostic_results": ["string"] or null
-          },
-          "assessment": {
-            "clinical_impression": "string (observations only, no diagnoses)",
-            "differential_considerations": null,
-            "problem_list": ["string"] or null
-          },
-          "plan": {
-            "interventions": ["string"] or null,
-            "follow_up": ["string"] or null,
-            "patient_education": null,
-            "referrals": null
-          }
-        }
+        Write a SOAP note as JSON only — no prose, no markdown. Observational and descriptive only; no diagnoses, disease names, or probabilistic language.
+        Patient: \(context.age)y \(context.sex) | Complaint: \(context.chiefComplaint) | Vitals: \(vitalsText) | Hx: \(historyText) | Meds: \(medsText) | Allergies: \(allergiesText)
+        {"subjective":{"chief_complaint":"","history_of_present_illness":"","past_medical_history":null,"medications":null,"allergies":null},"objective":{"vital_signs":{"temperature":null,"heart_rate":null,"respiratory_rate":null,"systolic_bp":null,"diastolic_bp":null,"oxygen_saturation":null,"recorded_at":null},"physical_exam_findings":null,"diagnostic_results":null},"assessment":{"clinical_impression":"","differential_considerations":null,"problem_list":null},"plan":{"interventions":null,"follow_up":null,"patient_education":null,"referrals":null}}
         """
     }
 }
