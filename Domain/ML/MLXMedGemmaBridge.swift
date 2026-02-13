@@ -348,7 +348,154 @@ class MLXMedGemmaBridge {
         #endif
     }
 
+    // MARK: - Text-Only Inference (SOAP notes, no image)
+
+    /// Generate a text-only response — used for SOAP note generation where no image is involved.
+    func generateText(
+        prompt: String,
+        maxTokens: Int = 2048,
+        temperature: Float = 0.3
+    ) async throws -> String {
+        #if targetEnvironment(simulator)
+        return simulatorSOAPPlaceholderJSON()
+
+        #else
+        guard let container = modelContainer else {
+            throw MLXModelError.modelNotLoaded
+        }
+
+        let userInput = UserInput(prompt: prompt, images: [])
+        let parameters = GenerateParameters(maxTokens: maxTokens, temperature: temperature)
+
+        do {
+            MLX.GPU.set(cacheLimit: 0)
+            MLX.GPU.clearCache()
+
+            let result = try await container.perform { context in
+                let lmInput = try await context.processor.prepare(input: userInput)
+                MLX.eval(lmInput.text.tokens)
+                MLX.GPU.clearCache()
+                var stepCount = 0
+                return try generate(
+                    input: lmInput,
+                    parameters: parameters,
+                    context: context
+                ) { (_: [Int]) in
+                    stepCount += 1
+                    if stepCount % 32 == 0 { MLX.GPU.clearCache() }
+                    return .more
+                }
+            }
+
+            MLX.GPU.set(cacheLimit: 64 * 1024 * 1024)
+            return result.output
+        } catch let error as MLXModelError {
+            throw error
+        } catch {
+            throw MLXModelError.invocationFailed(error.localizedDescription)
+        }
+        #endif
+    }
+
+    /// Streaming text-only response — used for streaming SOAP note generation.
+    func generateTextStreaming(
+        prompt: String,
+        maxTokens: Int = 2048,
+        temperature: Float = 0.3
+    ) -> AsyncThrowingStream<String, Error> {
+        #if targetEnvironment(simulator)
+        return AsyncThrowingStream { continuation in
+            Task {
+                let json = simulatorSOAPPlaceholderJSON()
+                for char in json {
+                    try await Task.sleep(nanoseconds: 5_000_000)
+                    continuation.yield(String(char))
+                }
+                continuation.finish()
+            }
+        }
+
+        #else
+        return AsyncThrowingStream { continuation in
+            Task {
+                do {
+                    guard let container = self.modelContainer else {
+                        throw MLXModelError.modelNotLoaded
+                    }
+                    let userInput = UserInput(prompt: prompt, images: [])
+                    let parameters = GenerateParameters(maxTokens: maxTokens, temperature: temperature)
+
+                    try await container.perform { context in
+                        let lmInput = try await context.processor.prepare(input: userInput)
+                        MLX.eval(lmInput.text.tokens)
+                        MLX.GPU.clearCache()
+                        var detokenizer = NaiveStreamingDetokenizer(tokenizer: context.tokenizer)
+                        var stepCount = 0
+                        _ = try generate(
+                            input: lmInput,
+                            parameters: parameters,
+                            context: context
+                        ) { (tokens: [Int]) in
+                            stepCount += 1
+                            if stepCount % 32 == 0 { MLX.GPU.clearCache() }
+                            if let last = tokens.last {
+                                detokenizer.append(token: last)
+                                if let piece = detokenizer.next() {
+                                    continuation.yield(piece)
+                                }
+                            }
+                            return .more
+                        }
+                    }
+                    continuation.finish()
+                } catch {
+                    continuation.finish(throwing: error)
+                }
+            }
+        }
+        #endif
+    }
+
     // MARK: - Private
+
+    /// Placeholder SOAP JSON for simulator builds — valid schema for SOAPNoteParser.
+    private func simulatorSOAPPlaceholderJSON() -> String {
+        """
+        {
+          "subjective": {
+            "chief_complaint": "Simulator placeholder — on-device inference unavailable",
+            "history_of_present_illness": "This is a fixed placeholder returned on simulator builds. Real generation requires a physical device.",
+            "past_medical_history": null,
+            "medications": null,
+            "allergies": null
+          },
+          "objective": {
+            "vital_signs": {
+              "temperature": null,
+              "heart_rate": null,
+              "respiratory_rate": null,
+              "systolic_bp": null,
+              "diastolic_bp": null,
+              "oxygen_saturation": null,
+              "recorded_at": null
+            },
+            "physical_exam_findings": null,
+            "diagnostic_results": null
+          },
+          "assessment": {
+            "clinical_impression": "Simulator build — no clinical impression available.",
+            "differential_considerations": null,
+            "problem_list": null
+          },
+          "plan": {
+            "interventions": null,
+            "follow_up": null,
+            "patient_education": null,
+            "referrals": null
+          }
+        }
+        """
+    }
 
     /// Correctly-structured placeholder JSON for simulator builds.
     /// Uses the exact schema expected by FindingsValidator / ImagingFindingsSummary.

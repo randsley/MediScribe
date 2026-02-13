@@ -136,26 +136,21 @@ class SOAPNoteGenerator {
         return AsyncThrowingStream { continuation in
             Task {
                 do {
-                    // 1. Ensure model is loaded
-                    if !self.modelLoader.isModelLoaded {
-                        try self.modelLoader.loadModel()
+                    let bridge = MLXMedGemmaBridge.shared
+                    if !bridge.isModelLoaded {
+                        let modelPath = ModelConfiguration.modelDirectoryPath()
+                        try await bridge.loadModel(from: modelPath)
                     }
 
-                    // 2. Build prompt
                     let prompt = self.promptBuilder.buildSOAPPrompt(from: context, language: language)
-
-                    // 3. Get streaming from model bridge
-                    let stream = MLXModelBridge.generateStreaming(
+                    let stream = bridge.generateTextStreaming(
                         prompt: prompt,
                         maxTokens: options.maxTokens,
                         temperature: options.temperature
                     )
-
-                    // 4. Yield tokens from stream
                     for try await token in stream {
                         continuation.yield(token)
                     }
-
                     continuation.finish()
                 } catch {
                     continuation.finish(throwing: error)
@@ -170,14 +165,16 @@ class SOAPNoteGenerator {
         prompt: String,
         options: SOAPGenerationOptions
     ) async throws -> String {
-        // Delegate to MLX model (placeholder: runs on main actor)
-        return try await MainActor.run {
-            try MLXModelBridge.generate(
-                prompt: prompt,
-                maxTokens: options.maxTokens,
-                temperature: options.temperature
-            )
+        let bridge = MLXMedGemmaBridge.shared
+        if !bridge.isModelLoaded {
+            let modelPath = ModelConfiguration.modelDirectoryPath()
+            try await bridge.loadModel(from: modelPath)
         }
+        return try await bridge.generateText(
+            prompt: prompt,
+            maxTokens: options.maxTokens,
+            temperature: options.temperature
+        )
     }
 
     private func streamResponse(
@@ -185,14 +182,16 @@ class SOAPNoteGenerator {
         options: SOAPGenerationOptions,
         onPartialToken: @escaping (String) -> Void
     ) async throws {
-        // Get streaming from model bridge
-        let stream = MLXModelBridge.generateStreaming(
+        let bridge = MLXMedGemmaBridge.shared
+        if !bridge.isModelLoaded {
+            let modelPath = ModelConfiguration.modelDirectoryPath()
+            try await bridge.loadModel(from: modelPath)
+        }
+        let stream = bridge.generateTextStreaming(
             prompt: prompt,
             maxTokens: options.maxTokens,
             temperature: options.temperature
         )
-
-        // Yield each token via callback
         for try await token in stream {
             onPartialToken(token)
         }
