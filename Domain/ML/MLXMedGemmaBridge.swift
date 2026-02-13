@@ -353,7 +353,7 @@ class MLXMedGemmaBridge {
     /// Generate a text-only response — used for SOAP note generation where no image is involved.
     func generateText(
         prompt: String,
-        maxTokens: Int = 512,
+        maxTokens: Int = 384,
         temperature: Float = 0.3
     ) async throws -> String {
         #if targetEnvironment(simulator)
@@ -381,6 +381,9 @@ class MLXMedGemmaBridge {
                 #if DEBUG
                 print("🧠 [SOAP after prepare+clearCache] app memory: \(self.memMB())")
                 #endif
+                // Second clearCache immediately before generate loop —
+                // eval may have left lazy computation nodes in the graph.
+                MLX.GPU.clearCache()
                 var stepCount = 0
                 return try generate(
                     input: lmInput,
@@ -414,7 +417,7 @@ class MLXMedGemmaBridge {
     /// Streaming text-only response — used for streaming SOAP note generation.
     func generateTextStreaming(
         prompt: String,
-        maxTokens: Int = 512,
+        maxTokens: Int = 384,
         temperature: Float = 0.3
     ) -> AsyncThrowingStream<String, Error> {
         #if targetEnvironment(simulator)

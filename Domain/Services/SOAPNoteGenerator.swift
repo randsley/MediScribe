@@ -20,7 +20,7 @@ struct SOAPGenerationOptions {
 
     nonisolated static var `default`: SOAPGenerationOptions {
         SOAPGenerationOptions(
-            maxTokens: 512,
+            maxTokens: 384,
             temperature: 0.3,
             includeVoiceInput: false
         )
@@ -28,7 +28,7 @@ struct SOAPGenerationOptions {
 
     nonisolated static var soapGeneration: SOAPGenerationOptions {
         SOAPGenerationOptions(
-            maxTokens: 512,
+            maxTokens: 384,
             temperature: 0.3,
             includeVoiceInput: false
         )
@@ -229,12 +229,12 @@ class SOAPPromptBuilder {
         let medsText = context.currentMedications?.joined(separator: "; ") ?? "None"
         let allergiesText = context.allergies?.joined(separator: "; ") ?? "NKDA"
 
-        // Token budget: no image so all tokens are prompt + output.
-        // Keep prompt under ~250 tokens so 512 max-output tokens stay well inside the LM context.
+        // Token budget: prompt + output must stay under ~500 tokens total.
+        // Omit the full JSON template — describe schema in ~30 tokens instead of ~150.
         return """
-        Write a SOAP note as JSON only — no prose, no markdown. Observational and descriptive only; no diagnoses, disease names, or probabilistic language.
-        Patient: \(context.age)y \(context.sex) | Complaint: \(context.chiefComplaint) | Vitals: \(vitalsText) | Hx: \(historyText) | Meds: \(medsText) | Allergies: \(allergiesText)
-        {"subjective":{"chief_complaint":"","history_of_present_illness":"","past_medical_history":null,"medications":null,"allergies":null},"objective":{"vital_signs":{"temperature":null,"heart_rate":null,"respiratory_rate":null,"systolic_bp":null,"diastolic_bp":null,"oxygen_saturation":null,"recorded_at":null},"physical_exam_findings":null,"diagnostic_results":null},"assessment":{"clinical_impression":"","differential_considerations":null,"problem_list":null},"plan":{"interventions":null,"follow_up":null,"patient_education":null,"referrals":null}}
+        Write a SOAP note as JSON. No diagnosis, no markdown. Observational only.
+        Patient: \(context.age)y \(context.sex). Complaint: \(context.chiefComplaint). Vitals: \(vitalsText). History: \(historyText). Meds: \(medsText). Allergies: \(allergiesText).
+        Required JSON keys: subjective(chief_complaint, history_of_present_illness, past_medical_history, medications, allergies), objective(vital_signs with temperature/heart_rate/respiratory_rate/systolic_bp/diastolic_bp/oxygen_saturation, physical_exam_findings), assessment(clinical_impression, problem_list), plan(interventions, follow_up). Output JSON only.
         """
     }
 }
