@@ -9,7 +9,7 @@ import Foundation
 
 struct ImagingFindingsSummary: Codable {
     let imageType: String
-    let imageQuality: String
+    let imageQuality: String?
     let anatomicalObservations: AnatomicalObservations
     let comparisonWithPrior: String
     let areasHighlighted: String

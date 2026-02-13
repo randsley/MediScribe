@@ -24,6 +24,25 @@ struct ImagingGenerateView: View {
     @State private var showCamera = false
     @State private var showSaveSuccess = false
     @State private var isGenerating = false
+    @State private var selectedModality: String = ImagingGenerateView.imagingModalities[0]
+    @State private var customModality: String = ""
+
+    static let imagingModalities = [
+        "PA chest radiograph",
+        "Lateral chest radiograph",
+        "AP abdominal X-ray",
+        "Abdominal CT axial",
+        "Head CT axial",
+        "Pelvic ultrasound",
+        "Abdominal ultrasound",
+        "Fetal / obstetric ultrasound",
+        "Echocardiogram",
+        "12-lead ECG",
+        "Haemogram / CBC",
+        "Laboratory report",
+        "Wound / clinical photograph",
+        "Other"
+    ]
 
     var body: some View {
         Form {
@@ -45,6 +64,17 @@ struct ImagingGenerateView: View {
                 if modelManager.isLoading {
                     ProgressView("Loading model...", value: modelManager.loadingProgress)
                         .font(.caption)
+                }
+            }
+
+            Section("Image Type") {
+                Picker("Modality", selection: $selectedModality) {
+                    ForEach(ImagingGenerateView.imagingModalities, id: \.self) { Text($0) }
+                }
+                .pickerStyle(.menu)
+                if selectedModality == "Other" {
+                    TextField("Describe image type", text: $customModality)
+                        .textInputAutocapitalization(.words)
                 }
             }
 
@@ -154,9 +184,9 @@ struct ImagingGenerateView: View {
             // Get user's selected language from AppSettings
             let language = AppSettings.shared.generationLanguage
 
-            // Build localized prompt for this language
+            // Build localized prompt for this language, injecting clinician-selected modality
             let localizedPrompts = LocalizedPrompts(language: language)
-            let imageContext = "Medical imaging scan provided for analysis"
+            let imageContext = selectedModality == "Other" ? (customModality.isEmpty ? "Medical imaging study" : customModality) : selectedModality
             let prompt = localizedPrompts.buildImagingPrompt(imageContext: imageContext)
 
             // Create inference options with language and localized prompt

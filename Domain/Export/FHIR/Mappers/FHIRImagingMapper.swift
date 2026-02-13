@@ -46,7 +46,7 @@ struct FHIRImagingMapper {
             started: createdAt.fhirDateTime,
             description: summary.imageType,
             note: [FHIRAnnotation(
-                text: "Image quality: \(summary.imageQuality). " +
+                text: "Image quality: \(summary.imageQuality ?? "Not recorded"). " +
                       "Comparison with prior: \(summary.comparisonWithPrior).",
                 time: createdAt.fhirDateTime
             )],
@@ -129,7 +129,7 @@ struct FHIRImagingMapper {
     private static func buildNarrativeDiv(_ summary: ImagingFindingsSummary) -> String {
         var html = "<div xmlns=\"http://www.w3.org/1999/xhtml\">"
         html += "<p><strong>Image Type:</strong> \(summary.imageType)</p>"
-        html += "<p><strong>Image Quality:</strong> \(summary.imageQuality)</p>"
+        if let q = summary.imageQuality { html += "<p><strong>Image Quality:</strong> \(q)</p>" }
 
         for (key, values) in summary.anatomicalObservations.structures.sorted(by: { $0.key < $1.key }) where !values.isEmpty {
             let label = key.replacingOccurrences(of: "_", with: " ").capitalized

@@ -44,16 +44,14 @@ struct LocalizedPrompts {
     private func englishImagingPrompt(_ imageContext: String) -> String {
         // Budget: prefill is (256 image + N prompt) tokens through all LM layers.
         // O(n²) attention — keep prompt under ~200 tokens (safe limit ~450 total).
-        // IMPORTANT: example JSON uses generic section_a/section_b keys — NOT
-        // chest-X-ray-specific keys — to avoid anchoring on radiology modalities.
-        // Explicitly lists non-radiology types (lab report, ECG) to counteract bias.
+        // imageContext = clinician-selected modality (pre-filled in image_type).
+        // Model only needs to fill image_quality + anatomical_observations —
+        // no modality guessing required.
         return """
-        Examine this medical image. Output ONLY the JSON — no other text, no markdown.
-        This image may be an X-ray, ultrasound, CT, MRI, ECG, lab report, photograph, or another type — identify it from the image itself.
-        No diagnosis, disease names, or probabilities.
-        Fill "image_type" with the specific modality of THIS image (e.g. "PA chest radiograph", "Haemogram report", "Abdominal ultrasound", "12-lead ECG trace", "Fetal ultrasound").
-        Fill "anatomical_observations" with 3–4 sections or structures visible in THIS image as keys, max 2 observations each. Do NOT copy the example keys — choose keys relevant to THIS image.
-        {"image_type":"","image_quality":"","anatomical_observations":{"section_a":["observation"],"section_b":["observation"]},"comparison_with_prior":"No prior image available for comparison.","areas_highlighted":"No highlighted areas provided.","limitations":"This summary describes visible image features only and does not assess clinical significance or provide a diagnosis."}
+        Examine this medical image (\(imageContext)). Output ONLY the JSON — no other text, no markdown.
+        No diagnosis, disease names, or probabilities. Describe only what you actually see.
+        Complete the blank fields. Do not change "image_type". Use 3–4 structures or sections relevant to THIS image as keys in "anatomical_observations", max 2 observations each. Do not use the example keys.
+        {\"image_type\":\"\(imageContext)\",\"image_quality\":\"\",\"anatomical_observations\":{\"section_a\":[\"observation\"],\"section_b\":[\"observation\"]},\"comparison_with_prior\":\"No prior image available for comparison.\",\"areas_highlighted\":\"No highlighted areas provided.\",\"limitations\":\"This summary describes visible image features only and does not assess clinical significance or provide a diagnosis.\"}
         """
     }
 
@@ -91,12 +89,10 @@ struct LocalizedPrompts {
 
     private func spanishImagingPrompt(_ imageContext: String) -> String {
         return """
-        Examina esta imagen médica. Genera SOLO el JSON — sin texto antes o después, sin markdown.
-        Esta imagen puede ser una radiografía, ecografía, TC, RM, ECG, análisis de laboratorio, fotografía u otro tipo — identifícalo a partir de la imagen.
-        Sin diagnóstico, sin nombres de enfermedades, sin probabilidades.
-        Rellena "image_type" con la modalidad específica de ESTA imagen (ej. "Radiografía PA de tórax", "Hemograma", "Ecografía abdominal", "ECG de 12 derivaciones").
-        Rellena "anatomical_observations" con 3–4 secciones o estructuras visibles en ESTA imagen. No copies las claves del ejemplo.
-        {"image_type":"","image_quality":"","anatomical_observations":{"seccion_a":["observación"],"seccion_b":["observación"]},"comparison_with_prior":"No prior image available for comparison.","areas_highlighted":"No highlighted areas provided.","limitations":"This summary describes visible image features only and does not assess clinical significance or provide a diagnosis."}
+        Examina esta imagen médica (\(imageContext)). Genera SOLO el JSON — sin texto antes o después, sin markdown.
+        Sin diagnóstico, sin nombres de enfermedades, sin probabilidades. Describe solo lo que ves.
+        Completa los campos vacíos. No cambies "image_type". Usa 3–4 estructuras de ESTA imagen como claves en "anatomical_observations", máximo 2 observaciones. No copies las claves del ejemplo.
+        {\"image_type\":\"\(imageContext)\",\"image_quality\":\"\",\"anatomical_observations\":{\"seccion_a\":[\"observación\"],\"seccion_b\":[\"observación\"]},\"comparison_with_prior\":\"No prior image available for comparison.\",\"areas_highlighted\":\"No highlighted areas provided.\",\"limitations\":\"This summary describes visible image features only and does not assess clinical significance or provide a diagnosis.\"}
         """
     }
 
@@ -134,12 +130,10 @@ struct LocalizedPrompts {
 
     private func frenchImagingPrompt(_ imageContext: String) -> String {
         return """
-        Examinez cette image médicale. Générez UNIQUEMENT le JSON — aucun texte avant ou après, aucun markdown.
-        Cette image peut être une radiographie, une échographie, un scanner, une IRM, un ECG, un bilan de laboratoire, une photo ou un autre type — identifiez-le à partir de l'image.
-        Pas de diagnostic, pas de noms de maladies, pas de probabilités.
-        Remplissez "image_type" avec la modalité spécifique de CETTE image (ex. "Radiographie thoracique PA", "Hémogramme", "Échographie abdominale", "ECG 12 dérivations").
-        Remplissez "anatomical_observations" avec 3–4 sections ou structures visibles dans CETTE image. Ne copiez pas les clés de l'exemple.
-        {"image_type":"","image_quality":"","anatomical_observations":{"section_a":["observation"],"section_b":["observation"]},"comparison_with_prior":"No prior image available for comparison.","areas_highlighted":"No highlighted areas provided.","limitations":"This summary describes visible image features only and does not assess clinical significance or provide a diagnosis."}
+        Examinez cette image médicale (\(imageContext)). Générez UNIQUEMENT le JSON — aucun texte avant ou après, aucun markdown.
+        Pas de diagnostic, noms de maladies ni probabilités. Décrivez uniquement ce que vous voyez.
+        Complétez les champs vides. Ne modifiez pas "image_type". Utilisez 3–4 structures de CETTE image comme clés dans "anatomical_observations", max 2 observations. Ne copiez pas les clés de l'exemple.
+        {\"image_type\":\"\(imageContext)\",\"image_quality\":\"\",\"anatomical_observations\":{\"section_a\":[\"observation\"],\"section_b\":[\"observation\"]},\"comparison_with_prior\":\"No prior image available for comparison.\",\"areas_highlighted\":\"No highlighted areas provided.\",\"limitations\":\"This summary describes visible image features only and does not assess clinical significance or provide a diagnosis.\"}
         """
     }
 
@@ -177,12 +171,10 @@ struct LocalizedPrompts {
 
     private func portugueseImagingPrompt(_ imageContext: String) -> String {
         return """
-        Examine esta imagem médica. Gere APENAS o JSON — sem texto antes ou depois, sem markdown.
-        Esta imagem pode ser uma radiografia, ultrassom, TC, RM, ECG, exame laboratorial, fotografia ou outro tipo — identifique-o a partir da própria imagem.
-        Sem diagnóstico, sem nomes de doenças, sem probabilidades.
-        Preencha "image_type" com a modalidade específica DESTA imagem (ex. "Radiografia PA de tórax", "Hemograma", "Ultrassom abdominal", "ECG de 12 derivações").
-        Preencha "anatomical_observations" com 3–4 seções ou estruturas visíveis NESTA imagem. Não copie as chaves do exemplo.
-        {"image_type":"","image_quality":"","anatomical_observations":{"secao_a":["observação"],"secao_b":["observação"]},"comparison_with_prior":"No prior image available for comparison.","areas_highlighted":"No highlighted areas provided.","limitations":"This summary describes visible image features only and does not assess clinical significance or provide a diagnosis."}
+        Examine esta imagem médica (\(imageContext)). Gere APENAS o JSON — sem texto antes ou depois, sem markdown.
+        Sem diagnóstico, nomes de doenças ou probabilidades. Descreva apenas o que você vê.
+        Preencha os campos vazios. Não altere "image_type". Use 3–4 estruturas DESTA imagem como chaves em "anatomical_observations", máximo 2 observações. Não copie as chaves do exemplo.
+        {\"image_type\":\"\(imageContext)\",\"image_quality\":\"\",\"anatomical_observations\":{\"secao_a\":[\"observação\"],\"secao_b\":[\"observação\"]},\"comparison_with_prior\":\"No prior image available for comparison.\",\"areas_highlighted\":\"No highlighted areas provided.\",\"limitations\":\"This summary describes visible image features only and does not assess clinical significance or provide a diagnosis.\"}
         """
     }
 

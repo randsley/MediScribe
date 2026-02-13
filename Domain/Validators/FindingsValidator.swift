@@ -58,7 +58,7 @@ final class FindingsValidator {
     private static func flattenStringsExcludingLimitations(_ s: ImagingFindingsSummary) -> String {
         var parts: [String] = []
         parts.append(s.imageType)
-        parts.append(s.imageQuality)
+        if let q = s.imageQuality { parts.append(q) }
         // Scan all observation values regardless of which keys the model used
         parts.append(contentsOf: s.anatomicalObservations.structures.values.flatMap { $0 })
         parts.append(s.comparisonWithPrior)
